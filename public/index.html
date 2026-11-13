@@ -335,7 +335,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 79, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 80, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -441,7 +441,7 @@ const WPN={
  knife:{n:'Combat knife',melee:1,dmg:38,rate:.28,noise:2,range:2.7},
  butterfly:{n:'Butterfly knife',melee:1,dmg:44,rate:.24,noise:2,range:2.7,price:6500},
  karambit:{n:'Karambit',melee:1,dmg:50,rate:.22,noise:2,range:2.6,price:8000},
- redrebel:{n:'Red Rebel',melee:1,dmg:75,rate:.4,noise:3,range:3.2,climb:1,price:60000},
+ redrebel:{n:'Red Rebel',melee:1,dmg:75,rate:.4,noise:3,range:3.2,climb:1,price:1000000,sell:24000},
  katana:{n:'Katana',melee:1,dmg:62,rate:.42,noise:4,range:3.5,price:9000},
  grapple:{n:'Grapple gun',gadget:1,rate:.35},
  saber:{n:'Lightsaber',melee:1,dmg:150,rate:.34,noise:12,range:4,price:38000},
@@ -484,7 +484,7 @@ const UPS={
  stash:{n:'Bigger stash',d:'+2 rows of stash space',base:2000}
 };
 const SHOP=[
- {k:'w',id:'dual'},{k:'w',id:'smg'},{k:'w',id:'uzis'},{k:'w',id:'shotgun'},{k:'w',id:'spas'},{k:'w',id:'ak'},{k:'w',id:'rifle'},{k:'w',id:'sniper'},{k:'w',id:'butterfly'},{k:'w',id:'karambit'},{k:'w',id:'katana'},{k:'w',id:'saber'},{k:'p',id:'assault'},{k:'p',id:'raid'},{k:'p',id:'hauler'},{k:'g',id:'grapple',n:'Grapple gun',price:12000},
+ {k:'w',id:'dual'},{k:'w',id:'smg'},{k:'w',id:'uzis'},{k:'w',id:'shotgun'},{k:'w',id:'spas'},{k:'w',id:'ak'},{k:'w',id:'rifle'},{k:'w',id:'sniper'},{k:'w',id:'butterfly'},{k:'w',id:'karambit'},{k:'w',id:'katana'},{k:'w',id:'saber'},{k:'w',id:'redrebel'},{k:'p',id:'assault'},{k:'p',id:'raid'},{k:'p',id:'hauler'},{k:'g',id:'grapple',n:'Grapple gun',price:12000},
  {k:'a',id:'9mm',n:30,price:150},{k:'a',id:'12ga',n:12,price:180},{k:'a',id:'5.56',n:30,price:320},{k:'a',id:'7.62',n:20,price:480},
  {k:'m',id:'bandage',n:'Bandage',price:80},{k:'m',id:'medkit',n:'First aid kit',price:450},{k:'m',id:'morphine',n:'Morphine injector',price:900},
  {k:'v',price:1200},{k:'lp',price:600},{k:'sc',price:50000}
@@ -496,6 +496,8 @@ const SAVE_KEY='deadhaul.v1';
 function defSave(){return {shoulder:1,picks:2,kmig:0,skins:{},skinOn:{},bfskin:'stock',cash:500,xp:0,level:1,streak:0,weapons:['pistol'],ammo:{'9mm':36,'12ga':0,'5.56':0,'7.62':0},meds:{bandage:2,painkillers:0,medkit:0,morphine:0},armor:0,keepGear:false,load:{},stash:[],packs:[],grapple:false,coins:1,bob:true,bhop:true,full:true,gfx:'high',gfxLock:false,pvp:true,nick:'',lobby:'',adsToggle:false,up:{pack:0,vit:0,lungs:0,hands:0,luck:0,stash:0},stats:{raids:0,extracts:0,best:0,kills:0},view:0,muted:false};}
 let S=defSave();
 try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s&&Array.isArray(s.weapons)){const d=defSave();for(const k in d){if(s[k]==null)continue;if(typeof d[k]==='object'&&!Array.isArray(d[k]))Object.assign(d[k],s[k]);else d[k]=s[k];}S=d;}}catch(e){}
+{const i=(S.stash||[]).findIndex(it=>it&&it.gid==='redrebel');if(i>=0&&S.weapons.indexOf('redrebel')<0){S.stash.splice(i,1);S.weapons.push('redrebel');}}
+for(const k in S.ammo)if(typeof S.ammo[k]!=='number'||isNaN(S.ammo[k])){if(k==='undefined')delete S.ammo[k];else S.ammo[k]=0;}
 if(!S.kmig){S.kmig=1;if((S.xp>0||S.cash!==500)&&S.weapons.indexOf('katana')<0)S.weapons.push('katana');}
 if(!S.nick)S.nick='Raider-'+(100+Math.floor(Math.random()*900));
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){}}
@@ -1242,7 +1244,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 function isz(it){const s=ISZ[it.id]||[1,1];return it.rot?[s[1],s[0]]:s;}
 function bagRows(){return curPack().r+S.up.pack;}
 const GUNR={redrebel:'l',pistol:'u',smg:'u',shotgun:'u',ak:'r',spas:'r',rifle:'r',sniper:'e'},GUNW={redrebel:1.6,pistol:.9,smg:3,shotgun:3.5,spas:4.4,ak:3.6,rifle:3.4,sniper:6};
-function gunItem(gid,part){const w=WPN[gid];return {id:'g_'+gid,gid:gid,k:'gun',name:w.n,r:GUNR[gid]||'u',val:Math.round((w.price||2000)*.4),w:GUNW[gid]||3,mag:part?randi(Math.ceil(w.mag/3),w.mag):w.mag};}
+function gunItem(gid,part){const w=WPN[gid];return {id:'g_'+gid,gid:gid,k:'gun',name:w.n,r:GUNR[gid]||'u',val:w.sell||Math.round((w.price||2000)*.4),w:GUNW[gid]||3,mag:part?randi(Math.ceil(w.mag/3),w.mag):w.mag};}
 function foundGuns(){const o=[];for(const it of P.bag)if(it.k==='gun'&&o.indexOf(it.gid)<0)o.push(it.gid);return o;}
 const SLOT={primary:['smg','shotgun','spas','ak','rifle','sniper'],secondary:['pistol','dual','uzis'],melee:['knife','butterfly','karambit','katana','saber','redrebel'],gadget:['grapple'],pack:['sling','daypack','assault','raid','hauler']},SLOTN={pack:'Backpack',primary:'Primary',secondary:'Sidearm',melee:'Melee',gadget:'Gadget'};
 function owns(id){if(PACKS[id])return !PACKS[id].price||(S.packs||[]).indexOf(id)>=0;return id==='knife'||(id==='grapple'?!!S.grapple:S.weapons.indexOf(id)>=0);}
@@ -1454,7 +1456,8 @@ function endRaid(res){if(P)P.climb=null;$('pickUI').hidden=true;if(P)P.pick=null
   if(res==='extract'){S.coins=(S.coins||0)+P.coins;con=conDone?W.contract.reward:0;total=Math.round(base*(1+heatB+lvlB+strB))+con;xp=Math.round(xp*1.5)+100;
     paid=P.loose+Math.round(base*(heatB+lvlB+strB))+con;S.cash+=paid;
     stLayout();
-    for(const it of items){if(it.k==='gun'&&S.weapons.indexOf(it.gid)<0){S.ammo[WPN[it.gid].am]+=P.mag[it.gid]||0;it.mag=0;}
+    for(const it of items){if(it.k==='gun'&&it.gid==='redrebel'&&S.weapons.indexOf('redrebel')<0){S.weapons.push('redrebel');autoEquip('redrebel');card('Red Rebel added to your loadout',0,'l','equip it in the melee slot');continue;}
+      if(it.k==='gun'&&S.weapons.indexOf(it.gid)<0){if(WPN[it.gid].am)S.ammo[WPN[it.gid].am]+=P.mag[it.gid]||0;it.mag=0;}
       const cp=stashCopy(it);cp.rot=false;if(stPlace(cp,stashRows()))S.stash.push(cp);else{overN++;overV+=it.val;}}
     S.cash+=overV;paid+=overV;
    S.stats.extracts++;S.streak++;if(total>S.stats.best)S.stats.best=total;S.armor=P.armor>1?1:0;}
@@ -2736,7 +2739,7 @@ function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.c
   $('mLoad').innerHTML=h;
   h='';
   SHOP.forEach((s,i)=>{let name,sub,price=s.price,own=false;
-    if(s.k==='w'){const w=WPN[s.id];name=w.n;sub=w.melee?'Melee · '+w.dmg+' dmg · cuts through anything':w.am+' · '+(w.pel?w.pel+' pellets':Math.round(60/w.rate)+' rpm')+' · '+w.dmg+' dmg';price=w.price;own=S.weapons.indexOf(s.id)>=0;}
+    if(s.k==='w'){const w=WPN[s.id];name=w.n;sub=s.id==='redrebel'?'Ice axe · climbs four storey walls · '+w.dmg+' dmg':w.melee?'Melee · '+w.dmg+' dmg · cuts through anything':w.am+' · '+(w.pel?w.pel+' pellets':Math.round(60/w.rate)+' rpm')+' · '+w.dmg+' dmg';price=w.price;own=S.weapons.indexOf(s.id)>=0;}
     else if(s.k==='a'){name=s.n+' x '+s.id;sub='You have '+S.ammo[s.id];}
     else if(s.k==='m'){name=s.n;sub='You have '+S.meds[s.id];}
     else if(s.k==='p'){const q=PACKS[s.id];name=q.n;sub=q.c+' x '+q.r+' grid · +'+q.kg+' kg · '+q.d;price=q.price;own=owns(s.id);}
