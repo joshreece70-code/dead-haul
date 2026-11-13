@@ -302,7 +302,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">7 minute raid. 2 exfils open. Build 38, hosted.</small>
+      <small id="mGo">7 minute raid. 2 exfils open. Build 39, hosted.</small>
     </div>
     <section id="stashS"><h2>Stash <small id="stInfo"></small></h2>
       <div class="stW"><div class="stash" id="stG"></div></div>
@@ -322,6 +322,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
         <div class="row"><span class="nm">Status<small id="mMp">Connecting...</small></span></div>
         <div class="row"><span class="nm">Callsign<small>Shown above your head</small></span><input id="mNick" type="text" maxlength="14" autocomplete="off" spellcheck="false" aria-label="Callsign"></div>
         <div class="row"><span class="nm">Lobby code<small>Same code, same squad. Leave blank for the open lobby.</small></span><span style="display:flex;gap:6px;align-items:center"><input id="mCode" type="text" maxlength="12" autocomplete="off" spellcheck="false" aria-label="Lobby code" placeholder="OPEN"><button class="btn plain" type="button" data-act="lobby">Join</button></span></div>
+        <div class="row"><span class="nm">Keep gear on death<small>Off: dying loses the weapons and backpack you took in. The P9 pistol, katana and free packs are never lost</small></span><button class="btn plain" type="button" data-act="keepgear" id="mKeep">Off</button></div>
         <div class="row"><span class="nm">Player damage<small>Off: players cannot hurt you and you cannot hurt them</small></span><button class="btn plain" type="button" data-act="pvp" id="mPvp">On</button></div>
         <ul class="keys"><li>You share the map and can see, shoot and loot each other. Infected, scavs and containers are your own.</li></ul>
       </section>
@@ -445,7 +446,7 @@ const EXF=[['North Gate',0,-HALF],['South Gate',0,HALF],['East Checkpoint',HALF,
 
 /* ================= save ================= */
 const SAVE_KEY='deadhaul.v1';
-function defSave(){return {cash:500,xp:0,level:1,streak:0,weapons:['pistol'],ammo:{'9mm':36,'12ga':0,'5.56':0,'7.62':0},meds:{bandage:2,painkillers:0,medkit:0,morphine:0},armor:0,stash:[],packs:[],grapple:false,coins:1,bob:true,bhop:true,full:true,gfx:'high',gfxLock:false,pvp:true,nick:'',lobby:'',adsToggle:false,up:{pack:0,vit:0,lungs:0,hands:0,luck:0,stash:0},stats:{raids:0,extracts:0,best:0,kills:0},view:0,muted:false};}
+function defSave(){return {cash:500,xp:0,level:1,streak:0,weapons:['pistol'],ammo:{'9mm':36,'12ga':0,'5.56':0,'7.62':0},meds:{bandage:2,painkillers:0,medkit:0,morphine:0},armor:0,keepGear:false,load:{},stash:[],packs:[],grapple:false,coins:1,bob:true,bhop:true,full:true,gfx:'high',gfxLock:false,pvp:true,nick:'',lobby:'',adsToggle:false,up:{pack:0,vit:0,lungs:0,hands:0,luck:0,stash:0},stats:{raids:0,extracts:0,best:0,kills:0},view:0,muted:false};}
 let S=defSave();
 try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s&&Array.isArray(s.weapons)){const d=defSave();for(const k in d){if(s[k]==null)continue;if(typeof d[k]==='object'&&!Array.isArray(d[k]))Object.assign(d[k],s[k]);else d[k]=s[k];}S=d;}}catch(e){}
 if(!S.nick)S.nick='Raider-'+(100+Math.floor(Math.random()*900));
@@ -1136,7 +1137,7 @@ function endRaid(res){
   const items=P.bag.slice().sort((a,b)=>b.val-a.val);let base=P.loose;for(const i of items)base+=i.val;
   const heatB=Math.floor(P.peakHeat)*.1,lvlB=(S.level-1)*.02,strB=Math.min(S.streak,5)*.05;
   let total=0,con=0,xp=P.xp;const conDone=conProg()>=W.contract.n;
-  let paid=0,overN=0,overV=0;
+  let paid=0,overN=0,overV=0;const lost=[];
   if(res==='extract'){S.coins=(S.coins||0)+P.coins;con=conDone?W.contract.reward:0;total=Math.round(base*(1+heatB+lvlB+strB))+con;xp=Math.round(xp*1.5)+100;
     paid=P.loose+Math.round(base*(heatB+lvlB+strB))+con;S.cash+=paid;
     let used=stashUsed();const cap=stashRows()*10;
@@ -1144,19 +1145,22 @@ function endRaid(res){
       if(used+cellsOf(it)<=cap){S.stash.push(stashCopy(it));used+=cellsOf(it);}else{overN++;overV+=it.val;}}
     S.cash+=overV;paid+=overV;
    S.stats.extracts++;S.streak++;if(total>S.stats.best)S.stats.best=total;S.armor=P.armor>1?1:0;}
-  else{S.streak=0;S.armor=0;}
+  else{S.streak=0;S.armor=0;
+    if(!S.keepGear){fixLoad();
+      for(const k of ['primary','secondary','melee']){const id=S.load[k];if(!id||id==='pistol'||id==='katana')continue;const i=S.weapons.indexOf(id);if(i>=0)S.weapons.splice(i,1);lost.push(WPN[id].n);S.load[k]=k==='secondary'?'pistol':k==='melee'?'katana':'';}
+      const pk=S.load.pack;if(PACKS[pk]&&PACKS[pk].price){const i=(S.packs||[]).indexOf(pk);if(i>=0)S.packs.splice(i,1);lost.push(PACKS[pk].n);S.load.pack='daypack';}}}
   for(const id in P.mag){if(id==='pistol'||!WPN[id]||!WPN[id].am||S.weapons.indexOf(id)<0)continue;S.ammo[WPN[id].am]+=P.mag[id]||0;}
   S.stats.kills+=P.kills;S.xp+=xp;let ups=0,lvlCash=0;
   while(S.xp>=xpNeed(S.level)){S.xp-=xpNeed(S.level);S.level++;ups++;lvlCash+=250*S.level;}
   S.cash+=lvlCash;save();
-  showSummary({res:res,items:items,loose:P.loose,base:base,heatB:heatB,lvlB:lvlB,strB:strB,con:con,conDone:conDone,total:total,xp:xp,ups:ups,lvlCash:lvlCash,kills:P.kills,coins:P.coins,paid:paid,overN:overN,overV:overV});
+  showSummary({res:res,items:items,loose:P.loose,base:base,heatB:heatB,lvlB:lvlB,strB:strB,con:con,conDone:conDone,total:total,xp:xp,ups:ups,lvlCash:lvlCash,kills:P.kills,coins:P.coins,lost:lost,paid:paid,overN:overN,overV:overV});
 }
 let sumTimers=[];
 function showSummary(r){
   sumTimers.forEach(clearTimeout);sumTimers=[];
   $('hud').hidden=true;$('cross').hidden=true;$('summary').hidden=false;$('summary').scrollTop=0;
   const ok=r.res==='extract',h=$('sumH');h.textContent=ok?'Extracted':r.res==='kia'?'You did not make it':'Missing in action';h.className=ok?'ok':'bad';
-  $('sumP').textContent=ok?'You walked out with the bag. Everything in it is now in your stash, ready to sell or keep.':r.res==='kia'?(MP.killer?'Killed by '+MP.killer+'. ':'')+'The bag stays in the town. Your guns, ammo and meds made it back.':'The clock ran out and the gates closed. The bag is gone.';
+  $('sumP').textContent=ok?'You walked out with the bag. Everything in it is now in your stash, ready to sell or keep.':r.res==='kia'?(MP.killer?'Killed by '+MP.killer+'. ':'')+'The bag stays in the town.'+(r.lost.length?' Lost with you: '+r.lost.join(', ')+'.':S.keepGear?' Your gear made it back.':''):'The clock ran out and the gates closed. The bag is gone.'+(r.lost.length?' Lost with you: '+r.lost.join(', ')+'.':'');
   const list=$('sumList');list.innerHTML='';$('sumTot').textContent=ok?'$0':'Lost '+fmt(r.base);$('sumTot').style.color=ok?'':'var(--blood)';
   const lines=[];
   if(r.coins)lines.push(ok?'+'+r.coins+' slot coin'+(r.coins>1?'s':'')+' banked. Spin in the hideout.':r.coins+' slot coin'+(r.coins>1?'s':'')+' lost with the bag.');
@@ -2085,7 +2089,7 @@ function makeIcons(){
     for(const k in IM)jobs.push([k,IM[k],false]);
     for(const g of ['pistol','smg','shotgun','spas','ak','rifle','sniper'])jobs.push(['g_'+g,g,true]);
     for(const g of ['pistol','dual','uzis','smg','shotgun','spas','ak','rifle','sniper','katana','saber','grapple','minigun'])if(GUNS[g])jobs.push(['w_'+g,g,true]);
-    for(const [k,def,gun] of jobs){
+    for(const [k,def,gun] of jobs){try{
       let geo,mat=M;
       let mesh2=null;
       if(gun){geo=GUNS[def];mat=GUN_MAT;}else{try{geo=bake(def.map(q=>q.slice()));}catch(e){continue;}}
@@ -2098,12 +2102,12 @@ function makeIcons(){
       cam.left=ctr.x-hw;cam.right=ctr.x+hw;cam.top=ctr.y+hh;cam.bottom=ctr.y-hh;cam.position.set(0,0,ctr.z+10);cam.updateProjectionMatrix();
       r.setSize(W,H,false);r.render(sc,cam);ICON[k]=cv.toDataURL('image/png');
       sc.remove(mesh);if(mesh2)mesh.remove(mesh2);if(!gun)geo.dispose();
-    }
+    }catch(e){}}
     M.dispose();
   }catch(e){}
   try{r.dispose();r.forceContextLoss();}catch(e){}
 }
-try{makeIcons();}catch(e){}
+setTimeout(()=>{try{makeIcons();}catch(e){}if(state==='menu')renderMenu();},0); /* after start-up, once every weapon's material is ready */
 let stSel=new Set();
 function stashRows(){return 10+2*(S.up.stash||0);}
 function cellsOf(it){const s=ISZ[it.id]||[1,1];return s[0]*s[1];}
@@ -2131,7 +2135,7 @@ function renderMenu(){
   $('sCoins').textContent=S.coins||0;$('sSpin').disabled=slotBusy||!(S.coins>0);
   $('mCash').textContent=fmt(S.cash);$('mLvl').textContent=S.level;$('mEx').textContent=S.stats.extracts+' / '+S.stats.raids;$('mBest').textContent=fmt(S.stats.best);$('mStreak').textContent=S.streak+(S.streak?'  (+'+Math.min(S.streak,5)*5+'%)':'');
   $('mXp').style.width=Math.round(S.xp/xpNeed(S.level)*100)+'%';
-  $('mMute').textContent=S.muted?'Off':'On';$('mFull').textContent=S.full?'On':'Off';$('mGfx').textContent=GFX.high?'High':'Low';$('mBob').textContent=S.bob===false?'Off':'On';$('mBhop').textContent=S.bhop===false?'Off':'On';$('mPvp').textContent=S.pvp?'On':'Off';{const n=$('mNick');if(document.activeElement!==n)n.value=S.nick;}mpStatus();$('mWipe').textContent=wipeArmed?'Tap again to wipe':'Wipe';
+  $('mMute').textContent=S.muted?'Off':'On';$('mFull').textContent=S.full?'On':'Off';$('mGfx').textContent=GFX.high?'High':'Low';$('mBob').textContent=S.bob===false?'Off':'On';$('mBhop').textContent=S.bhop===false?'Off':'On';$('mPvp').textContent=S.pvp?'On':'Off';$('mKeep').textContent=S.keepGear?'On':'Off';{const n=$('mNick');if(document.activeElement!==n)n.value=S.nick;}mpStatus();$('mWipe').textContent=wipeArmed?'Tap again to wipe':'Wipe';
   let h='<div class="row"><span class="nm">Katana<small>Quiet. Never runs dry.</small></span></div>';
   fixLoad();
   const nm=o=>WPN[o]?WPN[o].n:PACKS[o].n,psub=o=>{const q=PACKS[o];return q.c+' x '+q.r+(S.up.pack?' + '+S.up.pack+' rows':'')+' grid · '+(22+6*S.up.pack+q.kg)+' kg'+(q.slow?' · '+Math.round(q.slow*100)+'% slower':'');};
@@ -2177,6 +2181,7 @@ $('menu').addEventListener('click',e=>{
   if(a==='full'){S.full=!S.full;save();renderMenu();return;}
   if(a==='gfx'){S.gfxLock=true;setGfx(!GFX.high);renderMenu();return;}
   if(a==='pvp'){S.pvp=!S.pvp;save();renderMenu();return;}
+  if(a==='keepgear'){S.keepGear=!S.keepGear;save();renderMenu();return;}
   if(a==='lobby'){mpJoin($('mCode').value);return;}
   if(a==='mute'){toggleMute();return;}
   if(a==='wipe'){if(wipeArmed){S=defSave();view=0;wipeArmed=false;save();}else wipeArmed=true;renderMenu();return;}
