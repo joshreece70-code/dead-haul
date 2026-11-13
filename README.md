@@ -76,3 +76,7 @@ Character models are not replaceable yet.
 ## Not yet verified
 
 The server and the browser networking were tested together in a simulation, not on Cloudflare itself. The weapon model files were checked for structure and proportions, but the game's model loader and the two Blender scripts have not been run for real. Expect to adjust small things on first deploy.
+
+## Windows version (Unity)
+
+The `unity/` folder holds a Unity 6 version of the game that builds to a Windows `.exe` and uses this same Cloudflare server for multiplayer. Setup steps are in [unity/README.md](unity/README.md).
