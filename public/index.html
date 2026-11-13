@@ -335,7 +335,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 80, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 81, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -374,7 +374,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
           <li>The <b>Red Rebel</b> ice axe only turns up in airdrops. Carry it and press <b>Space</b> facing the outside wall of a four storey building to climb: <b>W</b>/<b>S</b> up and down, <b>A</b>/<b>D</b> along the wall, <b>Space</b> to let go. Climbing up costs stamina. Falling or jumping next to one of those walls, press <b>Space</b> to dig the axe in and catch yourself.</li>
           <li>Safes and cash registers are locked. With a <b>lock pick</b>, press <b>E</b> and hit <b>Space</b>, <b>E</b> or click while the marker is in the green to set each pin. A miss drops a pin and can snap the pick.</li>
           <li><b>Z</b> or <b>mouse button 5</b> dolphin dive in the direction you are moving. Time slows while you are in the air, but you aim and shoot at nearly full speed. A dive carries you through open windows. You land prone: crawl, press <b>Ctrl</b> to crouch, or <b>Space</b> to stand.</li>
-          <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. It holds until you fire again: you hang at the hook once you are reeled in, and a second click lets go and keeps your swing (or pops you over a roof edge). Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
+          <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. It lets go on its own once you are reeled all the way in (popping you over a roof edge), or click again to let go early and keep your swing. Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
           <li><b>Ctrl</b> or <b>mouse button 4</b> crouch: slower and quieter, steadier aim, harder for infected to spot. Press it while sprinting to slide.</li>
           <li><b>R</b> reload · tap <b>Q</b> to bandage and stop bleeding · hold <b>Q</b> for the med menu (mouse or scroll to choose, click, 1-4 or Q again to use, Esc to close) · <b>V</b> swap shoulder · <b>Middle mouse</b> ping what you aim at (your lobby sees it)</li>
           <li>There is no mouse cursor during a raid. The bag and loot window get a small gold in-game pointer.</li>
@@ -1958,8 +1958,7 @@ function updPlayer(dt){
     if(P.grap){
       /* the reel pulls you along the rope; gravity still acts, so long ropes swing */
       const g=P.grap;g.t+=dt;const feet=P.base+P.y,hx=g.x-P.x,hz=g.z-P.z,hy=g.y+.4-(feet+1.1),hd=Math.hypot(hx,hz)||.001,d=Math.hypot(hd,hy)||.001;
-      if(d<1.15){/* reeled all the way in: hang on the rope at the hook */
-        const k=Math.min(1,dt*10);P.vx+=(hx*6-P.vx)*k;P.vz+=(hz*6-P.vz)*k;P.vy+=(hy*8+18*dt*(P.y>0?1:0)-P.vy)*k;if(P.y<=0&&P.vy>0)P.y=.02;P.dive=false;P.slide=0;P.hops=0;}
+      if(d<1.15||(hd<1.2&&g.y-feet<.5)){releaseHook();} /* fully reeled in: the hook lets go on its own */
       else{const A=40;P.vx+=hx/d*A*dt;P.vz+=hz/d*A*dt;P.vy+=hy/d*A*dt;
         if(hd<1.7&&g.y>feet+.3)P.vy=Math.max(P.vy,6.5); /* walking up the wall on the rope */
         const sp=Math.hypot(P.vx,P.vy,P.vz);if(sp>17){P.vx*=17/sp;P.vy*=17/sp;P.vz*=17/sp;}
