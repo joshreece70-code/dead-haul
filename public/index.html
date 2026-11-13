@@ -328,7 +328,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 71, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 72, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -473,7 +473,7 @@ const SHOP=[
  {k:'w',id:'dual'},{k:'w',id:'smg'},{k:'w',id:'uzis'},{k:'w',id:'shotgun'},{k:'w',id:'spas'},{k:'w',id:'ak'},{k:'w',id:'rifle'},{k:'w',id:'sniper'},{k:'w',id:'butterfly'},{k:'w',id:'karambit'},{k:'w',id:'katana'},{k:'w',id:'saber'},{k:'p',id:'assault'},{k:'p',id:'raid'},{k:'p',id:'hauler'},{k:'g',id:'grapple',n:'Grapple gun',price:12000},
  {k:'a',id:'9mm',n:30,price:150},{k:'a',id:'12ga',n:12,price:180},{k:'a',id:'5.56',n:30,price:320},{k:'a',id:'7.62',n:20,price:480},
  {k:'m',id:'bandage',n:'Bandage',price:80},{k:'m',id:'medkit',n:'First aid kit',price:450},{k:'m',id:'morphine',n:'Morphine injector',price:900},
- {k:'v',price:1200},{k:'lp',price:600}
+ {k:'v',price:1200},{k:'lp',price:600},{k:'sc',price:50000}
 ];
 const EXF=[['North Gate',0,-HALF],['South Gate',0,HALF],['East Checkpoint',HALF,0],['West Underpass',-HALF,0]];
 
@@ -2634,6 +2634,7 @@ function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.c
     else if(s.k==='m'){name=s.n;sub='You have '+S.meds[s.id];}
     else if(s.k==='p'){const q=PACKS[s.id];name=q.n;sub=q.c+' x '+q.r+' grid · +'+q.kg+' kg · '+q.d;price=q.price;own=owns(s.id);}
     else if(s.k==='g'){name=s.n;sub='Fires a hook on a rope and reels you in. Reaches rooftops.';own=!!S.grapple;}
+    else if(s.k==='sc'){name='Slot coin';sub='One spin on the slot machine. You have '+(S.coins||0);}
     else if(s.k==='lp'){name='Lock picks x 2';sub='Opens locked safes and registers. You have '+(S.picks||0);}
     else{name='Armor vest';sub='Kept if you extract with it intact';own=!!S.armor;}
     h+='<div class="row"><span class="nm">'+name+'<small>'+sub+'</small></span><button class="btn" type="button" data-act="buy" data-id="'+i+'"'+(own||S.cash<price?' disabled':'')+'>'+(own?'Owned':fmt(price))+'</button></div>';});
@@ -2675,7 +2676,7 @@ $('menu').addEventListener('click',e=>{
   if(a==='wipe'){if(wipeArmed){S=defSave();view=0;wipeArmed=false;save();}else wipeArmed=true;renderMenu();return;}
   if(a==='buy'){const s=SHOP[+id],price=s.k==='w'?WPN[s.id].price:s.k==='p'?PACKS[s.id].price:s.price;if(S.cash<price)return;
     if(s.k==='w'){if(S.weapons.indexOf(s.id)>=0)return;S.weapons.push(s.id);if(!WPN[s.id].melee)S.ammo[WPN[s.id].am]+=WPN[s.id].mag*2;autoEquip(s.id);}
-    else if(s.k==='a')S.ammo[s.id]+=s.n;else if(s.k==='m')S.meds[s.id]++;else if(s.k==='p'){if(owns(s.id))return;(S.packs||(S.packs=[])).push(s.id);fixLoad();S.load.pack=s.id;}else if(s.k==='g'){if(S.grapple)return;S.grapple=true;autoEquip('grapple');}else if(s.k==='lp'){S.picks=(S.picks||0)+2;}else{if(S.armor)return;S.armor=1;}
+    else if(s.k==='a')S.ammo[s.id]+=s.n;else if(s.k==='m')S.meds[s.id]++;else if(s.k==='p'){if(owns(s.id))return;(S.packs||(S.packs=[])).push(s.id);fixLoad();S.load.pack=s.id;}else if(s.k==='g'){if(S.grapple)return;S.grapple=true;autoEquip('grapple');}else if(s.k==='lp'){S.picks=(S.picks||0)+2;}else if(s.k==='sc'){S.coins=(S.coins||0)+1;}else{if(S.armor)return;S.armor=1;}
     S.cash-=price;sfx.cash();}
   if(a==='up'){const c=upCost(id);if(S.up[id]>=UPMAX||S.cash<c)return;S.cash-=c;S.up[id]++;sfx.loot(2);}
   save();renderMenu();
