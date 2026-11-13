@@ -97,23 +97,24 @@ button{font-family:inherit;color:inherit;border-radius:0}
 #combo small{display:block;font:400 11px var(--mono);color:var(--text)}
 #exbar{position:absolute;left:50%;top:33%;transform:translateX(-50%);width:210px;text-align:center;font:600 16px var(--display);letter-spacing:.14em;color:var(--go);text-shadow:0 1px 0 #000}
 #exB{background:var(--go)}
-#bc{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:150px;text-align:center}
+#bc{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:240px;text-align:center}
+.touch #bc{width:170px}
 #hotbar{position:relative;left:50%;transform:translateX(-50%);display:flex;gap:4px;width:max-content;margin-bottom:6px}
-.hb{position:relative;width:76px;height:42px;padding:0;pointer-events:auto;cursor:pointer;background:rgba(12,16,12,.66) no-repeat 50% 58%/88% auto;border:1px solid var(--line);border-bottom:2px solid var(--line)}
+.hb{position:relative;width:98px;height:54px;padding:0;pointer-events:auto;cursor:pointer;background:rgba(12,16,12,.66) no-repeat 50% 58%/88% auto;border:1px solid var(--line);border-bottom:2px solid var(--line)}
 .hb.on{border-color:var(--cash);border-bottom-color:var(--cash);background-color:rgba(230,193,74,.18);box-shadow:0 0 12px -3px var(--cash)}
 .hb.dry{opacity:.55}
-.hb i{position:absolute;left:3px;top:1px;font:600 11px var(--display);font-style:normal;color:var(--dim);text-shadow:0 1px 0 #000}
+.hb i{position:absolute;left:4px;top:2px;font:600 13px var(--display);font-style:normal;color:var(--dim);text-shadow:0 1px 0 #000}
 .hb.on i{color:var(--cash)}
-.hb b{position:absolute;right:3px;bottom:1px;font:400 10px var(--mono);color:var(--text);text-shadow:0 1px 2px #000}
+.hb b{position:absolute;right:4px;bottom:2px;font:400 12px var(--mono);color:var(--text);text-shadow:0 1px 2px #000}
 .hb.found{border-style:dashed}
-.touch .hb{width:52px;height:32px}
-#ammo{font:400 20px var(--mono);text-shadow:0 1px 0 #000;line-height:1.1}
+.touch .hb{width:62px;height:38px}
+#ammo{font:400 24px var(--mono);text-shadow:0 1px 0 #000;line-height:1.1}
 #ammo small{font-size:12px;color:var(--dim)}
 #wname,#carT,#hint{font:600 12px var(--display);letter-spacing:.14em;color:var(--dim);text-shadow:0 1px 0 #000;text-transform:uppercase}
 #carT{color:var(--text)} #hint{color:var(--cash)}
-#bc .bar{margin-top:3px}
+#bc .bar{margin-top:4px;height:11px}
 #hpB{background:var(--blood)} #stB{background:#c9cfc0}
-#bc .bar.st{height:4px}
+#bc .bar.st{height:7px}
 #btns{display:none}
 .touch #btns{display:block}
 .tb{position:absolute;pointer-events:auto;width:54px;height:54px;border-radius:50%;background:rgba(12,16,12,.55);border:1px solid rgba(214,220,207,.5);font:600 13px var(--display);letter-spacing:.06em;touch-action:none}
@@ -175,8 +176,9 @@ h1 span{color:var(--cash)}
 .slot small{font:400 12px var(--mono);color:var(--dim)}
 .opts{display:flex;flex-wrap:wrap;gap:6px;padding:8px 0 4px;align-items:center}
 .opts small{font:400 12px var(--mono);color:var(--dim);flex-basis:100%}
-.stash{display:grid;grid-template-columns:repeat(10,1fr);grid-auto-rows:calc(100cqw/10);grid-auto-flow:dense;min-height:calc(100cqw/10*3);background-color:rgba(0,0,0,.45);background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:calc(100cqw/10) calc(100cqw/10);outline:1px solid var(--line);margin-top:8px}
-.sc{--c:var(--rc);box-sizing:border-box;border:1px solid var(--c);border-left-width:3px;background:rgba(18,24,18,.94);padding:3px 5px;font:600 13px/1.05 var(--display);color:var(--c);overflow:hidden;cursor:pointer;text-align:left;min-width:0}
+.stash{position:relative;min-height:calc(100cqw/10*3);background-color:rgba(0,0,0,.45);background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:calc(100cqw/10) calc(100cqw/10);outline:1px solid var(--line);margin-top:8px}
+.sc.drag{opacity:.3}
+.sc{position:absolute;touch-action:none;box-sizing:border-box;border:1px solid var(--c,var(--rc));border-left-width:3px;background:rgba(18,24,18,.94);padding:3px 5px;font:600 13px/1.05 var(--display);color:var(--c,var(--rc));overflow:hidden;cursor:pointer;text-align:left;min-width:0}
 .sc,.gi{background-repeat:no-repeat!important;background-position:50% 62%!important;background-size:contain!important}
 .sc,.gi:not(.unk){display:flex;flex-direction:column;justify-content:space-between;text-shadow:0 1px 2px #000,0 0 4px #000}
 .sc small{display:block;font:400 11px var(--mono);color:var(--cash);margin-top:2px}
@@ -302,11 +304,11 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">7 minute raid. 2 exfils open. Build 39, hosted.</small>
+      <small id="mGo">7 minute raid. 2 exfils open. Build 40, hosted.</small>
     </div>
     <section id="stashS"><h2>Stash <small id="stInfo"></small></h2>
       <div class="stW"><div class="stash" id="stG"></div></div>
-      <div class="stBar"><span id="stMsg">Click items to select them. Shift-click sells one straight away.</span>
+      <div class="stBar"><span id="stMsg">Drag items to arrange them, R turns the one you are holding. Click to select, Shift-click sells one straight away.</span>
         <span class="stBtns"><button class="btn plain" type="button" data-act="stjunk">Select cheap</button><button class="btn plain" type="button" data-act="stall">Select all</button><button class="btn plain" type="button" data-act="stclear">Clear</button><button class="btn" type="button" data-act="stkeep" id="stKeep" hidden>Add to loadout</button><button class="btn plain" type="button" data-act="up" data-id="stash" id="stUp">Expand</button><button class="btn" type="button" data-act="stsell" id="stSell">Sell</button></span></div>
     </section>
     <div class="cols">
@@ -1140,9 +1142,9 @@ function endRaid(res){
   let paid=0,overN=0,overV=0;const lost=[];
   if(res==='extract'){S.coins=(S.coins||0)+P.coins;con=conDone?W.contract.reward:0;total=Math.round(base*(1+heatB+lvlB+strB))+con;xp=Math.round(xp*1.5)+100;
     paid=P.loose+Math.round(base*(heatB+lvlB+strB))+con;S.cash+=paid;
-    let used=stashUsed();const cap=stashRows()*10;
+    stLayout();
     for(const it of items){if(it.k==='gun'&&S.weapons.indexOf(it.gid)<0){S.ammo[WPN[it.gid].am]+=P.mag[it.gid]||0;it.mag=0;}
-      if(used+cellsOf(it)<=cap){S.stash.push(stashCopy(it));used+=cellsOf(it);}else{overN++;overV+=it.val;}}
+      const cp=stashCopy(it);cp.rot=false;if(stPlace(cp,stashRows()))S.stash.push(cp);else{overN++;overV+=it.val;}}
     S.cash+=overV;paid+=overV;
    S.stats.extracts++;S.streak++;if(total>S.stats.best)S.stats.best=total;S.armor=P.armor>1?1:0;}
   else{S.streak=0;S.armor=0;
@@ -2112,14 +2114,45 @@ let stSel=new Set();
 function stashRows(){return 10+2*(S.up.stash||0);}
 function cellsOf(it){const s=ISZ[it.id]||[1,1];return s[0]*s[1];}
 function stashUsed(){let n=0;for(const it of S.stash)n+=cellsOf(it);return n;}
-function stashCopy(it){const o={};for(const k of ['id','gid','k','name','r','val','w','mag'])if(it[k]!=null)o[k]=it[k];return o;}
+/* stash drag and drop: the stash is a fixed grid, 10 cells wide; items keep the spot you put them in */
+const SC=10;
+function stFree(x,y,w,h,skip,rows){if(x<0||y<0||x+w>SC||y+h>rows)return false;for(const o of S.stash){if(o===skip||o.gx==null)continue;const s=isz(o);if(x<o.gx+s[0]&&x+w>o.gx&&y<o.gy+s[1]&&y+h>o.gy)return false;}return true;}
+function stPlace(it,rows){for(let t=0;t<2;t++){const s=isz(it);for(let y=0;y<=rows-s[1];y++)for(let x=0;x<=SC-s[0];x++)if(stFree(x,y,s[0],s[1],it,rows)){it.gx=x;it.gy=y;return true;}it.rot=!it.rot;}it.rot=false;return false;}
+function stLayout(){const rows=stashRows();for(const it of S.stash){if(it.gx!=null&&!stFree(it.gx,it.gy,isz(it)[0],isz(it)[1],it,999))it.gx=null;}
+  for(const it of S.stash)if(it.gx==null&&!stPlace(it,rows)){let r=rows;while(!stPlace(it,++r)&&r<rows+60);}}
+function stRowsShown(){let m=stashRows();for(const it of S.stash)if(it.gx!=null)m=Math.max(m,it.gy+isz(it)[1]);return m;}
+let SD=null,stSuppress=false;
+function stTarget(x,y){const g=$('stG').getBoundingClientRect(),cs=g.width/SC,s=isz(SD.it);if(x<g.left||x>g.right||y<g.top||y>g.bottom)return {in:false};
+  const gx=Math.floor((x-g.left)/cs)-SD.ox,gy=Math.floor((y-g.top)/cs)-SD.oy;return {in:true,gx:gx,gy:gy,ok:stFree(gx,gy,s[0],s[1],SD.it,stashRows()),g:g,cs:cs};}
+function stGhost(x,y){const gh=$('ghost'),t=stTarget(x,y),g=$('stG').getBoundingClientRect(),cs=g.width/SC,s=isz(SD.it),a=$('app').getBoundingClientRect();
+  const px=t.in?t.g.left+t.gx*cs:x-(SD.ox+.5)*cs,py=t.in?t.g.top+t.gy*cs:y-(SD.oy+.5)*cs;
+  gh.hidden=!SD.moved;gh.style.transform='translate('+(px-a.left)+'px,'+(py-a.top)+'px)';gh.style.width=s[0]*cs+'px';gh.style.height=s[1]*cs+'px';gh.className=t.in&&!t.ok?'bad':'';gh.textContent=SD.it.name;}
+function stDown(x,y,tile){const it=S.stash[+tile.dataset.id];if(!it)return;const r=tile.getBoundingClientRect(),cs=$('stG').getBoundingClientRect().width/SC,s=isz(it);
+  SD={it:it,tile:tile,ox:clamp(Math.floor((x-r.left)/cs),0,s[0]-1),oy:clamp(Math.floor((y-r.top)/cs),0,s[1]-1),sx:x,sy:y,lx:x,ly:y,moved:false,rot0:!!it.rot};}
+function stMove(x,y){if(!SD)return;SD.lx=x;SD.ly=y;if(!SD.moved&&Math.hypot(x-SD.sx,y-SD.sy)>6){SD.moved=true;SD.tile.classList.add('drag');}if(SD.moved)stGhost(x,y);}
+function stUp(x,y){if(!SD)return;const d=SD;SD=null;$('ghost').hidden=true;if(!d.moved)return;stSuppress=true;setTimeout(()=>{stSuppress=false;},0);
+  const t0=(SD=d,stTarget(x,y));SD=null;
+  if(t0.in&&t0.ok){d.it.gx=t0.gx;d.it.gy=t0.gy;save();tone(520,.04,'triangle',.1);}else{d.it.rot=d.rot0;if(t0.in)sfx.click();}
+  renderStash();}
+function stRotate(){if(!SD||!SD.moved)return;const s0=ISZ[SD.it.id];if(!s0||s0[0]===s0[1])return;SD.it.rot=!SD.it.rot;const s=isz(SD.it);SD.ox=Math.min(SD.ox,s[0]-1);SD.oy=Math.min(SD.oy,s[1]-1);stGhost(SD.lx,SD.ly);sfx.click();}
+(function(){const g=$('stG');
+  g.addEventListener('mousedown',e=>{if(e.button!==0||e.shiftKey)return;const t=e.target.closest('.sc');if(!t)return;e.preventDefault();stDown(e.clientX,e.clientY,t);});
+  window.addEventListener('mousemove',e=>{if(SD)stMove(e.clientX,e.clientY);});
+  window.addEventListener('mouseup',e=>{if(SD)stUp(e.clientX,e.clientY);});
+  let tid=null;
+  g.addEventListener('touchstart',e=>{const t=e.target.closest('.sc');if(!t)return;const p=e.changedTouches[0];tid=p.identifier;stDown(p.clientX,p.clientY,t);},{passive:true});
+  g.addEventListener('touchmove',e=>{for(const p of e.changedTouches)if(p.identifier===tid){stMove(p.clientX,p.clientY);if(SD&&SD.moved)e.preventDefault();}},{passive:false});
+  g.addEventListener('touchend',e=>{for(const p of e.changedTouches)if(p.identifier===tid){tid=null;stUp(p.clientX,p.clientY);}});
+  window.addEventListener('keydown',e=>{if(SD&&e.code==='KeyR'){e.preventDefault();stRotate();}if(SD&&e.code==='Escape'){SD.it.rot=SD.rot0;SD=null;$('ghost').hidden=true;renderStash();}});
+})();
+function stashCopy(it){const o={};for(const k of ['id','gid','k','name','r','val','w','mag','rot'])if(it[k]!=null)o[k]=it[k];return o;}
 function renderStash(){
   const st=S.stash||(S.stash=[]);for(const it of [...stSel])if(st.indexOf(it)<0)stSel.delete(it);
   let cells=0,val=0;for(const it of st){const s=ISZ[it.id]||[1,1];cells+=s[0]*s[1];val+=it.val;}
   const cap=stashRows()*10;$('stInfo').textContent=cells+' / '+cap+' cells'+(st.length?' · '+st.length+' item'+(st.length===1?'':'s')+' worth '+fmt(val):'');
-  $('stG').style.minHeight='calc(100cqw / 10 * '+stashRows()+')';
+  stLayout();$('stG').style.minHeight='calc(100cqw / 10 * '+stRowsShown()+')';
   {const lv=S.up.stash||0,c=upCost('stash'),u=$('stUp');u.disabled=lv>=5||S.cash<c;u.textContent=lv>=5?'Stash at max size':'Expand +2 rows · '+fmt(c);}
-  $('stG').innerHTML=st.length?st.map((it,i)=>{const s=ISZ[it.id]||[1,1];return '<button type="button" class="sc r-'+it.r+(stSel.has(it)?' sel':'')+'" data-act="st" data-id="'+i+'" style="'+iconStyle(it)+';grid-column:span '+s[0]+';grid-row:span '+s[1]+'">'+esc(it.name)+'<small>'+fmt(it.val)+(it.k==='gun'?(S.weapons.indexOf(it.gid)<0?' · new gun':' · owned'):'')+'</small></button>';}).join(''):'<div class="stEmpty">Empty. What you carry out of a raid lands here.</div>';
+  $('stG').innerHTML=st.length?st.map((it,i)=>{const s=isz(it),u='100cqw / 10';return '<button type="button" class="sc r-'+it.r+(stSel.has(it)?' sel':'')+'" data-act="st" data-id="'+i+'" style="'+iconStyle(it)+';left:calc('+u+' * '+it.gx+');top:calc('+u+' * '+it.gy+');width:calc('+u+' * '+s[0]+');height:calc('+u+' * '+s[1]+')">'+esc(it.name)+'<small>'+fmt(it.val)+(it.k==='gun'?(S.weapons.indexOf(it.gid)<0?' · new gun':' · owned'):'')+'</small></button>';}).join(''):'<div class="stEmpty">Empty. What you carry out of a raid lands here.</div>';
   let sv=0;for(const it of stSel)sv+=it.val;
   $('stSell').disabled=!stSel.size;$('stSell').textContent=stSel.size?'Sell '+stSel.size+' for '+fmt(sv):'Sell';
   const one=stSel.size===1?[...stSel][0]:null;$('stKeep').hidden=!(one&&one.k==='gun'&&S.weapons.indexOf(one.gid)<0);
@@ -2170,7 +2203,7 @@ $('menu').addEventListener('click',e=>{
   if(a==='spin'){spin();return;}
   if(a==='slot'){loadOpen=loadOpen===id?null:id;renderMenu();return;}
   if(a==='equip'){const q=id.split(':');fixLoad();if(q[1]&&!owns(q[1]))return;S.load[q[0]]=q[1]||'';if(q[0]==='melee'&&!q[1])S.load.melee='katana';if(q[0]==='pack'&&!q[1])S.load.pack='daypack';loadOpen=null;save();sfx.click();renderMenu();return;}
-  if(a==='st'){const it=S.stash[+id];if(!it)return;if(e.shiftKey){stashSell([it]);renderMenu();return;}if(stSel.has(it))stSel.delete(it);else stSel.add(it);renderStash();return;}
+  if(a==='st'){if(stSuppress)return;const it=S.stash[+id];if(!it)return;if(e.shiftKey){stashSell([it]);renderMenu();return;}if(stSel.has(it))stSel.delete(it);else stSel.add(it);renderStash();return;}
   if(a==='stall'){for(const it of S.stash)stSel.add(it);renderStash();return;}
   if(a==='stjunk'){stSel.clear();for(const it of S.stash)if(it.val<500&&it.k!=='gun')stSel.add(it);$('stMsg').textContent=stSel.size?'Selected everything worth under $500.':'Nothing cheap to sell.';renderStash();return;}
   if(a==='stclear'){stSel.clear();renderStash();return;}
