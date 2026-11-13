@@ -335,7 +335,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 81, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 82, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -374,7 +374,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
           <li>The <b>Red Rebel</b> ice axe only turns up in airdrops. Carry it and press <b>Space</b> facing the outside wall of a four storey building to climb: <b>W</b>/<b>S</b> up and down, <b>A</b>/<b>D</b> along the wall, <b>Space</b> to let go. Climbing up costs stamina. Falling or jumping next to one of those walls, press <b>Space</b> to dig the axe in and catch yourself.</li>
           <li>Safes and cash registers are locked. With a <b>lock pick</b>, press <b>E</b> and hit <b>Space</b>, <b>E</b> or click while the marker is in the green to set each pin. A miss drops a pin and can snap the pick.</li>
           <li><b>Z</b> or <b>mouse button 5</b> dolphin dive in the direction you are moving. Time slows while you are in the air, but you aim and shoot at nearly full speed. A dive carries you through open windows. You land prone: crawl, press <b>Ctrl</b> to crouch, or <b>Space</b> to stand.</li>
-          <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. It lets go on its own once you are reeled all the way in (popping you over a roof edge), or click again to let go early and keep your swing. Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
+          <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. It lets go on its own once you are reeled all the way in (popping you over a roof edge), or click again to let go early and keep your swing. The <b>Swing Line</b> from the trader is the same hook, but you hold the click (or <b>G</b>) and the line drops the moment you let go. Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
           <li><b>Ctrl</b> or <b>mouse button 4</b> crouch: slower and quieter, steadier aim, harder for infected to spot. Press it while sprinting to slide.</li>
           <li><b>R</b> reload · tap <b>Q</b> to bandage and stop bleeding · hold <b>Q</b> for the med menu (mouse or scroll to choose, click, 1-4 or Q again to use, Esc to close) · <b>V</b> swap shoulder · <b>Middle mouse</b> ping what you aim at (your lobby sees it)</li>
           <li>There is no mouse cursor during a raid. The bag and loot window get a small gold in-game pointer.</li>
@@ -444,6 +444,7 @@ const WPN={
  redrebel:{n:'Red Rebel',melee:1,dmg:75,rate:.4,noise:3,range:3.2,climb:1,price:1000000,sell:24000},
  katana:{n:'Katana',melee:1,dmg:62,rate:.42,noise:4,range:3.5,price:9000},
  grapple:{n:'Grapple gun',gadget:1,rate:.35},
+ swingline:{n:'Swing Line',gadget:1,hold:1,rate:.35,price:15000},
  saber:{n:'Lightsaber',melee:1,dmg:150,rate:.34,noise:12,range:4,price:38000},
  dual:{n:'Twin P9s',dual:1,dmg:30,rate:.125,mag:24,rl:1.9,spr:.02,am:'9mm',noise:44,kick:.02,heat:.02,price:4500},
  uzis:{n:'Twin Uzis',dual:1,dmg:19,rate:.05,mag:64,rl:2.4,spr:.04,am:'9mm',noise:48,kick:.011,heat:.01,price:14000},
@@ -484,7 +485,7 @@ const UPS={
  stash:{n:'Bigger stash',d:'+2 rows of stash space',base:2000}
 };
 const SHOP=[
- {k:'w',id:'dual'},{k:'w',id:'smg'},{k:'w',id:'uzis'},{k:'w',id:'shotgun'},{k:'w',id:'spas'},{k:'w',id:'ak'},{k:'w',id:'rifle'},{k:'w',id:'sniper'},{k:'w',id:'butterfly'},{k:'w',id:'karambit'},{k:'w',id:'katana'},{k:'w',id:'saber'},{k:'w',id:'redrebel'},{k:'p',id:'assault'},{k:'p',id:'raid'},{k:'p',id:'hauler'},{k:'g',id:'grapple',n:'Grapple gun',price:12000},
+ {k:'w',id:'dual'},{k:'w',id:'smg'},{k:'w',id:'uzis'},{k:'w',id:'shotgun'},{k:'w',id:'spas'},{k:'w',id:'ak'},{k:'w',id:'rifle'},{k:'w',id:'sniper'},{k:'w',id:'butterfly'},{k:'w',id:'karambit'},{k:'w',id:'katana'},{k:'w',id:'saber'},{k:'w',id:'redrebel'},{k:'w',id:'swingline'},{k:'p',id:'assault'},{k:'p',id:'raid'},{k:'p',id:'hauler'},{k:'g',id:'grapple',n:'Grapple gun',price:12000},
  {k:'a',id:'9mm',n:30,price:150},{k:'a',id:'12ga',n:12,price:180},{k:'a',id:'5.56',n:30,price:320},{k:'a',id:'7.62',n:20,price:480},
  {k:'m',id:'bandage',n:'Bandage',price:80},{k:'m',id:'medkit',n:'First aid kit',price:450},{k:'m',id:'morphine',n:'Morphine injector',price:900},
  {k:'v',price:1200},{k:'lp',price:600},{k:'sc',price:50000}
@@ -819,9 +820,10 @@ const GUNS={
 };
 GUNS.dual=bake([[gBox(.03,.034,.19),0x3a3d42,0,.038,-.075],[gBox(.028,.024,.15),0x202226,0,.01,-.055],[gBox(.022,.012,.055),0x202226,0,-.006,-.118],[gBox(.03,.104,.046),0x202226,0,-.052,.013,-.2443],[gBox(.032,.01,.052),0x2c2e33,0,-.108,.027,-.2443],[gBox(.006,.02,.007),0x3a3d42,0,-.016,-.022,.2793],[gCyl(.0085,.0085,.012,8),0x1b1c1f,0,.038,-.176,1.5708],[gBox(.016,.002,.036),0x1b1c1f,.008,.0555,-.06],[gBox(.02,.008,.008),0x1b1c1f,0,.06,.008],[gBox(.005,.008,.008),0x1b1c1f,0,.06,-.16],[gBox(.01,.014,.012),0x1b1c1f,0,.046,.024],[gBox(.01,.005,.055),0x202226,0,-.04,-.0275],[gBox(.01,.028,.005),0x202226,0,-.026,-.055],[gBox(.0305,.026,.003),0x1b1c1f,0,.038,.004],[gBox(.0305,.026,.003),0x1b1c1f,0,.038,.011],[gBox(.0305,.026,.003),0x1b1c1f,0,.038,.018],[gBox(.0305,.026,.003),0x1b1c1f,0,.038,.025],[gBox(.0305,.026,.003),0x1b1c1f,0,.038,.032]]);
 GUNS.grapple=bake([[gBox(.05,.075,.24),0x3a3d42,0,.03,-.06],[gCyl(.032,.032,.12,12),0x1b1c1f,0,.035,-.24,HPI],[gBox(.075,.075,.075),0xb02a20,0,-.035,.02],[gBox(.077,.02,.077),0xd8d0b8,0,-.035,.02],[gBox(.032,.1,.045),0x202226,0,-.07,.1,-.25],[gBox(.008,.03,.012),0x6a6e74,0,-.02,.05]]);
+GUNS.swingline=bake([[gBox(.05,.075,.24),0x3a3d42,0,.03,-.06],[gCyl(.032,.032,.12,12),0x1b1c1f,0,.035,-.24,HPI],[gBox(.075,.075,.075),0x2a6fd0,0,-.035,.02],[gBox(.077,.02,.077),0xf2c40a,0,-.035,.02],[gBox(.032,.1,.045),0x202226,0,-.07,.1,-.25],[gBox(.008,.03,.012),0x6a6e74,0,-.02,.05]]);
 if(S.bfskin&&S.bfskin!=='stock'&&((S.skins||{}).butterfly||[]).indexOf(S.bfskin)<0)S.bfskin='stock';
 GUNS.butterfly=bfGeo(S.bfskin);
-const ADSY={grapple:-.1,dual:-.15,uzis:-.15,spas:-.1,pistol:-.092,smg:-.12,shotgun:-.092,rifle:-.135,ak:-.114,sniper:-.142,minigun:-.125,katana:-.105,redrebel:-.105,knife:-.105,butterfly:-.105,karambit:-.105,saber:-.105};
+const ADSY={grapple:-.1,swingline:-.1,dual:-.15,uzis:-.15,spas:-.1,pistol:-.092,smg:-.12,shotgun:-.092,rifle:-.135,ak:-.114,sniper:-.142,minigun:-.125,katana:-.105,redrebel:-.105,knife:-.105,butterfly:-.105,karambit:-.105,saber:-.105};
 const BLADE_GEO=new T.CylinderGeometry(.011,.011,.84,8);BLADE_GEO.rotateX(HPI);BLADE_GEO.translate(0,0,-.54);
 const GLOW_GEO=new T.CylinderGeometry(.026,.026,.86,8);GLOW_GEO.rotateX(HPI);GLOW_GEO.translate(0,0,-.54);
 const BLADE_MAT=new T.MeshBasicMaterial({color:0xd6f8ff,fog:false});BLADE_MAT.toneMapped=false;
@@ -872,8 +874,8 @@ function setGun(mesh,w){
   mesh.geometry=gunGeo(w);mesh.material=gunMat(w);
   if(w==='saber'&&!mesh.blade){mesh.blade=new T.Group();mesh.blade.add(new T.Mesh(BLADE_GEO,BLADE_MAT));mesh.blade.add(new T.Mesh(GLOW_GEO,GLOW_MAT));mesh.add(mesh.blade);}
   if(mesh.blade)mesh.blade.visible=w==='saber';
-  if(w==='grapple'&&!mesh.hk){mesh.hk=new T.Mesh(HK(),GUN_MAT);mesh.hk.rotation.y=Math.PI;mesh.hk.position.set(0,.035,-.3);mesh.hk.scale.setScalar(.62);mesh.add(mesh.hk);}
-  if(mesh.hk)mesh.hk.visible=w==='grapple';
+  if(WPN[w]&&WPN[w].gadget&&!mesh.hk){mesh.hk=new T.Mesh(HK(),GUN_MAT);mesh.hk.rotation.y=Math.PI;mesh.hk.position.set(0,.035,-.3);mesh.hk.scale.setScalar(.62);mesh.add(mesh.hk);}
+  if(mesh.hk)mesh.hk.visible=!!(WPN[w]&&WPN[w].gadget);
   if(false&&w==='rifle'&&!mesh.dot){mesh.dot=new T.Group();const d=new T.Mesh(DOT_GEO,DOT_MAT);d.position.set(0,.099,-.09);mesh.dot.add(d);const l=new T.Mesh(LENS_GEO,LENS_MAT);l.position.set(0,.099,-.09);mesh.dot.add(l);mesh.add(mesh.dot);}
   if(mesh.dot)mesh.dot.visible=w==='rifle';
 }
@@ -1246,12 +1248,12 @@ function bagRows(){return curPack().r+S.up.pack;}
 const GUNR={redrebel:'l',pistol:'u',smg:'u',shotgun:'u',ak:'r',spas:'r',rifle:'r',sniper:'e'},GUNW={redrebel:1.6,pistol:.9,smg:3,shotgun:3.5,spas:4.4,ak:3.6,rifle:3.4,sniper:6};
 function gunItem(gid,part){const w=WPN[gid];return {id:'g_'+gid,gid:gid,k:'gun',name:w.n,r:GUNR[gid]||'u',val:w.sell||Math.round((w.price||2000)*.4),w:GUNW[gid]||3,mag:part?randi(Math.ceil(w.mag/3),w.mag):w.mag};}
 function foundGuns(){const o=[];for(const it of P.bag)if(it.k==='gun'&&o.indexOf(it.gid)<0)o.push(it.gid);return o;}
-const SLOT={primary:['smg','shotgun','spas','ak','rifle','sniper'],secondary:['pistol','dual','uzis'],melee:['knife','butterfly','karambit','katana','saber','redrebel'],gadget:['grapple'],pack:['sling','daypack','assault','raid','hauler']},SLOTN={pack:'Backpack',primary:'Primary',secondary:'Sidearm',melee:'Melee',gadget:'Gadget'};
+const SLOT={primary:['smg','shotgun','spas','ak','rifle','sniper'],secondary:['pistol','dual','uzis'],melee:['knife','butterfly','karambit','katana','saber','redrebel'],gadget:['grapple','swingline'],pack:['sling','daypack','assault','raid','hauler']},SLOTN={pack:'Backpack',primary:'Primary',secondary:'Sidearm',melee:'Melee',gadget:'Gadget'};
 function owns(id){if(PACKS[id])return !PACKS[id].price||(S.packs||[]).indexOf(id)>=0;return id==='knife'||(id==='grapple'?!!S.grapple:S.weapons.indexOf(id)>=0);}
 function fixLoad(){
   const L=S.load||(S.load={});
   for(const k in SLOT){if(L[k]&&(!owns(L[k])||SLOT[k].indexOf(L[k])<0))L[k]='';
-    if(L[k]==null){const o=SLOT[k].filter(owns);L[k]=k==='primary'?(o[o.length-1]||''):k==='secondary'?(owns('pistol')?'pistol':o[0]||''):k==='melee'?(['saber','katana','karambit','butterfly'].find(owns)||'knife'):k==='pack'?'daypack':(owns('grapple')?'grapple':'');}}
+    if(L[k]==null){const o=SLOT[k].filter(owns);L[k]=k==='primary'?(o[o.length-1]||''):k==='secondary'?(owns('pistol')?'pistol':o[0]||''):k==='melee'?(['saber','katana','karambit','butterfly'].find(owns)||'knife'):k==='pack'?'daypack':(owns('grapple')?'grapple':owns('swingline')?'swingline':'');}}
   if(!L.melee||!owns(L.melee))L.melee='knife';if(!L.pack)L.pack='daypack';
 }
 function autoEquip(id){fixLoad();for(const k in SLOT)if(SLOT[k].indexOf(id)>=0&&!S.load[k])S.load[k]=id;}
@@ -1437,7 +1439,7 @@ function startRaid(){
   W.contract=newContract();
   combo=0;comboT=0;shake=0;slow=0;ctx=null;firing=false;ads=false;bagOpen=false;hudKey={};
   state='raid';
-  $('menu').hidden=true;$('summary').hidden=true;$('hud').hidden=false;$('cross').hidden=false;$('inv').hidden=true;$('loot').hidden=true;bagAuto=false;$('bHook').hidden=equipped().indexOf('grapple')<0;$('feed').innerHTML='';
+  $('menu').hidden=true;$('summary').hidden=true;$('hud').hidden=false;$('cross').hidden=false;$('inv').hidden=true;$('loot').hidden=true;bagAuto=false;$('bHook').hidden=!equipped().some(g=>WPN[g]&&WPN[g].gadget);$('feed').innerHTML='';
   mpResync();
   banner('RAID STARTED','Loot the town. Reach a green flare to extract.','go');
   if(W.drops)card((W.drops>1?W.drops+' airdrops':'Airdrop')+' on the rooftops',0,'l','follow the red smoke');
@@ -1866,7 +1868,9 @@ function fireHook(){
   P.fireCd=.35;P.recoil+=.04;P.stam=Math.max(0,P.stam-6);
   hiss(.18,.45,2600);tone(180,.12,'square',.12,.5);makeNoise(P.x,P.z,16);
 }
-function useGrapple(){if(state!=='raid'||gunList().indexOf('grapple')<0)return;if(P.weapon!=='grapple')swapWeapon('grapple');P.fireCd=0;fireHook();}
+function gadgetId(){return gunList().find(g=>WPN[g]&&WPN[g].gadget);}
+function useGrapple(){if(state!=='raid')return;const g=gadgetId();if(!g)return;if(P.weapon!==g)swapWeapon(g);P.fireCd=0;fireHook();}
+function letGoLine(){if(state==='raid'&&P&&WPN[P.weapon]&&WPN[P.weapon].hold&&(P.grap||(P.hook&&P.hook.st==='fly')))releaseHook();}
 function updHook(dt){
   const h=P.hook;if(!h)return;
   if(h.st==='fly'){
@@ -1888,7 +1892,7 @@ function updHook(dt){
   }
 }
 function drawRope(){
-  if(P){const loaded=!P.hook;if(vmGun.hk)vmGun.hk.visible=vmGun.wid==='grapple'&&loaded;if(P.c&&P.c.gun&&P.c.gun.hk)P.c.gun.hk.visible=P.c.wid==='grapple'&&loaded;}
+  if(P){const loaded=!P.hook;const isG=w=>!!(WPN[w]&&WPN[w].gadget);if(vmGun.hk)vmGun.hk.visible=isG(vmGun.wid)&&loaded;if(P.c&&P.c.gun&&P.c.gun.hk)P.c.gun.hk.visible=isG(P.c.wid)&&loaded;}
   const h=P&&state==='raid'?P.hook:null;ROPE.visible=HOOK_MESH.visible=!!h;if(!h)return;
   const a=hookHand(),pos=ROPE.geometry.attributes.position,len=Math.hypot(h.x-a[0],h.y-a[1],h.z-a[2]),sag=h.st==='set'&&P.grap?0:Math.min(1.6,len*.05);
   for(let i=0;i<ROPE_N;i++){const t=i/(ROPE_N-1);pos.setXYZ(i,a[0]+(h.x-a[0])*t,a[1]+(h.y-a[1])*t-Math.sin(t*Math.PI)*sag,a[2]+(h.z-a[2])*t);}
@@ -2002,7 +2006,9 @@ function updPlayer(dt){
     P.swx*=Math.max(0,1-9*dt);P.swy*=Math.max(0,1-9*dt);
     if(P.sprint){if(!(P.adren>0)&&P.y<=0)P.stam-=18*dt/(1+.25*S.up.lungs);P.noiseT-=dt;if(P.noiseT<=0){P.noiseT=.6;makeNoise(P.x,P.z,9);}}else P.stam=Math.min(100,P.stam+(P.moving?9:16)*dt);
   }
-  if(firing)shoot();
+  {const gw=P.mini>0?null:WPN[P.weapon];
+   if(gw&&gw.gadget){if(firing&&!P.fPrev)shoot();else if(!firing&&P.fPrev&&gw.hold)letGoLine();}
+   else if(firing)shoot();P.fPrev=firing;}
   if(state!=='raid')return;
   if(P.search){const s=P.search;s.t+=dt;if(P.car||Math.hypot(P.x-s.x,P.z-s.z)>3.4)P.search=null;else if(s.t>=s.dur){P.search=null;finishSearch(s.c);}}
   if(P.loot){const c=P.loot.c;let x=c.x,z=c.z;if(c.car){x=c.car.x+Math.sin(c.car.yaw)*2.5;z=c.car.z+Math.cos(c.car.yaw)*2.5;}
@@ -2412,12 +2418,12 @@ window.addEventListener('keydown',e=>{
     case 'ControlLeft':case 'ControlRight':crouch();break;
     case 'KeyZ':dive();break;
     case 'KeyF':inspect();break;
-    case 'KeyG':useGrapple();break;
+    case 'KeyG':if(!e.repeat)useGrapple();break;
     case 'KeyM':toggleMute();break;
     case 'Digit1':case 'Digit2':case 'Digit3':case 'Digit4':case 'Digit5':case 'Digit6':swapWeapon(+e.code.slice(5)-1);break;
   }
 });
-window.addEventListener('keyup',e=>{keys[e.code]=false;if(e.code==='KeyQ')medUp();});
+window.addEventListener('keyup',e=>{keys[e.code]=false;if(e.code==='KeyQ')medUp();if(e.code==='KeyG')letGoLine();});
 /* mouse button 4 (the back side button) crouches, button 5 (the forward one) dives; the side buttons never navigate away mid-raid */
 window.addEventListener('mousedown',e=>{if(state!=='raid')return;
   if(QT&&QT.open&&e.button===0){e.preventDefault();e.stopPropagation();medUse();return;}
@@ -2493,7 +2499,7 @@ function tap(id,fn){const b=$(id);
   b.addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();setTouch();initAudio();fn();},{passive:false});
   b.addEventListener('mousedown',e=>{e.preventDefault();e.stopPropagation();initAudio();fn();});}
 (function(){const hb=$('hotbar');const pick=e=>{const b=e.target.closest('[data-hb]');if(!b||state!=='raid')return;e.preventDefault();e.stopPropagation();swapWeapon(+b.dataset.hb);};hb.addEventListener('mousedown',pick);hb.addEventListener('touchstart',pick,{passive:false});})();
-tap('bAim',()=>{ads=!ads;});tap('bJump',()=>{jumpHeld=true;jump();});for(const t of ['touchend','touchcancel','mouseup','mouseleave'])$('bJump').addEventListener(t,()=>{jumpHeld=false;});tap('bCrouch',crouch);tap('bDive',dive);tap('bHook',useGrapple);tap('bUse',()=>{if(P&&P.pick)pickPress();else if(P&&P.loot)takeAll();else interact();});tap('bReload',reload);tap('bSwap',()=>{if(state==='raid')swapWeapon();});tap('bHeal',heal);tap('bView',()=>{if(state==='raid')toggleView();});tap('bBag',toggleBag);
+tap('bAim',()=>{ads=!ads;});tap('bJump',()=>{jumpHeld=true;jump();});for(const t of ['touchend','touchcancel','mouseup','mouseleave'])$('bJump').addEventListener(t,()=>{jumpHeld=false;});tap('bCrouch',crouch);tap('bDive',dive);tap('bHook',useGrapple);for(const t of ['touchend','touchcancel','mouseup'])$('bHook').addEventListener(t,letGoLine);tap('bUse',()=>{if(P&&P.pick)pickPress();else if(P&&P.loot)takeAll();else interact();});tap('bReload',reload);tap('bSwap',()=>{if(state==='raid')swapWeapon();});tap('bHeal',heal);tap('bView',()=>{if(state==='raid')toggleView();});tap('bBag',toggleBag);
 $('bFire').addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();setTouch();if(state!=='raid')return;const t=e.changedTouches[0];fireTouch=t.identifier;firing=true;if(look.id===null){look.id=t.identifier;look.x=t.clientX;look.y=t.clientY;}},{passive:false});
 
 /* ================= menu ================= */
@@ -2640,7 +2646,7 @@ function makeIcons(){
     const jobs=[];
     for(const k in IM)jobs.push([k,IM[k],false]);
     for(const g of ['pistol','smg','shotgun','spas','ak','rifle','sniper'])jobs.push(['g_'+g,g,true]);
-    for(const g of ['pistol','dual','uzis','smg','shotgun','spas','ak','rifle','sniper','knife','butterfly','karambit','katana','saber','redrebel','grapple','minigun'])if(GUNS[g])jobs.push(['w_'+g,g,true]);
+    for(const g of ['pistol','dual','uzis','smg','shotgun','spas','ak','rifle','sniper','knife','butterfly','karambit','katana','saber','redrebel','grapple','swingline','minigun'])if(GUNS[g])jobs.push(['w_'+g,g,true]);
     for(const [k,def,gun] of jobs){try{
       let geo,mat=M;
       let mesh2=null;
@@ -2724,7 +2730,7 @@ function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.c
   const nm=o=>WPN[o]?WPN[o].n:PACKS[o].n,psub=o=>{const q=PACKS[o];return q.c+' x '+q.r+(S.up.pack?' + '+S.up.pack+' rows':'')+' grid · '+(22+6*S.up.pack+q.kg)+' kg'+(q.slow?' · '+Math.round(q.slow*100)+'% slower':'');};
   for(const k of ['primary','secondary','melee','gadget','pack']){
     const id=S.load[k],w=id?(WPN[id]||PACKS[id]):null,open=loadOpen===k;
-    const sub=!w?'Empty. Click to pick one.':k==='pack'?psub(id):w.gadget?'G fires it, Space lets go':w.melee?'Melee · '+w.dmg+' damage a swing':w.am+' · '+(id==='pistol'?'free mag each raid · ':'')+S.ammo[w.am]+' in reserve';
+    const sub=!w?'Empty. Click to pick one.':k==='pack'?psub(id):w.gadget?(w.hold?'Hold click or G to swing, let go to drop the line':'Click or G fires it, click again to let go'):w.melee?'Melee · '+w.dmg+' damage a swing':w.am+' · '+(id==='pistol'?'free mag each raid · ':'')+S.ammo[w.am]+' in reserve';
     h+='<button type="button" class="slot'+(open?' open':'')+'" data-act="slot" data-id="'+k+'"><span class="sk">'+(k==='gadget'?'G':k==='pack'?'Tab':['primary','secondary','melee'].indexOf(k)+1)+' · '+SLOTN[k]+'</span><b>'+(w?w.n:'Empty')+'</b><small>'+sub+'</small></button>';
     if(open){const opts=SLOT[k].filter(owns);
       h+='<div class="opts">'+opts.map(o=>'<button type="button" class="btn'+(o===id?'':' plain')+'" data-act="equip" data-id="'+k+':'+o+'">'+nm(o)+(k==='pack'?' · '+PACKS[o].c+'x'+PACKS[o].r:'')+'</button>').join('')+(k!=='melee'&&k!=='pack'&&id?'<button type="button" class="btn plain" data-act="equip" data-id="'+k+':">Leave empty</button>':'')+(opts.length<SLOT[k].length?'<small>More at the trader'+(k==='primary'?' or found on scavs and hunters':'')+'.</small>':'')+'</div>';}
@@ -2738,7 +2744,7 @@ function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.c
   $('mLoad').innerHTML=h;
   h='';
   SHOP.forEach((s,i)=>{let name,sub,price=s.price,own=false;
-    if(s.k==='w'){const w=WPN[s.id];name=w.n;sub=s.id==='redrebel'?'Ice axe · climbs four storey walls · '+w.dmg+' dmg':w.melee?'Melee · '+w.dmg+' dmg · cuts through anything':w.am+' · '+(w.pel?w.pel+' pellets':Math.round(60/w.rate)+' rpm')+' · '+w.dmg+' dmg';price=w.price;own=S.weapons.indexOf(s.id)>=0;}
+    if(s.k==='w'){const w=WPN[s.id];name=w.n;sub=s.id==='swingline'?'Gadget · the grapple hook, but the line drops the moment you let go of the click':s.id==='redrebel'?'Ice axe · climbs four storey walls · '+w.dmg+' dmg':w.melee?'Melee · '+w.dmg+' dmg · cuts through anything':w.am+' · '+(w.pel?w.pel+' pellets':Math.round(60/w.rate)+' rpm')+' · '+w.dmg+' dmg';price=w.price;own=S.weapons.indexOf(s.id)>=0;}
     else if(s.k==='a'){name=s.n+' x '+s.id;sub='You have '+S.ammo[s.id];}
     else if(s.k==='m'){name=s.n;sub='You have '+S.meds[s.id];}
     else if(s.k==='p'){const q=PACKS[s.id];name=q.n;sub=q.c+' x '+q.r+' grid · +'+q.kg+' kg · '+q.d;price=q.price;own=owns(s.id);}
@@ -2785,7 +2791,7 @@ $('menu').addEventListener('click',e=>{
   if(a==='mute'){toggleMute();return;}
   if(a==='wipe'){if(wipeArmed){S=defSave();view=0;wipeArmed=false;save();}else wipeArmed=true;renderMenu();return;}
   if(a==='buy'){const s=SHOP[+id],price=s.k==='w'?WPN[s.id].price:s.k==='p'?PACKS[s.id].price:s.price;if(S.cash<price)return;
-    if(s.k==='w'){if(S.weapons.indexOf(s.id)>=0)return;S.weapons.push(s.id);if(!WPN[s.id].melee)S.ammo[WPN[s.id].am]+=WPN[s.id].mag*2;autoEquip(s.id);}
+    if(s.k==='w'){if(S.weapons.indexOf(s.id)>=0)return;S.weapons.push(s.id);if(!WPN[s.id].melee&&WPN[s.id].am)S.ammo[WPN[s.id].am]+=WPN[s.id].mag*2;autoEquip(s.id);}
     else if(s.k==='a')S.ammo[s.id]+=s.n;else if(s.k==='m')S.meds[s.id]++;else if(s.k==='p'){if(owns(s.id))return;(S.packs||(S.packs=[])).push(s.id);fixLoad();S.load.pack=s.id;}else if(s.k==='g'){if(S.grapple)return;S.grapple=true;autoEquip('grapple');}else if(s.k==='lp'){S.picks=(S.picks||0)+2;}else if(s.k==='sc'){S.coins=(S.coins||0)+1;}else{if(S.armor)return;S.armor=1;}
     S.cash-=price;sfx.cash();}
   if(a==='up'){const c=upCost(id);if(S.up[id]>=UPMAX||S.cash<c)return;S.cash-=c;S.up[id]++;sfx.loot(2);}
