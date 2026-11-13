@@ -320,7 +320,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 63, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 64, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -355,7 +355,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
           <li><b>Z</b> dolphin dive in the direction you are moving. Time slows while you are in the air, but you aim and shoot at nearly full speed. A dive carries you through open windows. You land prone: crawl, press <b>Ctrl</b> to crouch, or <b>Space</b> to stand.</li>
           <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. Fire again, or press <b>Space</b>, to let go and keep your swing. Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
           <li><b>Ctrl</b> crouch: slower and quieter, steadier aim, harder for infected to spot. Press it while sprinting to slide.</li>
-          <li><b>R</b> reload · <b>Q</b> heal</li>
+          <li><b>R</b> reload · <b>Q</b> bandage, stops bleeding · <b>V</b> med item: first aid kit, painkillers or morphine, whichever fits how hurt you are</li>
           <li>There is no mouse cursor during a raid. The bag and loot window get a small gold in-game pointer.</li>
           <li>Click anywhere on the game to lock the mouse. If it will not lock, the mouse still aims, and the screen edges keep turning you.</li>
           <li><b>E</b> search containers and bodies, open or close the loot window, drive · <b>Shift</b> sprint</li>
@@ -1445,7 +1445,7 @@ function addHeat(v){const b=Math.floor(W.heat);W.heat=clamp(W.heat+v,0,5);if(W.h
 function hurt(d,bite){
   if(state!=='raid')return;if(P.jug>0)d*=.25;
   if(!bite&&P.armor>0){const a=Math.min(P.armor,d*.5);P.armor-=a;d-=a;}
-  P.hp-=d;if((bite&&Math.random()<.22)||(!bite&&Math.random()<.15)){if(!P.bleed){P.bleed=true;card('You are bleeding',0,'c','bandage it');}}
+  P.hp-=d;if((bite&&Math.random()<.22)||(!bite&&Math.random()<.15)){if(!P.bleed){P.bleed=true;card('You are bleeding',0,'c','Q to bandage');}}
   hurtFx();sfx.hurt();shake=Math.max(shake,.25);
   if(P.hp<=0){P.hp=0;endRaid('kia');}
 }
@@ -1550,6 +1550,27 @@ function updPowers(dt){
     if(got||p.t<=0){W.g.remove(p.mesh);W.pickups.splice(i,1);if(got)grabPower(p.type);}
     else p.mesh.visible=p.t>5||Math.sin(p.t*14)>0;
   }
+}
+/* Q: bandage only. Stops bleeding and patches a little. */
+function bandage(){
+  if(state!=='raid'||P.healCd>0)return;const m=S.meds;
+  if(!(m.bandage>0)){card('No bandages',0,'c',P.bleed?'V for a first aid kit':'');P.healCd=.4;return;}
+  if(!P.bleed&&P.hp>=P.maxHp-1){card('Not bleeding',0,'c');P.healCd=.4;return;}
+  m.bandage--;const was=P.bleed;P.bleed=false;P.hp=Math.min(P.maxHp,P.hp+12);P.healCd=1.2;sfx.heal();
+  card(was?'Bleeding stopped':'Used bandage',0,'u','+12 hp · '+m.bandage+' left');$('hurt').style.opacity=P.hp<P.maxHp*.35?.45:0;
+}
+/* V: the best med item for how hurt you are (never a bandage) */
+function useMed(){
+  if(state!=='raid'||P.healCd>0)return;const m=S.meds,miss=P.maxHp-P.hp;let used=null,amt=0;
+  if(miss<=1&&!P.bleed){card('No need to heal',0,'c');P.healCd=.4;return;}
+  if(miss>=70&&m.morphine>0){used='morphine';amt=100;}
+  else if(m.medkit>0&&(miss>=30||P.bleed)){used='medkit';amt=50;}
+  else if(m.painkillers>0){used='painkillers';amt=22;}
+  else if(m.medkit>0){used='medkit';amt=50;}
+  else if(m.morphine>0){used='morphine';amt=100;}
+  if(!used){card('No med items',0,'c',m.bandage>0?'Q for a bandage':'');P.healCd=.4;return;}
+  m[used]--;P.hp=Math.min(P.maxHp,P.hp+amt);if(used!=='painkillers')P.bleed=false;P.healCd=1.4;sfx.heal();
+  card('Used '+({medkit:'first aid kit',morphine:'morphine',painkillers:'painkillers'})[used],0,'u','+'+amt+' hp · '+m[used]+' left');$('hurt').style.opacity=P.hp<P.maxHp*.35?.45:0;
 }
 function heal(){
   if(state!=='raid'||P.healCd>0)return;const m=S.meds,miss=P.maxHp-P.hp;let used=null,amt=0;
@@ -2224,7 +2245,8 @@ window.addEventListener('keydown',e=>{
   switch(e.code){
     case 'KeyE':case 'KeyF':if(e.shiftKey&&P&&P.loot)takeAll();else interact();break;
     case 'KeyR':if(DRAG)invRotate();else if(P&&P.loot)takeAll();else reload();break;
-    case 'KeyQ':heal();break;
+    case 'KeyQ':bandage();break;
+    case 'KeyV':useMed();break;
     case 'KeyC':case 'KeyO':toggleView();break;
     case 'Tab':case 'KeyI':toggleBag();break;
     case 'Escape':closeLoot();break;
