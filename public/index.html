@@ -197,6 +197,32 @@ h1 span{color:var(--cash)}
 .slot .sk{font:600 11px var(--display);letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
 .slot small{font:400 12px var(--mono);color:var(--dim)}
 .opts{display:flex;flex-wrap:wrap;gap:6px;padding:8px 0 4px;align-items:center}
+.lo{display:grid;grid-template-columns:minmax(260px,360px) 1fr;gap:16px;align-items:start;margin-top:8px}
+@media(max-width:700px){.lo{grid-template-columns:1fr}}
+.doll{position:relative;width:100%;max-width:360px;aspect-ratio:320/420;margin:0 auto;user-select:none;-webkit-user-select:none}
+.doll svg{position:absolute;inset:0;width:100%;height:100%}
+.doll .body *{fill:#3a4036}.doll .body .limb,.doll .body .leg{fill:none;stroke:#3a4036;stroke-linecap:round;stroke-linejoin:round}.doll .body .limb{stroke-width:17}.doll .body .leg{stroke-width:24}
+.doll .bp{fill:#2a2f27}.doll .vest{fill:#4a5332;stroke:#6a7546;stroke-width:1.5}.doll .plate{fill:none;stroke:#2f3522;stroke-width:3}.doll .belt{fill:#1a1c18}
+.doll line{stroke:#3a4238;stroke-width:1.5;stroke-dasharray:4 4}.doll line.on{stroke:var(--cash);stroke-dasharray:none;opacity:.7}.doll circle{fill:#3a4238}.doll circle.on{fill:var(--cash)}
+.dslot{position:absolute;width:37%;height:17.6%;box-sizing:border-box;background:rgba(6,8,6,.92);border:1px solid var(--line);padding:5px 7px;display:flex;flex-direction:column;justify-content:space-between;cursor:grab;touch-action:none;overflow:hidden;transition:opacity .15s,border-color .15s}
+.dslot.l{left:0}.dslot.r{right:0}.dslot:hover,.dslot.open{border-color:var(--cash)}
+.dslot .sk{font:600 10px var(--display);letter-spacing:.16em;color:var(--dim);text-transform:uppercase;position:relative}
+.dslot b{font:600 14px var(--display);color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative;text-shadow:0 1px 3px #000}
+.dslot small{font:400 10px var(--mono);color:var(--dim);position:relative}
+.dslot .ai{position:absolute;left:8%;right:8%;top:24%;bottom:26%;background:center/contain no-repeat}
+.dslot.empty{border-style:dashed;background:rgba(6,8,6,.8)}.dslot.empty b{color:var(--dim);font:400 11px var(--mono)}
+.dslot.fixed{cursor:default}
+.lo.dragging .dslot{opacity:.35}.lo.dragging .dslot.ok{opacity:1;border:1px solid var(--go);box-shadow:0 0 14px rgba(111,207,90,.35)}.lo .dslot.hov{background:rgba(111,207,90,.2)}
+.arm{min-width:0}.arm h4{margin:12px 0 5px;font:600 11px var(--display);letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
+.lohint{margin:0;font:400 12px var(--mono);color:var(--dim)}
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(108px,1fr));gap:6px}
+.aitem{position:relative;height:66px;box-sizing:border-box;background:rgba(0,0,0,.4);border:1px solid var(--line);padding:4px 6px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;display:flex;align-items:flex-end;font:600 12px var(--display);color:var(--text)}
+.aitem span{position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aitem .ai{position:absolute;left:8px;right:8px;top:6px;bottom:20px;background:center/contain no-repeat}
+.aitem:hover{border-color:var(--text)}.aitem.eq{border-color:var(--cash);background:rgba(230,193,74,.08)}
+.aitem.eq::after{content:'on you';position:absolute;top:3px;right:5px;font:400 9px var(--mono);color:var(--cash)}
+.lghost{position:fixed;left:0;top:0;z-index:9999;pointer-events:none;width:110px;height:60px;box-sizing:border-box;background:rgba(10,12,10,.9);border:1px solid var(--cash);padding:4px 6px;display:flex;align-items:flex-end;font:600 12px var(--display);color:var(--text);box-shadow:0 6px 18px rgba(0,0,0,.5)}
+.lghost .ai{position:absolute;left:8px;right:8px;top:5px;bottom:18px;background:center/contain no-repeat}.lghost span{position:relative}
 .opts small{font:400 12px var(--mono);color:var(--dim);flex-basis:100%}
 .stash{position:relative;min-height:calc(100cqw/10*3);background-color:rgba(0,0,0,.45);background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:calc(100cqw/10) calc(100cqw/10);outline:1px solid var(--line);margin-top:8px}
 .sc.drag{opacity:.3}
@@ -335,7 +361,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 83, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 84, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -2723,7 +2749,32 @@ function stashSell(list){
   if(!v)return;S.cash+=v;save();sfx.cash();$('stMsg').textContent='Sold for '+fmt(v)+'.';
 }
 let loadOpen=null;
+const PACK_ICO='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M22 14 Q32 4 42 14" fill="none" stroke="#6a6f5a" stroke-width="4"/><rect x="14" y="14" width="36" height="44" rx="8" fill="#4a5332"/><rect x="19" y="34" width="26" height="16" rx="3" fill="#3a4128"/><rect x="19" y="20" width="26" height="4" fill="#2a2f1e"/></svg>');
+function loIcon(id){return PACKS[id]?PACK_ICO:(ICON['w_'+id]||'');}
+function slotOf(id){for(const k in SLOT)if(SLOT[k].indexOf(id)>=0)return k;return null;}
+function loEquip(k,id){fixLoad();if(id&&!owns(id))return;S.load[k]=id||'';if(k==='melee'&&!id)S.load.melee='knife';if(k==='pack'&&!id)S.load.pack='daypack';save();sfx.click();renderMenu();}
+let LDR=null;
+function loEnd(){if(!LDR)return;if(LDR.ghost)LDR.ghost.remove();const lo=document.querySelector('#mLoad .lo');if(lo)lo.classList.remove('dragging');document.querySelectorAll('#mLoad .dslot.hov,#mLoad .dslot.ok').forEach(x=>x.classList.remove('hov','ok'));LDR=null;}
+function loInit(){const root=$('mLoad');
+  root.addEventListener('pointerdown',e=>{const el=e.target.closest('.aitem,.dslot');if(!el||e.button>0||el.classList.contains('fixed'))return;
+    const from=el.classList.contains('dslot'),id=el.dataset.item||'',k=from?el.dataset.slot:slotOf(id);if(!k)return;
+    LDR={id:id,k:k,from:from,x:e.clientX,y:e.clientY,moved:false,ghost:null,pid:e.pointerId};});
+  window.addEventListener('pointermove',e=>{const d=LDR;if(!d||e.pointerId!==d.pid)return;
+    if(!d.moved){if(Math.hypot(e.clientX-d.x,e.clientY-d.y)<6||(d.from&&!d.id))return;d.moved=true;
+      const g=document.createElement('div');g.className='lghost';const ic=loIcon(d.id);g.innerHTML=(ic?'<i class="ai" style="background-image:url('+ic+')"></i>':'')+'<span>'+(WPN[d.id]||PACKS[d.id]).n+'</span>';document.body.appendChild(g);d.ghost=g;
+      const lo=document.querySelector('#mLoad .lo');if(lo)lo.classList.add('dragging');document.querySelectorAll('#mLoad .dslot').forEach(x=>x.classList.toggle('ok',x.dataset.slot===d.k));}
+    d.ghost.style.transform='translate('+(e.clientX-55)+'px,'+(e.clientY-30)+'px)';
+    const t=document.elementFromPoint(e.clientX,e.clientY),sl=t&&t.closest('#mLoad .dslot');document.querySelectorAll('#mLoad .dslot.hov').forEach(x=>x.classList.remove('hov'));if(sl&&sl.dataset.slot===d.k)sl.classList.add('hov');e.preventDefault();});
+  window.addEventListener('pointerup',e=>{const d=LDR;if(!d||e.pointerId!==d.pid)return;
+    if(!d.moved){loEnd();if(d.from){loadOpen=loadOpen===d.k?null:d.k;sfx.click();renderMenu();}else loEquip(d.k,d.id);return;}
+    const t=document.elementFromPoint(e.clientX,e.clientY),sl=t&&t.closest('#mLoad .dslot');loEnd();
+    if(sl&&sl.dataset.slot===d.k){if(!d.from)loEquip(d.k,d.id);else renderMenu();}
+    else if(d.from&&!(t&&t.closest('#mLoad .doll'))){loadOpen=null;loEquip(d.k,'');}
+    else renderMenu();});
+  window.addEventListener('pointercancel',loEnd);}
+
 let wipeArmed=false;
+setTimeout(loInit,0);
 function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.coins:'';const dc=$('dCoins');if(dc)dc.textContent=S.coins||0;const dr=$('dRoll');if(dr)dr.disabled=dripBusy||!(S.coins>=DRIP_COST);if(!dripBusy&&$('dStrip')&&!$('dStrip').children.length)dripIdle();}
   renderStash();
   $('sCoins').textContent=S.coins||0;$('sSpin').disabled=slotBusy||!(S.coins>0);
@@ -2733,18 +2784,33 @@ function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.c
   let h='';
   fixLoad();
   const nm=o=>WPN[o]?WPN[o].n:PACKS[o].n,psub=o=>{const q=PACKS[o];return q.c+' x '+q.r+(S.up.pack?' + '+S.up.pack+' rows':'')+' grid · '+(22+6*S.up.pack+q.kg)+' kg'+(q.slow?' · '+Math.round(q.slow*100)+'% slower':'');};
-  for(const k of ['primary','secondary','melee','gadget','pack']){
-    const id=S.load[k],w=id?(WPN[id]||PACKS[id]):null,open=loadOpen===k;
-    const sub=!w?'Empty. Click to pick one.':k==='pack'?psub(id):w.gadget?(w.hold?'Hold click or G to swing, let go to drop the line':'Click or G fires it, click again to let go'):w.melee?'Melee · '+w.dmg+' damage a swing':w.am+' · '+(id==='pistol'?'free mag each raid · ':'')+S.ammo[w.am]+' in reserve';
-    h+='<button type="button" class="slot'+(open?' open':'')+'" data-act="slot" data-id="'+k+'"><span class="sk">'+(k==='gadget'?'G':k==='pack'?'Tab':['primary','secondary','melee'].indexOf(k)+1)+' · '+SLOTN[k]+'</span><b>'+(w?w.n:'Empty')+'</b><small>'+sub+'</small></button>';
-    if(open){const opts=SLOT[k].filter(owns);
-      h+='<div class="opts">'+opts.map(o=>'<button type="button" class="btn'+(o===id?'':' plain')+'" data-act="equip" data-id="'+k+':'+o+'">'+nm(o)+(k==='pack'?' · '+PACKS[o].c+'x'+PACKS[o].r:'')+'</button>').join('')+(k!=='melee'&&k!=='pack'&&id?'<button type="button" class="btn plain" data-act="equip" data-id="'+k+':">Leave empty</button>':'')+(opts.length<SLOT[k].length?'<small>More at the trader'+(k==='primary'?' or found on scavs and hunters':'')+'.</small>':'')+'</div>';}
-  }
+  /* paper doll: the operator in the middle, a slot for each piece of kit, the armory beside it. Drag items onto the body (or tap them). */
+  const DS=[['pack','l',8,140,100,'Back'],['primary','r',8,184,96,'Sling'],['melee','l',40,126,200,'Sheath'],['secondary','r',40,194,200,'Holster'],['gadget','l',70,142,290,'Belt'],['armor','r',70,190,168,'Chest']];
+  let dl='',ds='';
+  for(const [k,side,top,ax,ay,where] of DS){const cy=(top/100)*420+37,x0=side==='l'?118:202;
+    if(k==='armor'){dl+='<line x1="'+x0+'" y1="'+cy+'" x2="'+ax+'" y2="'+ay+'" class="'+(S.armor?'on':'')+'"/><circle cx="'+ax+'" cy="'+ay+'" r="3.5" class="'+(S.armor?'on':'')+'"/>';
+      ds+='<div class="dslot fixed '+side+(S.armor?'':' empty')+'" style="top:'+top+'%" data-slot="armor"><span class="sk">Armor · '+where+'</span><b>'+(S.armor?'Armor vest':'No vest')+'</b><small>'+(S.armor?'Soaks half of each bullet':'Buy one at the trader')+'</small></div>';continue;}
+    const id=S.load[k],w=id?(WPN[id]||PACKS[id]):null,ic=id?loIcon(id):'';
+    dl+='<line x1="'+x0+'" y1="'+cy+'" x2="'+ax+'" y2="'+ay+'" class="'+(w?'on':'')+'"/><circle cx="'+ax+'" cy="'+ay+'" r="3.5" class="'+(w?'on':'')+'"/>';
+    ds+='<div class="dslot '+side+(w?'':' empty')+(loadOpen===k?' open':'')+'" style="top:'+top+'%" data-slot="'+k+'" data-item="'+(id||'')+'" title="'+SLOTN[k]+'"><span class="sk">'+(k==='gadget'?'G':k==='pack'?'Tab':['primary','secondary','melee'].indexOf(k)+1)+' · '+SLOTN[k]+'</span>'+(ic?'<i class="ai" style="background-image:url('+ic+')"></i>':'')+'<b>'+(w?w.n:'Drop '+SLOTN[k].toLowerCase()+' here')+'</b></div>';}
+  const fig='<svg viewBox="0 0 320 420" aria-hidden="true">'+(S.load.pack?'<rect x="128" y="86" width="64" height="86" rx="12" class="bp"/>':'')+
+    '<g class="body"><circle cx="160" cy="50" r="21"/><rect x="151" y="66" width="18" height="16"/><path d="M126 84 Q160 74 194 84 L201 192 Q160 202 119 192 Z"/>'+
+    '<path class="limb" d="M130 90 L108 150 L102 208"/><path class="limb" d="M190 90 L212 150 L218 208"/><rect x="121" y="188" width="78" height="32" rx="9"/>'+
+    '<path class="leg" d="M146 214 L141 300 L139 380"/><path class="leg" d="M174 214 L179 300 L181 380"/><rect x="124" y="378" width="28" height="14" rx="4"/><rect x="168" y="378" width="28" height="14" rx="4"/></g>'+
+    (S.armor?'<path class="vest" d="M132 92 Q160 86 188 92 L193 178 Q160 186 127 178 Z"/><path class="plate" d="M140 104 H180 M140 122 H180 M140 140 H180"/>':'')+
+    '<rect x="119" y="186" width="82" height="8" class="belt"/>'+dl+'</svg>';
+  let arm='';
+  for(const k of ['primary','secondary','melee','gadget','pack']){const opts=SLOT[k].filter(owns);if(!opts.length)continue;
+    arm+='<h4>'+SLOTN[k]+'</h4><div class="agrid">'+opts.map(o=>{const ic=loIcon(o);return '<div class="aitem'+(S.load[k]===o?' eq':'')+'" data-item="'+o+'" title="'+nm(o)+'">'+(ic?'<i class="ai" style="background-image:url('+ic+')"></i>':'')+'<span>'+nm(o)+'</span></div>';}).join('')+'</div>';}
+  h+='<div class="lo"><div class="doll">'+fig+ds+'</div><div class="arm"><p class="lohint">Drag gear onto a slot on the body, or tap it to equip. Drag a slot off the body to empty it.</p>'+arm+'</div></div>';
+  if(loadOpen&&SLOT[loadOpen]){const k=loadOpen,id=S.load[k],w=id?(WPN[id]||PACKS[id]):null;
+    const sub=!w?'Empty':k==='pack'?psub(id):w.gadget?(w.hold?'Hold click or G to swing, let go to drop the line':'Click or G fires it, click again to let go'):w.melee?'Melee · '+w.dmg+' damage a swing':w.am+' · '+(id==='pistol'?'free mag each raid · ':'')+S.ammo[w.am]+' in reserve';
+    h+='<div class="row"><span class="nm">'+SLOTN[k]+': '+(w?w.n:'Empty')+'<small>'+sub+'</small></span></div>';
+    if(k!=='melee'&&k!=='pack'&&id)h+='<div class="opts"><button type="button" class="btn plain" data-act="equip" data-id="'+k+':">Leave '+SLOTN[k].toLowerCase()+' empty</button></div>';}
   {const have=SKINNABLE.filter(w=>owns(w)&&(S.skins[w]||[]).length);
    if(have.length){h+='<div class="row"><span class="nm">Weapon skins<small>Won on Drip Drop</small></span></div>';
     for(const w of have){const on=S.skinOn[w]||'';h+='<div class="opts"><small>'+WPN[w].n+'</small>'+['',...S.skins[w]].map(k=>'<button type="button" class="btn'+(k===on?'':' plain')+'" data-act="skin" data-id="'+w+':'+k+'">'+(k?SKINS[k].n:'Default')+'</button>').join('')+'</div>';}}}
   if(owns('butterfly'))h+='<div class="row"><span class="nm">Butterfly knife skin<small>'+BF_SKINS[S.bfskin||'stock'].n+'</small></span></div><div class="opts">'+Object.keys(BF_SKINS).filter(k=>k==='stock'||((S.skins.butterfly||[]).indexOf(k)>=0)).map(k=>'<button type="button" class="btn'+(k===(S.bfskin||'stock')?'':' plain')+'" data-act="bfskin" data-id="'+k+'">'+BF_SKINS[k].n+'</button>').join('')+'</div>';
-  h+='<div class="row"><span class="nm">Armor vest<small>'+(S.armor?'Equipped. Soaks half of each bullet until it breaks.':'None. Lost when you die.')+'</small></span></div>';
   h+='<div class="row"><span class="nm">Pack<small>'+(22+6*S.up.pack)+' kg before you slow down</small></span></div>';
   $('mLoad').innerHTML=h;
   h='';
