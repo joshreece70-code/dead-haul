@@ -304,7 +304,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">7 minute raid. 2 exfils open. Build 41, hosted.</small>
+      <small id="mGo">7 minute raid. 2 exfils open. Build 42, hosted.</small>
     </div>
     <section id="stashS"><h2>Stash <small id="stInfo"></small></h2>
       <div class="stW"><div class="stash" id="stG"></div></div>
@@ -798,6 +798,29 @@ const vmGunL=new T.Mesh(GUNS.pistol,GUN_MAT);vmGunL.scale.set(1.35,1.35,1.35);vm
 const tracers=[];let trI=0;
 for(let i=0;i<14;i++){const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute([0,0,0,0,0,0],3));const l=new T.Line(g,new T.LineBasicMaterial({color:0xffe9a0,transparent:true,opacity:.9,fog:false}));l.frustumCulled=false;l.visible=false;scene.add(l);tracers.push({l:l,life:0});}
 function tracer(a,b,c,d,e,f,col){const t=tracers[trI++%tracers.length];const p=t.l.geometry.attributes.position;p.setXYZ(0,a,b,c);p.setXYZ(1,d,e,f);p.needsUpdate=true;t.l.material.color.setHex(col||0xffe9a0);t.l.visible=true;t.life=.07;}
+/* bullets fly as real projectiles, so bullet time slows them with everything else */
+const bulFree=[];let bullets=[];
+for(let i=0;i<110;i++){const m=new T.Mesh(BOX,mat(0xffe9a0,0xffe9a0,.5,0,4));m.visible=false;m.frustumCulled=false;m.castShadow=false;scene.add(m);bulFree.push(m);}
+function fireBullet(x0,y0,z0,x1,y1,z1,speed,col,done){
+  const dx=x1-x0,dy=y1-y0,dz=z1-z0,d=Math.hypot(dx,dy,dz)||.001;
+  let m=bulFree.pop();
+  if(!m){const ob=bullets.shift();m=ob.m;if(ob.done&&ob.w===W)ob.done();}
+  m.material=mat(col,col,.5,0,4);m.visible=true;
+  const b={m:m,w:W,x0:x0,y0:y0,z0:z0,dx:dx/d,dy:dy/d,dz:dz/d,d:d,s:0,v:speed,done:done};bullets.push(b);placeBullet(b);
+}
+function placeBullet(b){
+  const len=Math.max(.25,Math.min(b.s,b.v*.011)),h=b.s,t=h-len/2;
+  b.m.position.set(b.x0+b.dx*t,b.y0+b.dy*t,b.z0+b.dz*t);b.m.scale.set(.05,.05,len);
+  b.m.lookAt(b.x0+b.dx*(h+1),b.y0+b.dy*(h+1),b.z0+b.dz*(h+1));
+}
+function updBullets(dt){
+  for(let i=bullets.length-1;i>=0;i--){const b=bullets[i];
+    if(b.w!==W){b.m.visible=false;bullets.splice(i,1);bulFree.push(b.m);continue;}
+    b.s+=b.v*dt;
+    if(b.s>=b.d){b.m.visible=false;bullets.splice(i,1);bulFree.push(b.m);if(b.done)b.done();if(state!=='raid')return;continue;}
+    placeBullet(b);
+  }
+}
 const parts=[];let paI=0;
 for(let i=0;i<48;i++){const m=new T.Mesh(BOX,mat(0x8a1c16));m.visible=false;scene.add(m);parts.push({m:m,vx:0,vy:0,vz:0,life:0});}
 function burst(x,y,z,hex,n,sp){for(let i=0;i<n;i++){const p=parts[paI++%parts.length];p.m.material=mat(hex,(hex===0xff8a20||hex===0xff7a20)?hex:0,.8,0,2.5);const s=rand(.07,.16);p.m.scale.set(s,s,s);p.m.position.set(x,y,z);p.vx=rand(-sp,sp);p.vy=rand(.5,sp);p.vz=rand(-sp,sp);p.life=rand(.3,.65);p.m.visible=true;}}
@@ -837,6 +860,7 @@ function rayCol(ox,oy,oz,dx,dy,dz,max){
     if(t0<best)best=t0;}
   return best;
 }
+function sightLine(x0,y0,z0,x1,y1,z1){const dx=x1-x0,dy=y1-y0,dz=z1-z0,d=Math.hypot(dx,dy,dz);if(d<.01)return true;return rayCol(x0,y0,z0,dx/d,dy/d,dz/d,d)>=d-.05;}
 function clearLine(x0,z0,x1,z1){const dx=x1-x0,dz=z1-z0,d=Math.hypot(dx,dz);if(d<.01)return true;return rayCol(x0,1.5,z0,dx/d,0,dz/d,d)>=d-.01;}
 function raySph(ox,oy,oz,dx,dy,dz,cx,cy,cz,r){const lx=cx-ox,ly=cy-oy,lz=cz-oz,tc=lx*dx+ly*dy+lz*dz;if(tc<0)return -1;const d2=lx*lx+ly*ly+lz*lz-tc*tc;if(d2>r*r)return -1;return tc-Math.sqrt(r*r-d2);}
 
@@ -1312,9 +1336,10 @@ function shoot(){
       t=raySph(ox,oy,oz,ax,ay,az,r.x,1.2+r.y,r.z,.48);if(t>0&&t<bt){bt=t;bp=id;bh=false;}
       t=raySph(ox,oy,oz,ax,ay,az,r.x,.5+r.y,r.z,.42);if(t>0&&t<bt){bt=t;bp=id;bh=false;}}
     const hx=ox+ax*bt,hy=oy+ay*bt,hz=oz+az*bt;
-    if(bp){mpHit(bp,w.dmg*(bh?2.2:1),bh);burst(hx,hy,hz,0x8a1c16,3,2);}
-    else if(be){damageEnemy(be,w.dmg*(bh?(be.kind==='z'?10:2.2):1),bh);burst(hx,hy,hz,0x8a1c16,3,2);}else if(tw<140)burst(hx,hy,hz,0xcfc7a6,2,1.5);
-    tracer(mx,my,mz,hx,hy,hz);MP.fx=[+hx.toFixed(1),+hy.toFixed(1),+hz.toFixed(1)];
+    fireBullet(mx,my,mz,hx,hy,hz,mini?280:240,mini?0xffc070:0xffe9a0,()=>{
+      if(bp){mpHit(bp,w.dmg*(bh?2.2:1),bh);burst(hx,hy,hz,0x8a1c16,3,2);}
+      else if(be){if(!be.dead)damageEnemy(be,w.dmg*(bh?(be.kind==='z'?10:2.2):1),bh);burst(hx,hy,hz,0x8a1c16,3,2);}else if(tw<140)burst(hx,hy,hz,0xcfc7a6,2,1.5);
+    });MP.fx=[+hx.toFixed(1),+hy.toFixed(1),+hz.toFixed(1)];
   }
   MP.fn=(MP.fn+1)%1000000;MP.sendT=0;
   mflash.position.set(mx,my,mz);mflash.intensity=2.2;P.recoil+=w.kick*(1-.35*P.adsT);shake=Math.max(shake,w.pel?.25:.07);
@@ -1366,9 +1391,20 @@ function heal(){
 function enemyShoot(e,dist,tx,tz){
   if(e.burst<=0)e.burst=e.kind==='h'?randi(2,3):randi(2,4);e.burst--;e.cd=e.burst>0?(e.kind==='h'?.17:.13):(e.kind==='h'?rand(1.8,2.9):rand(1,2.1));
   let ch=.6-dist*.012-(P.moving?.1:0)-(P.sprint?.1:0)-(e.kind==='h'?.08:0)-(P.dive?.3:0);if(P.car)ch-=.05+Math.abs(P.car.speed)*.01;ch=clamp(ch,.05,.75);
+  const ty=(P.car?0:P.base+P.y)+1.2;
+  if(!sightLine(e.x,1.5,e.z,tx,ty+.1,tz)){e.sees=false;e.cd=.35;return;}
   const hit=Math.random()<ch,o=hit?0:rand(-1.4,1.4);
-  tracer(e.x,1.4,e.z,tx+o,hit?1.2:rand(.3,2.6),tz+o,0xff8a5a);sfx.shot('pistol',clamp(1-dist/60,.15,.8));
-  if(hit){const d=e.kind==='h'?rand(5,8):rand(6,10);if(P.car){carDamage(P.car,d*.8);hurt(d*.4,false);}else hurt(d,false);}
+  const ax=tx+o,ay=hit?ty:ty+rand(-.9,1.4),az=tz+o,dx=ax-e.x,dy=ay-1.4,dz=az-e.z,d=Math.hypot(dx,dy,dz)||.001;
+  const far=hit?d:d+45,wall=rayCol(e.x,1.4,e.z,dx/d,dy/d,dz/d,far),end=Math.min(far,wall),blocked=wall<d-.3;
+  const ex=e.x+dx/d*end,ey=1.4+dy/d*end,ez=e.z+dz/d*end;
+  sfx.shot('pistol',clamp(1-dist/60,.15,.8));
+  fireBullet(e.x,1.4,e.z,ex,ey,ez,95,0xff8a5a,()=>{
+    if(state!=='raid'||!P)return;
+    if(blocked||!hit){if(end<far-.1)burst(ex,ey,ez,0xcfc7a6,2,1.5);return;}
+    /* it only lands if you are still where it was aimed: dive out of the way */
+    const ny=(P.car?0:P.base+P.y)+1.2;if(Math.hypot(P.x-ax,P.z-az)>(P.car?2.2:1)||Math.abs(ny-ay)>1.1)return;
+    const dm=e.kind==='h'?rand(5,8):rand(6,10);if(P.car){carDamage(P.car,dm*.8);hurt(dm*.4,false);}else hurt(dm,false);
+  });
 }
 
 /* ================= cars ================= */
@@ -1616,7 +1652,7 @@ function updEnemies(dt){
     e.mesh.visible=true;
     e.losT-=dt;
     if(e.losT<=0){e.losT=.3+Math.random()*.15;const sight=EN[e.kind].sight*(e.kind==='z'&&(P.sprint||P.car)?1.4:1)*(P.crT>.5&&!P.car?.6:1);
-      const was=e.sees;e.sees=dist<sight&&clearLine(e.x,e.z,tx,tz);if(e.kind==='h'&&e.sees&&!was)e.react=Math.max(e.react,.9);
+      const was=e.sees;e.sees=dist<sight&&sightLine(e.x,1.5,e.z,tx,(P.car?0:P.base+P.y)+1.3,tz);if(e.kind==='h'&&e.sees&&!was)e.react=Math.max(e.react,.9);
       if(e.sees){if(e.aggro<=0){e.react=e.kind==='z'?0:rand(.5,.9);if(e.kind==='z'&&dist<25)sfx.groan();}e.aggro=e.kind==='z'?12:7;e.lkx=tx;e.lkz=tz;}
       if(e.kind==='h'){e.lkx=tx;e.lkz=tz;if(e.aggro<10)e.aggro=10;}}
     if(e.aggro>0)e.aggro-=dt;if(e.hearT>0)e.hearT-=dt;e.cd-=dt;if(e.lunge>0)e.lunge-=dt;
@@ -1933,6 +1969,7 @@ function update(rdt){
   updCars(dt);if(state!=='raid')return;
   if(P.car){P.x=P.car.x;P.z=P.car.z;}
   updEnemies(dt);if(state!=='raid')return;
+  updBullets(dt);if(state!=='raid')return;
   W.heat=Math.max(0,W.heat-dt*.012);
   W.hunterT-=dt;
   if(W.heat>=2&&W.hunterT<=0){W.hunterT=36;const want=Math.floor(W.heat)-1;let alive=0;for(const e of W.enemies)if(e.kind==='h'&&!e.dead)alive++;
