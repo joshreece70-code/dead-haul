@@ -175,7 +175,7 @@ h1 span{color:var(--cash)}
 .dripWin{position:relative;height:124px;overflow:hidden;background:#070907;border:1px solid var(--line);border-bottom:3px solid var(--cash);margin:10px 0 6px}
 .dripStrip{position:absolute;left:0;top:10px;display:flex;gap:6px;will-change:transform}
 .dc{flex:0 0 120px;height:104px;box-sizing:border-box;border:1px solid #2a3128;border-bottom:4px solid #9aa4ac;background:#111410;position:relative;overflow:hidden;font:600 13px var(--display);color:#fff;padding:4px 6px;text-shadow:0 1px 2px #000,0 0 4px #000;display:flex;flex-direction:column;justify-content:flex-end}
-.dc.rare{border-bottom-color:var(--rl)}.dc .sw{position:absolute;left:0;right:0;top:0;height:62px;opacity:.9}
+.dc.rare{border-bottom-color:var(--rl)}.dc.leg{border-bottom-color:#ff4a2a;box-shadow:inset 0 -14px 18px -10px rgba(255,90,40,.55)}.dc .sw{position:absolute;left:0;right:0;top:0;height:62px;opacity:.9}
 .dc .ic{position:absolute;left:6px;right:6px;top:6px;height:52px;background-size:contain;background-repeat:no-repeat;background-position:center;filter:drop-shadow(0 2px 2px #000)}
 .dc small{font:400 10px var(--mono);color:#c9cdc6}.dc.win{outline:2px solid var(--cash);outline-offset:-2px;box-shadow:inset 0 0 18px rgba(230,193,74,.45)}
 .dripMark{position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--cash);box-shadow:0 0 8px var(--cash);z-index:2}
@@ -335,7 +335,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 74, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 75, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -350,8 +350,8 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
       </section>
       <section class="tab" data-tab="drip"><h2>Drip Drop <small style="font:400 12px var(--mono);letter-spacing:0;text-transform:none;color:var(--dim)">weapon skins</small></h2>
         <div class="dripWin"><div class="dripStrip" id="dStrip"></div><i class="dripMark"></i></div>
-        <div class="row"><span class="nm"><span id="dCoins">0</span> coins<small id="dMsg">One slot coin a roll. Always a skin for a weapon you own. Doubles pay cash.</small></span><button class="btn" type="button" data-act="drip" id="dRoll">Roll · 1 coin</button></div>
-        <ul class="pay"><li><b>Common · 75%</b> Arctic Camo, Tiger Tooth, Crimson Web</li><li><b>Rare · 25%</b> Fade, Doppler, Gold</li><li><b>Double</b> common $5,000 · rare $15,000</li></ul>
+        <div class="row"><span class="nm"><span id="dCoins">0</span> coins<small id="dMsg">Ten slot coins a roll. Always a skin for a weapon you own. Doubles pay cash.</small></span><button class="btn" type="button" data-act="drip" id="dRoll">Roll · 10 coins</button></div>
+        <ul class="pay"><li><b>Common · 70%</b> Arctic Camo, Tiger Tooth, Crimson Web, Urban Pixel, Hazard Stripe, Rust Bucket</li><li><b>Rare · 25%</b> Fade, Doppler, Gold, Neon Rider, Toxic Spill, Carbon Fiber</li><li><b>Legendary · 5%</b> Dragon Scale, Galaxy, Molten Core</li><li><b>Double</b> common $20,000 · rare $60,000 · legendary $150,000</li></ul>
       </section>
       <section class="tab" data-tab="loadout"><h2>Loadout</h2><div id="mLoad"></div></section>
       <section class="tab" data-tab="trader"><h2>Trader</h2><div id="mShop"></div></section>
@@ -371,7 +371,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
           <li><b>Left click</b> fire (hold for auto) · <b>Right click</b> aim down sights on/off · <b>Space</b> jump, or vault through a window you are facing</li>
           <li><b>Hold Space</b> to bunny hop: you re-jump the instant you land and build speed. Strafe with <b>A</b> or <b>D</b> while turning the same way to gain more.</li>
           <li><b>F</b> inspects the weapon in your hands.</li>
-          <li>The <b>Red Rebel</b> ice axe only turns up in airdrops. Carry it and press <b>Space</b> facing the outside wall of a four storey building to climb: <b>W</b>/<b>S</b> up and down, <b>A</b>/<b>D</b> along the wall, <b>Space</b> to let go. Climbing up costs stamina.</li>
+          <li>The <b>Red Rebel</b> ice axe only turns up in airdrops. Carry it and press <b>Space</b> facing the outside wall of a four storey building to climb: <b>W</b>/<b>S</b> up and down, <b>A</b>/<b>D</b> along the wall, <b>Space</b> to let go. Climbing up costs stamina. Falling or jumping next to one of those walls, press <b>Space</b> to dig the axe in and catch yourself.</li>
           <li>Safes and cash registers are locked. With a <b>lock pick</b>, press <b>E</b> and hit <b>Space</b>, <b>E</b> or click while the marker is in the green to set each pin. A miss drops a pin and can snap the pick.</li>
           <li><b>Z</b> or <b>mouse button 5</b> dolphin dive in the direction you are moving. Time slows while you are in the air, but you aim and shoot at nearly full speed. A dive carries you through open windows. You land prone: crawl, press <b>Ctrl</b> to crouch, or <b>Space</b> to stand.</li>
           <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. Fire again, or press <b>Space</b>, to let go and keep your swing. Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
@@ -786,7 +786,11 @@ const BF_SKINS={
  fade:{n:'Fade',h:0xc9ced4,b:[0xf2d45c,0xf08aa8,0xc06ad8,0x8a5ae0],t:0x6a4ae8},
  doppler:{n:'Doppler',h:0x2a2d33,b:[0x2a1f5a,0x4a2a9a,0x7a3ab8,0x2f5fd0],t:0x3a7ae0},
  crimson:{n:'Crimson Web',h:0x5a0c12,b:[0x9a1420,0x9a1420,0x9a1420,0x9a1420],t:0x9a1420,web:1},
- gold:{n:'Gold',h:0xb08a3a,b:[0xe0b84a,0xe0b84a,0xe0b84a,0xe0b84a],t:0xf0cc60}
+ gold:{n:'Gold',h:0xb08a3a,b:[0xe0b84a,0xe0b84a,0xe0b84a,0xe0b84a],t:0xf0cc60},
+ neon:{n:'Neon Rider',h:0x101014,b:[0xff2ad4,0xb02aff,0x2ad4ff,0x2affd0],t:0x2affd0},
+ toxic:{n:'Toxic Spill',h:0x1a2a10,b:[0x7aff3a,0x5ae02a,0x3ab81a,0x2a8a10],t:0xb0ff60},
+ galaxy:{n:'Galaxy',h:0x120a26,b:[0x2a1060,0x5a2aa0,0x1a3a90,0x6a3ad0],t:0xe0d0ff},
+ molten:{n:'Molten Core',h:0x141010,b:[0xff8a1a,0xe04a10,0xa02a0a,0x3a1008],t:0xffc04a}
 };
 function bfGeo(skin){const k=BF_SKINS[skin]||BF_SKINS.stock;
   const p=[[gBox(.006,.014,.12),k.h,-.006,0,.05],[gBox(.006,.014,.12),k.h,.006,0,.05],[gBox(.004,.008,.03),0x3a3d42,0,0,.1],[gCyl(.006,.006,.02,6),0x3a3d42,0,0,-.012]];
@@ -807,7 +811,7 @@ const GUNS={
  knife:bake([[gCyl(.015,.013,.11,8),0x101011,0,0,.05,1.5708],[gBox(.03,.01,.016),0x3a3d42,0,0,-.008],[gCyl(.016,.016,.012,8),0x3a3d42,0,0,.108,1.5708],[gBox(.005,.026,.13),0xc9ced4,0,0,-.08],[gBox(.005,.016,.04),0xc9ced4,0,.004,-.16,.35],[gBox(.0055,.004,.12),0x8a8f96,0,.013,-.075]]),
  butterfly:null,
  karambit:bake([[gBox(.012,.026,.1),0x101011,0,0,.05],[gBox(.0125,.004,.09),0x2a2d33,0,.0125,.05],[new T.TorusGeometry(.019,.0045,6,16).rotateY(1.5708),0x3a3d42,0,0,.118],[gBox(.014,.03,.012),0x3a3d42,0,0,-.002],[karBlade(),0xc9ced4,0,0,-.007],[karBlade(.0012,.97),0x8a8f96,0,.0005,-.008]]),
- redrebel:bake([[gCyl(.017,.015,.5,8),0xc8141c,0,0,-.2,1.5708],[gCyl(.02,.02,.12,8),0x151515,0,0,.02,1.5708],[gCyl(.006,.014,.06,6),0x2a2d32,0,0,.11,1.5708],[gBox(.03,.006,.12),0x151515,0,-.02,.04],[gBox(.024,.05,.06),0x2a2d32,0,0,-.47],[gBox(.012,.06,.026),0x8a8f96,0,-.055,-.465,.25],[gBox(.011,.06,.022),0x8a8f96,0,-.105,-.45,.55],[gBox(.01,.045,.018),0x8a8f96,0,-.14,-.425,.9],[gBox(.03,.05,.03),0x8a8f96,0,.045,-.475],[gBox(.045,.012,.035),0x8a8f96,0,.075,-.475],[gBox(.026,.008,.06),0xc8141c,0,.03,-.47]]),
+ redrebel:bake([[gCyl(.017,.015,.5,8),0xc8141c,0,0,-.2,1.5708],[gCyl(.02,.02,.12,8),0x151515,0,0,.02,1.5708],[gCyl(.006,.014,.06,6),0x2a2d32,0,0,.11,1.5708],[gBox(.03,.006,.12),0x151515,0,-.02,.04],[gBox(.024,.05,.06),0x2a2d32,0,0,-.47],[gBox(0.0120,0.0184,0.0240),0x8a8f96,0,-0.0330,-0.4700,-0.0000],[gBox(0.0066,0.0176,.004),0xc9ced4,0,-0.0330,-0.4570,-0.0000],[gBox(0.0114,0.0184,0.0226),0x8a8f96,0,-0.0490,-0.4696,-0.0493],[gBox(0.0063,0.0176,.004),0xc9ced4,0,-0.0484,-0.4573,-0.0493],[gBox(0.0109,0.0184,0.0211),0x8a8f96,0,-0.0649,-0.4683,-0.1126],[gBox(0.0060,0.0176,.004),0xc9ced4,0,-0.0636,-0.4568,-0.1126],[gBox(0.0103,0.0184,0.0197),0x8a8f96,0,-0.0807,-0.4659,-0.1900],[gBox(0.0057,0.0176,.004),0xc9ced4,0,-0.0787,-0.4553,-0.1900],[gBox(0.0098,0.0184,0.0182),0x8a8f96,0,-0.0963,-0.4622,-0.2815],[gBox(0.0054,0.0176,.004),0xc9ced4,0,-0.0935,-0.4525,-0.2815],[gBox(0.0078,.006,.006),0xb4b9bf,0,-0.0926,-0.4496,0.3185],[gBox(0.0092,0.0184,0.0168),0x8a8f96,0,-0.1114,-0.4569,-0.3870],[gBox(0.0051,0.0176,.004),0xc9ced4,0,-0.1078,-0.4482,-0.3870],[gBox(0.0087,0.0184,0.0153),0x8a8f96,0,-0.1258,-0.4500,-0.5067],[gBox(0.0048,0.0176,.004),0xc9ced4,0,-0.1216,-0.4424,-0.5067],[gBox(0.0069,.006,.006),0xb4b9bf,0,-0.1201,-0.4398,0.0933],[gBox(0.0081,0.0184,0.0139),0x8a8f96,0,-0.1392,-0.4414,-0.6404],[gBox(0.0045,0.0176,.004),0xc9ced4,0,-0.1344,-0.4350,-0.6404],[gBox(0.0076,0.0184,0.0124),0x8a8f96,0,-0.1512,-0.4309,-0.7881],[gBox(0.0042,0.0176,.004),0xc9ced4,0,-0.1461,-0.4258,-0.7881],[gBox(0.0060,.006,.006),0xb4b9bf,0,-0.1440,-0.4237,-0.1881],[gBox(0.0070,0.0184,0.0110),0x8a8f96,0,-0.1615,-0.4187,-0.9500],[gBox(0.0039,0.0176,.004),0xc9ced4,0,-0.1562,-0.4150,-0.9500],[gBox(.03,.05,.03),0x8a8f96,0,.045,-.475],[gBox(.045,.012,.035),0x8a8f96,0,.075,-.475],[gBox(.047,.004,.037),0xc9ced4,0,.083,-.475],[gBox(.026,.008,.06),0xc8141c,0,.03,-.47]]),
  katana:bake([[gCyl(.016,.016,.26,8),0x101011,0,0,.04,1.5708],[gBox(.034,.012,.03),0xb08a3a,0,0,.1],[gBox(.034,.012,.03),0xb08a3a,0,0,.02],[gCyl(.018,.018,.02,8),0xb08a3a,0,0,.178,1.5708],[gCyl(.045,.045,.008,10),0x1b1c1f,0,0,-.095,1.5708],[gBox(.012,.034,.03),0xb08a3a,0,0,-.115],[gBox(.006,.032,.26),0xc9ced4,0,0,-.26],[gBox(.006,.03,.26),0xc9ced4,0,.008,-.512,.0524],[gBox(.006,.026,.24),0xc9ced4,0,.026,-.752,.1047],[gBox(.006,.018,.07),0xc9ced4,0,.046,-.895,.2094]]),
  saber:bake([[gCyl(.018,.018,.26,10),0x3a3d42,0,0,.03,1.5708],[gCyl(.024,.024,.03,10),0x1b1c1f,0,0,-.105,1.5708],[gCyl(.022,.022,.025,10),0x1b1c1f,0,0,.17,1.5708],[gBox(.01,.008,.03),0x9a2a20,.018,0,-.04],[gBox(.008,.01,.05),0xb08a3a,-.018,0,-.02],[gCyl(.021,.021,.02,10),0x1b1c1f,0,0,.12,1.5708],[gCyl(.021,.021,.02,10),0x1b1c1f,0,0,.08,1.5708],[gCyl(.021,.021,.02,10),0x1b1c1f,0,0,.04,1.5708],[gCyl(.021,.021,.02,10),0x1b1c1f,0,0,0,1.5708]])
 };
@@ -825,7 +829,9 @@ const LENS_GEO=new T.BoxGeometry(.026,.04,.002),LENS_MAT=new T.MeshBasicMaterial
 /* weapon skins: recolour a weapon's model, one flat colour per face so patterns stay crisp */
 const SKINS={
  arctic:{n:'Arctic Camo',rare:0},tiger:{n:'Tiger Tooth',rare:0},web:{n:'Crimson Web',rare:0},
- fade:{n:'Fade',rare:1},doppler:{n:'Doppler',rare:1},gold:{n:'Gold',rare:1}
+ urban:{n:'Urban Pixel',rare:0},hazard:{n:'Hazard Stripe',rare:0},rust:{n:'Rust Bucket',rare:0},
+ fade:{n:'Fade',rare:1},doppler:{n:'Doppler',rare:1},gold:{n:'Gold',rare:1},neon:{n:'Neon Rider',rare:1},toxic:{n:'Toxic Spill',rare:1},carbon:{n:'Carbon Fiber',rare:1},
+ dragon:{n:'Dragon Scale',rare:2},galaxy:{n:'Galaxy',rare:2},molten:{n:'Molten Core',rare:2}
 };
 const SKINNABLE=['pistol','dual','uzis','smg','shotgun','spas','ak','rifle','sniper','knife','karambit','katana','saber'];
 const SKC={},skA=new T.Color(),skB=new T.Color();
@@ -836,7 +842,7 @@ function skinGeo(w,sk){
   const base=GUNS[w]||GUNS.pistol;if(!base||!SKINS[sk])return base;
   const key=w+':'+sk+':'+base.uuid;if(SKC[key])return SKC[key];
   const g=base.index?base.toNonIndexed():base.clone(),p=g.attributes.position,c=g.attributes.color;if(!c)return base;
-  g.computeBoundingBox();const bb=g.boundingBox,zl=(bb.max.z-bb.min.z)||1;
+  g.computeBoundingBox();const bb=g.boundingBox,zl=(bb.max.z-bb.min.z)||1,yl=(bb.max.y-bb.min.y)||1;
   for(let i=0;i+2<c.count;i+=3){
     const x=(p.getX(i)+p.getX(i+1)+p.getX(i+2))/3,y=(p.getY(i)+p.getY(i+1)+p.getY(i+2))/3,z=(p.getZ(i)+p.getZ(i+1)+p.getZ(i+2))/3;
     const l=.2126*c.getX(i)+.7152*c.getY(i)+.0722*c.getZ(i),t=(bb.max.z-z)/zl,f=.5+.5*Math.min(1,l/.12);let o;
@@ -845,6 +851,15 @@ function skinGeo(w,sk){
     else if(sk==='doppler')o=skGrad([0x1a1640,0x4a2a9a,0x7a3ab8,0x2f5fd0,0x1a1640],(t+skHash(Math.floor(x*30),Math.floor(y*30),0)*.35)%1).multiplyScalar(.6+.6*f);
     else if(sk==='arctic'){const n=skHash(Math.floor(x*28),Math.floor(y*28),Math.floor(z*28));o=skHex(n<.4?0xe8eef2:n<.75?0x9aa4ac:0x4a565e).multiplyScalar(f);}
     else if(sk==='tiger'){const st=Math.sin((z+y*.7)*95+skHash(0,Math.floor(y*40),0)*2);o=skHex(st>.35?0x1a1208:0xe0882a).multiplyScalar(f);}
+    else if(sk==='urban'){const n=skHash(Math.floor(x*45),Math.floor(y*45),Math.floor(z*45));o=skHex(n<.3?0x2a2d30:n<.6?0x5a5f66:n<.85?0x9aa0a6:0xd0d4d8).multiplyScalar(f);}
+    else if(sk==='hazard'){o=skHex(Math.sin((z+y)*120)>0?0xf2c40a:0x141414).multiplyScalar(f);}
+    else if(sk==='rust'){const n=skHash(Math.floor(x*60),Math.floor(y*60),Math.floor(z*60));o=skGrad([0x3a1a0a,0x8a3a12,0xc0601a,0x6a4a3a],n).multiplyScalar(f);}
+    else if(sk==='neon'){const q=((t*6+y*20)%1+1)%1;o=skHex(q<.1?0xff2ad4:q<.18?0x2ad4ff:0x0c0c12).multiplyScalar(q<.18?1:f);}
+    else if(sk==='toxic'){const dr=skHash(Math.floor(z*40),0,0),dn=(bb.max.y-y)/yl;o=skHex(dn<.15+dr*.7?0x7aff3a:0x1a2410).multiplyScalar(dn<.15+dr*.7?1:f);}
+    else if(sk==='carbon'){const ch=(Math.floor(z*120)+Math.floor(y*120)+Math.floor(x*120))&1;o=skHex(ch?0x1a1b1e:0x34363c).multiplyScalar(f);}
+    else if(sk==='dragon'){const u=z*90,v=y*90+(Math.floor(u)&1)*.5,dx=u-Math.floor(u)-.5,dy=v-Math.floor(v)-.5;o=Math.hypot(dx,dy)>.42?skHex(0x3a0808):skGrad([0xb01818,0xd0501a,0xe0a030],t);}
+    else if(sk==='galaxy'){const n=skHash(Math.floor(x*80),Math.floor(y*80),Math.floor(z*80));o=n>.95?skHex(0xffffff):skGrad([0x0a0620,0x2a1060,0x1a3a90,0x5a2aa0,0x0a0620],(t+n*.15)%1).multiplyScalar(.7+.5*f);}
+    else if(sk==='molten'){const cr=Math.abs(Math.sin(z*80+Math.sin(y*60)*2)*Math.sin(y*70+x*50));o=cr<.14?skHex(cr<.06?0xffd04a:0xff6a10):skHex(0x141012).multiplyScalar(f);}
     else{const wv=Math.abs(Math.sin(z*70+Math.sin(y*90)*1.5))*Math.abs(Math.sin(y*80+x*60));o=skHex(wv<.12?0x0d0a0a:0x8a1018).multiplyScalar(f);}
     for(let k=0;k<3;k++)c.setXYZ(i+k,o.r,o.g,o.b);
   }
@@ -1783,13 +1798,14 @@ function findVault(){
 /* Red Rebel: dig the ice axe into the outside wall of a tall building and climb it */
 function canClimb(){return !!P&&gunList().indexOf('redrebel')>=0;}
 function findClimb(){
-  if(!canClimb()||P.car||P.climb||P.grap)return null;const fx=-Math.sin(P.yaw),fz=-Math.cos(P.yaw),feet=P.base+P.y;
+  if(!canClimb()||P.car||P.climb||P.grap||(P.regrab||0)>0)return null;const fx=-Math.sin(P.yaw),fz=-Math.cos(P.yaw),feet=P.base+P.y,air=P.y>.05,reach=air?1.6:.95;
   for(const b of W.buildings){if(!b.lv)continue;const X0=b.x0-TH/2,X1=b.x1+TH/2,Z0=b.z0-TH/2,Z1=b.z1+TH/2;
     const nx=clamp(P.x,X0,X1),nz=clamp(P.z,Z0,Z1),dx=nx-P.x,dz=nz-P.z,d=Math.hypot(dx,dz);
-    if(d<.05||d>.95||feet>b.rh-1||(fx*dx+fz*dz)/d<.5)continue;
+    if(d<.05||d>reach||feet>b.rh-.6||(!air&&(fx*dx+fz*dz)/d<.5))continue;
     return {b:b,nx:-dx/d,nz:-dz/d};}
   return null;}
-function startClimb(c){P.climb={b:c.b,nx:c.nx,nz:c.nz,top:c.b.rh,st:0};P.vx=P.vz=P.vy=0;if(P.y<=0)P.y=.05;P.crouch=false;P.prone=false;P.slide=0;P.search=null;
+function startClimb(c){const fall=P.y>.05?-P.vy:0;P.climb={b:c.b,nx:c.nx,nz:c.nz,top:c.b.rh,st:0};P.vx=P.vz=P.vy=0;P.dive=false;
+  if(fall>0){P.stam=Math.max(0,P.stam-Math.min(30,6+fall*1.5));shake=Math.max(shake,Math.min(.35,.08+fall*.02));burst(P.x-c.nx*.4,P.base+P.y+1.6,P.z-c.nz*.4,0xc8c2b4,8,2.2);card('Caught the wall',0,'l');}if(P.y<=0)P.y=.05;P.crouch=false;P.prone=false;P.slide=0;P.search=null;
   tone(240,.06,'square',.08);tone(140,.08,'sawtooth',.05,0,.04);makeNoise(P.x,P.z,6);}
 function updClimb(dt,ix,iy){
   const c=P.climb,b=c.b;if(!canClimb()){P.climb=null;return;}
@@ -1804,7 +1820,8 @@ function updClimb(dt,ix,iy){
   if(P.y<=0&&up<0){P.y=0;P.climb=null;}
 }
 function jump(){
-  if(state==='raid'&&P.climb){const c=P.climb;P.climb=null;P.vx=c.nx*3.2;P.vz=c.nz*3.2;P.vy=2.5;if(P.y<=0)P.y=.02;return;}
+  if(state==='raid'&&P.climb){const c=P.climb;P.climb=null;P.vx=c.nx*1.8;P.vz=c.nz*1.8;P.vy=2;if(P.y<=0)P.y=.02;P.regrab=.45;return;}
+  if(state==='raid'&&P.y>.05&&!P.car&&!P.loot&&!bagOpen){const cl=findClimb();if(cl){startClimb(cl);return;}}
   if(state==='raid'&&P.grap){releaseHook();return;}
   if(state!=='raid'||P.car||P.y>0||P.vault||P.loot||bagOpen)return;
   if(P.prone){P.prone=false;return;}
@@ -1933,6 +1950,7 @@ function updPlayer(dt){
         const sp=Math.hypot(P.vx,P.vy,P.vz);if(sp>17){P.vx*=17/sp;P.vy*=17/sp;P.vz*=17/sp;}
         if(P.y<=0&&P.vy>0)P.y=.02;P.dive=false;P.crouch=false;P.prone=false;P.slide=0;P.hops=0;}
     }
+    if(P.regrab>0)P.regrab-=dt;
     if(P.y>0||P.vy>0){P.vy-=(P.dive?11:18)*dt;P.y+=P.vy*dt;if(P.y<=0){P.y=0;const fall=Math.abs(P.vy);P.vy=0;sfx.step(1.5);makeNoise(P.x,P.z,8);
       /* bunny hop: holding jump re-jumps on the landing frame, so ground friction never bites and speed carries over */
       if(P.dive){P.dive=false;P.diveSlide=true;P.hops=0;P.land=.2;P.diveCd=1;const s0=Math.hypot(P.vx,P.vz)||1;P.slide=.5;P.sdx=P.vx/s0;P.sdz=P.vz/s0;hiss(.4,.2,700);}
@@ -2103,9 +2121,9 @@ function updView(){
   const scoped=view===1&&P.weapon==='sniper'&&!(P.mini>0)&&P.adsT>.75&&!P.car;setHid('scope',!scoped);
   {const o=scoped||(view===1&&wm==='rifle'&&P.adsT>.6&&!P.car)?0:1;if(hudKey.crossO!==o){hudKey.crossO=o;el('cross').style.opacity=o;}}
   vm.visible=view===1&&!scoped;
-  if(vm.visible){const vb=S.bob===false?0:P.bobA*(1-.8*P.adsT);vm.position.z=P.recoil*1.6;vm.position.x=Math.cos(P.anim)*.012*vb+P.swx;vm.position.y=(P.reloading>0?-.16:0)-Math.abs(Math.sin(P.anim))*.014*vb+P.swy-P.land*.25-.05*P.sprT*(1-P.adsT);vm.rotation.z=-P.lean*.05;vm.rotation.y=.22*P.sprT*(1-P.adsT);vmGun.position.x=.2*(1-P.adsT);vmGun.position.y=-.2+(.2+(ADSY[wm]||-.105))*P.adsT;{const sf=melee&&P.swing>0?P.swing/.25:0;vm.rotation.x=sf>0?.45-1.5*(1-sf):0;if(sf>0)vm.rotation.y+=.45*(1-sf)-.15;}if(SHORTK[wm])vmGun.rotation.set(.55,.35,.25);else vmGun.rotation.set(melee?.75:0,melee?.5:0,melee?.3:0);if(vmGun.wid!==wm){vmGun.wid=wm;setGun(vmGun,wm);}
+  if(vm.visible){const vb=S.bob===false?0:P.bobA*(1-.8*P.adsT);vm.position.z=P.recoil*1.6;vm.position.x=Math.cos(P.anim)*.012*vb+P.swx;vm.position.y=(P.reloading>0?-.16:0)-Math.abs(Math.sin(P.anim))*.014*vb+P.swy-P.land*.25-.05*P.sprT*(1-P.adsT);vm.rotation.z=-P.lean*.05;vm.rotation.y=.22*P.sprT*(1-P.adsT);vmGun.position.x=.2*(1-P.adsT);vmGun.position.y=-.2+(.2+(ADSY[wm]||-.105))*P.adsT;{const sf=melee&&P.swing>0?P.swing/.25:0;vm.rotation.x=sf>0?.45-1.5*(1-sf):0;if(sf>0)vm.rotation.y+=.45*(1-sf)-.15;}if(SHORTK[wm])vmGun.rotation.set(.55,.35,.25);else if(wm==='redrebel')vmGun.rotation.set(.32,.14,.06);else vmGun.rotation.set(melee?.75:0,melee?.5:0,melee?.3:0);if(vmGun.wid!==wm){vmGun.wid=wm;setGun(vmGun,wm);}
     if(dual){vmGun.position.x=.2-.07*P.adsT;vmGun.position.y=-.2+.05*P.adsT;vmGun.position.z=-.48+P.kR;vmGunL.position.set(-vmGun.position.x,vmGun.position.y,-.48+P.kL);}else vmGun.position.z=-.48;
-    if(melee){if(SHORTK[wm])vmGun.position.set(.16,-.155,-.34);else vmGun.position.set(.27,-.3,-.42);}
+    if(melee){if(SHORTK[wm])vmGun.position.set(.16,-.155,-.34);else if(wm==='redrebel')vmGun.position.set(.25,-.27,-.44);else vmGun.position.set(.27,-.3,-.42);}
     if(P.insp>0){const q=inspPose();if(wm==='butterfly'){const t=1-P.insp/INSP_T,u=clamp((t-.2)/.5,0,1);vmGun.rotation.x+=Math.PI*4*u*u*(3-2*u);}vmGun.rotation.x+=q[0];vmGun.rotation.y+=q[1];vmGun.rotation.z+=q[2];vmGun.position.x+=q[3];vmGun.position.y+=q[4];vmGun.position.z+=q[5];
       if(dual){vmGunL.rotation.set(q[0],-q[1],-q[2]);vmGunL.position.x-=q[3];vmGunL.position.y+=q[4];vmGunL.position.z+=q[5];}}
     else if(dual)vmGunL.rotation.set(0,0,0);}
@@ -2165,7 +2183,7 @@ function updHud(){
   setT('hint',(!isTouch&&!locked&&!ui)?(lockFailed?'Mouse aims · left click fires':'Click anywhere to lock the mouse'):'');
   const ch=true;setHid('cur',!ui||isTouch);if(hudKey.cur!==ch){hudKey.cur=ch;$('app').classList.toggle('nocur',ch);}
   const key=isTouch?'':'<kbd>E</kbd>';
-  setH('prompt',P.search||P.loot?'':P.climb?(isTouch?'Stick up and down to climb · jump to let go':'<kbd>W</kbd><kbd>S</kbd> climb · <kbd>A</kbd><kbd>D</kbd> shuffle · <kbd>SPACE</kbd> let go'):ctx?key+ctx.label:P.canVault?(isTouch?'Jump to vault':'<kbd>SPACE</kbd>Vault window'):findClimb()?(isTouch?'Jump to climb':'<kbd>SPACE</kbd>Climb with the Red Rebel'):'');
+  setH('prompt',P.search||P.loot?'':P.climb?(isTouch?'Stick up and down to climb · jump to let go':'<kbd>W</kbd><kbd>S</kbd> climb · <kbd>A</kbd><kbd>D</kbd> shuffle · <kbd>SPACE</kbd> let go'):P.y>.4&&findClimb()?(isTouch?'Jump to grab the wall':'<kbd>SPACE</kbd> Grab the wall'):ctx?key+ctx.label:P.canVault?(isTouch?'Jump to vault':'<kbd>SPACE</kbd>Vault window'):findClimb()?(isTouch?'Jump to climb':'<kbd>SPACE</kbd>Climb with the Red Rebel'):'');
   if(isTouch){setHid('bUse',(!ctx&&!P.loot)||!!P.search);if(P.loot)setT('bUse','TAKE ALL');else if(ctx)setT('bUse',ctx.t==='search'?(ctx.c.opened?'OPEN':'SEARCH'):ctx.t==='car'?'DRIVE':'EXIT');}
   setHid('search',!P.search);if(P.search){setT('searchL','Searching '+P.search.n);setW('searchB',P.search.t/P.search.dur*100);}
   setHid('exbar',P.exT<=0);if(P.exT>0){setT('exL','EXTRACTING '+Math.max(0,5-P.exT).toFixed(1));setW('exB',P.exT/5*100);}
@@ -2488,17 +2506,21 @@ function slotItem(kind,three){
 let slotBusy=false;
 /* Drip Drop: one reel of skin cards that whips past and stops on your skin */
 const SKIN_CSS={arctic:'linear-gradient(135deg,#e8eef2 0 32%,#9aa4ac 32% 62%,#4a565e 62%)',tiger:'repeating-linear-gradient(115deg,#e0882a 0 11px,#1a1208 11px 17px)',web:'repeating-radial-gradient(circle at 30% 40%,#8a1018 0 7px,#120a0a 7px 8px)',
- crimson:'repeating-radial-gradient(circle at 70% 30%,#9a1420 0 7px,#120a0a 7px 8px)',fade:'linear-gradient(90deg,#f2d45c,#f08aa8,#c06ad8,#6a4ae8)',doppler:'linear-gradient(90deg,#1a1640,#4a2a9a,#7a3ab8,#2f5fd0)',gold:'linear-gradient(135deg,#f2cc5a,#8a6420 55%,#f2cc5a)'};
+ crimson:'repeating-radial-gradient(circle at 70% 30%,#9a1420 0 7px,#120a0a 7px 8px)',fade:'linear-gradient(90deg,#f2d45c,#f08aa8,#c06ad8,#6a4ae8)',doppler:'linear-gradient(90deg,#1a1640,#4a2a9a,#7a3ab8,#2f5fd0)',gold:'linear-gradient(135deg,#f2cc5a,#8a6420 55%,#f2cc5a)',
+ urban:'conic-gradient(#2a2d30 25%,#9aa0a6 0 50%,#5a5f66 0 75%,#d0d4d8 0) 0 0/14px 14px',hazard:'repeating-linear-gradient(45deg,#f2c40a 0 10px,#141414 10px 20px)',rust:'radial-gradient(circle at 30% 40%,#c0601a,#8a3a12 40%,#3a1a0a)',
+ neon:'repeating-linear-gradient(100deg,#0c0c12 0 14px,#ff2ad4 14px 17px,#0c0c12 17px 22px,#2ad4ff 22px 25px)',toxic:'linear-gradient(180deg,#7aff3a 0 30%,#1a2410 70%)',carbon:'repeating-conic-gradient(#1a1b1e 0 25%,#34363c 0 50%) 0 0/8px 8px',
+ dragon:'radial-gradient(circle at 50% 100%,#e0a030 0 5px,#b01818 6px 9px,#3a0808 10px) 0 0/12px 10px',galaxy:'radial-gradient(circle at 20% 30%,#fff 0 1px,transparent 2px) 0 0/17px 13px,linear-gradient(120deg,#0a0620,#2a1060,#1a3a90,#5a2aa0)',molten:'radial-gradient(circle at 40% 60%,#ffd04a,#ff6a10 20%,#141012 55%)'};
+const DRIP_COST=10,DRIP_TIER=['Common','Rare','Legendary'],DRIP_DUP=[20000,60000,150000];
 let dripBusy=false;
-function dripPool(){const o=[];for(const w of SKINNABLE)if(owns(w))for(const k in SKINS)o.push({w:w,k:k,rare:!!SKINS[k].rare,n:SKINS[k].n});
-  if(owns('butterfly'))for(const k of ['crimson','fade','doppler','gold'])o.push({w:'butterfly',k:k,rare:k!=='crimson',n:BF_SKINS[k].n});return o;}
-function dripPick(pool){const rare=Math.random()<.25,sub=pool.filter(p=>p.rare===rare);return pick(sub.length?sub:pool);}
-function dripCard(p,win){return '<div class="dc'+(p.rare?' rare':'')+(win?' win':'')+'"><span class="sw" style="background:'+SKIN_CSS[p.k]+'"></span><span class="ic" style="'+(ICON['w_'+p.w]?'background-image:url('+ICON['w_'+p.w]+')':'')+'"></span>'+p.n+'<small>'+WPN[p.w].n+'</small></div>';}
+function dripPool(){const o=[];for(const w of SKINNABLE)if(owns(w))for(const k in SKINS)o.push({w:w,k:k,rare:SKINS[k].rare,n:SKINS[k].n});
+  if(owns('butterfly'))for(const k of ['crimson','fade','doppler','gold','neon','toxic','galaxy','molten'])o.push({w:'butterfly',k:k,rare:k==='crimson'?0:k==='galaxy'||k==='molten'?2:1,n:BF_SKINS[k].n});return o;}
+function dripPick(pool){const r=Math.random(),rare=r<.05?2:r<.3?1:0,sub=pool.filter(p=>p.rare===rare);return pick(sub.length?sub:pool);}
+function dripCard(p,win){return '<div class="dc'+(p.rare===2?' leg':p.rare?' rare':'')+(win?' win':'')+'"><span class="sw" style="background:'+SKIN_CSS[p.k]+'"></span><span class="ic" style="'+(ICON['w_'+p.w]?'background-image:url('+ICON['w_'+p.w]+')':'')+'"></span>'+p.n+'<small>'+WPN[p.w].n+'</small></div>';}
 function dripIdle(){const el=$('dStrip');if(!el||dripBusy)return;const pool=dripPool();el.style.transition='none';el.style.transform='translateX(0)';el.innerHTML=Array.from({length:12},()=>dripCard(dripPick(pool),false)).join('');}
 function dripOwned(p){return p.w==='butterfly'?(S.skins.butterfly||[]).indexOf(p.k)>=0:(S.skins[p.w]||[]).indexOf(p.k)>=0;}
 function dripRoll(){
-  if(dripBusy||!(S.coins>0))return;const pool=dripPool();if(!pool.length)return;
-  S.coins--;save();dripBusy=true;$('dRoll').disabled=true;$('dMsg').textContent='Rolling...';$('dCoins').textContent=S.coins;
+  if(dripBusy||!(S.coins>=DRIP_COST))return;const pool=dripPool();if(!pool.length)return;
+  S.coins-=DRIP_COST;save();dripBusy=true;$('dRoll').disabled=true;$('dMsg').textContent='Rolling...';$('dCoins').textContent=S.coins;
   const win=dripPick(pool),N=48,WI=40,cards=[];for(let i=0;i<N;i++)cards.push(i===WI?win:dripPick(pool));
   const el=$('dStrip'),box=el.parentNode.clientWidth||600,step=126,target=WI*step-(box/2-60)+rand(-46,46);
   el.style.transition='none';el.style.transform='translateX(0)';el.innerHTML=cards.map(c=>dripCard(c,false)).join('');void el.offsetWidth;
@@ -2506,11 +2528,11 @@ function dripRoll(){
   for(let i=1;i<=WI;i++){const t=T*(1-Math.pow(1-i/WI,1/2.6));setTimeout(()=>tone(900+i*8,.025,'square',.04),t*1000);}
   setTimeout(()=>{
     dripBusy=false;const msg=$('dMsg');el.children[WI].classList.add('win');
-    if(dripOwned(win)){const c=win.rare?15000:5000;S.cash+=c;msg.textContent='Double: '+win.n+' on the '+WPN[win.w].n+'. You get '+fmt(c)+'.';sfx.cash();}
+    if(dripOwned(win)){const c=DRIP_DUP[win.rare];S.cash+=c;msg.textContent='Double: '+win.n+' on the '+WPN[win.w].n+'. You get '+fmt(c)+'.';sfx.cash();}
     else{(S.skins[win.w]||(S.skins[win.w]=[])).push(win.k);
       if(win.w==='butterfly'){S.bfskin=win.k;GUNS.butterfly=bfGeo(win.k);}else S.skinOn[win.w]=win.k;
       vmGun.wid=null;vmGunL.wid=null;try{makeIcons();}catch(e){}
-      msg.textContent=(win.rare?'RARE. ':'')+win.n+' for the '+WPN[win.w].n+'. Equipped.';sfx.win();if(win.rare)flashFx('var(--rl)');}
+      msg.textContent=(win.rare===2?'LEGENDARY. ':win.rare?'RARE. ':'')+win.n+' for the '+WPN[win.w].n+'. Equipped.';sfx.win();if(win.rare)flashFx('var(--rl)');}
     save();renderMenu();
   },T*1000+120);
 }
@@ -2676,7 +2698,7 @@ function stashSell(list){
 }
 let loadOpen=null;
 let wipeArmed=false;
-function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.coins:'';const dc=$('dCoins');if(dc)dc.textContent=S.coins||0;const dr=$('dRoll');if(dr)dr.disabled=dripBusy||!(S.coins>0);if(!dripBusy&&$('dStrip')&&!$('dStrip').children.length)dripIdle();}
+function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.coins:'';const dc=$('dCoins');if(dc)dc.textContent=S.coins||0;const dr=$('dRoll');if(dr)dr.disabled=dripBusy||!(S.coins>=DRIP_COST);if(!dripBusy&&$('dStrip')&&!$('dStrip').children.length)dripIdle();}
   renderStash();
   $('sCoins').textContent=S.coins||0;$('sSpin').disabled=slotBusy||!(S.coins>0);
   $('mCash').textContent=fmt(S.cash);$('mLvl').textContent=S.level;$('mEx').textContent=S.stats.extracts+' / '+S.stats.raids;$('mBest').textContent=fmt(S.stats.best);$('mStreak').textContent=S.streak+(S.streak?'  (+'+Math.min(S.streak,5)*5+'%)':'');
