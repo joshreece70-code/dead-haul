@@ -335,7 +335,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 75, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 76, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -350,7 +350,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
       </section>
       <section class="tab" data-tab="drip"><h2>Drip Drop <small style="font:400 12px var(--mono);letter-spacing:0;text-transform:none;color:var(--dim)">weapon skins</small></h2>
         <div class="dripWin"><div class="dripStrip" id="dStrip"></div><i class="dripMark"></i></div>
-        <div class="row"><span class="nm"><span id="dCoins">0</span> coins<small id="dMsg">Ten slot coins a roll. Always a skin for a weapon you own. Doubles pay cash.</small></span><button class="btn" type="button" data-act="drip" id="dRoll">Roll · 10 coins</button></div>
+        <div class="row"><span class="nm"><span id="dCoins">0</span> coins<small id="dMsg">Five slot coins a roll. Always a skin for a weapon you own. Doubles pay cash.</small></span><button class="btn" type="button" data-act="drip" id="dRoll">Roll · 5 coins</button></div>
         <ul class="pay"><li><b>Common · 70%</b> Arctic Camo, Tiger Tooth, Crimson Web, Urban Pixel, Hazard Stripe, Rust Bucket</li><li><b>Rare · 25%</b> Fade, Doppler, Gold, Neon Rider, Toxic Spill, Carbon Fiber</li><li><b>Legendary · 5%</b> Dragon Scale, Galaxy, Molten Core</li><li><b>Double</b> common $20,000 · rare $60,000 · legendary $150,000</li></ul>
       </section>
       <section class="tab" data-tab="loadout"><h2>Loadout</h2><div id="mLoad"></div></section>
@@ -376,7 +376,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
           <li><b>Z</b> or <b>mouse button 5</b> dolphin dive in the direction you are moving. Time slows while you are in the air, but you aim and shoot at nearly full speed. A dive carries you through open windows. You land prone: crawl, press <b>Ctrl</b> to crouch, or <b>Space</b> to stand.</li>
           <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. Fire again, or press <b>Space</b>, to let go and keep your swing. Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
           <li><b>Ctrl</b> or <b>mouse button 4</b> crouch: slower and quieter, steadier aim, harder for infected to spot. Press it while sprinting to slide.</li>
-          <li><b>R</b> reload · tap <b>Q</b> for the med menu (mouse or scroll to choose, click, 1-4 or Q again to use, Esc to close) · hold <b>Q</b> bandage, stops bleeding · <b>V</b> swap shoulder · <b>Middle mouse</b> ping what you aim at (your lobby sees it)</li>
+          <li><b>R</b> reload · tap <b>Q</b> to bandage and stop bleeding · hold <b>Q</b> for the med menu (mouse or scroll to choose, click, 1-4 or Q again to use, Esc to close) · <b>V</b> swap shoulder · <b>Middle mouse</b> ping what you aim at (your lobby sees it)</li>
           <li>There is no mouse cursor during a raid. The bag and loot window get a small gold in-game pointer.</li>
           <li>Click anywhere on the game to lock the mouse. If it will not lock, the mouse still aims, and the screen edges keep turning you.</li>
           <li><b>E</b> search containers and bodies, take all, drive · <b>Shift+E</b> close the loot window · <b>Shift</b> sprint</li>
@@ -1511,7 +1511,7 @@ function addHeat(v){const b=Math.floor(W.heat);W.heat=clamp(W.heat+v,0,5);if(W.h
 function hurt(d,bite){
   if(state!=='raid')return;if(P.jug>0)d*=.25;
   if(!bite&&P.armor>0){const a=Math.min(P.armor,d*.5);P.armor-=a;d-=a;}
-  P.hp-=d;if((bite&&Math.random()<.22)||(!bite&&Math.random()<.15)){if(!P.bleed){P.bleed=true;card('You are bleeding',0,'c','hold Q to bandage');}}
+  P.hp-=d;if((bite&&Math.random()<.22)||(!bite&&Math.random()<.15)){if(!P.bleed){P.bleed=true;card('You are bleeding',0,'c','tap Q to bandage');}}
   hurtFx();sfx.hurt();shake=Math.max(shake,.25);
   if(P.hp<=0){P.hp=0;endRaid('kia');}
 }
@@ -1617,7 +1617,7 @@ function updPowers(dt){
     else p.mesh.visible=p.t>5||Math.sin(p.t*14)>0;
   }
 }
-/* tap Q: a menu of every med. Hold Q: bandage, stops bleeding. */
+/* tap Q: bandage, stops bleeding. Hold Q: a menu of every med. */
 const MEDS=[['bandage','Bandage','+12 hp, stops bleeding',12,1],['painkillers','Painkillers','+22 hp',22,0],['medkit','First aid kit','+50 hp, stops bleeding',50,1],['morphine','Morphine','+100 hp, stops bleeding',100,1]];
 let QT=null;
 function medDown(){if(state!=='raid'||!P||P.car)return;if(QT&&QT.open){QT.tap=1;return;}if(QT)return;QT={t:performance.now(),open:false,held:false,sel:0,acc:0};}
@@ -1627,7 +1627,7 @@ function renderMed(){if(!QT)return;const m=S.meds;$('medUI').innerHTML='<h3>Meds
 function medPick(d){if(!QT||!QT.open)return;QT.sel=(QT.sel+d+MEDS.length)%MEDS.length;renderMed();tone(1200,.02,'square',.03);}
 function medUse(){if(!QT)return;const s=QT.sel;QT=null;$('medUI').hidden=true;if(state==='raid'&&P)useMedId(MEDS[s][0]);}
 function medClose(){QT=null;$('medUI').hidden=true;}
-function medUp(){if(!QT)return;if(QT.open){if(QT.tap)medUse();return;}if(QT.held){QT=null;return;}medOpen();}
+function medUp(){if(!QT)return;if(QT.open){if(QT.tap)medUse();return;}QT=null;bandage();}
 function useMedId(id){
   if(state!=='raid'||P.healCd>0)return;const m=S.meds,q=MEDS.find(x=>x[0]===id);if(!q)return;
   if(!(m[id]>0)){card('No '+q[1].toLowerCase()+' left',0,'c');return;}
@@ -1663,7 +1663,7 @@ function updPings(rdt){
 }
 function bandage(){
   if(state!=='raid'||P.healCd>0)return;const m=S.meds;
-  if(!(m.bandage>0)){card('No bandages',0,'c',P.bleed?'tap Q for a first aid kit':'');P.healCd=.4;return;}
+  if(!(m.bandage>0)){card('No bandages',0,'c',P.bleed?'hold Q for a first aid kit':'');P.healCd=.4;return;}
   if(!P.bleed&&P.hp>=P.maxHp-1){card('Not bleeding',0,'c');P.healCd=.4;return;}
   m.bandage--;const was=P.bleed;P.bleed=false;P.hp=Math.min(P.maxHp,P.hp+12);P.healCd=1.2;sfx.heal();
   card(was?'Bleeding stopped':'Used bandage',0,'u','+12 hp · '+m.bandage+' left');$('hurt').style.opacity=P.hp<P.maxHp*.35?.45:0;
@@ -2353,7 +2353,7 @@ function update(rdt){
   if(P.car){P.x=P.car.x;P.z=P.car.z;}
   updEnemies(dt);if(state!=='raid')return;
   updBullets(dt);if(state!=='raid')return;
-  updSmoke(dt);updPick(rdt);if(QT&&!QT.open&&!QT.held&&performance.now()-QT.t>350){QT.held=true;bandage();}updPings(rdt);
+  updSmoke(dt);updPick(rdt);if(QT&&!QT.open&&performance.now()-QT.t>350)medOpen();updPings(rdt);
   W.heat=Math.max(0,W.heat-dt*.012);
   W.hunterT-=dt;
   if(W.heat>=2&&W.hunterT<=0){W.hunterT=36;const want=Math.floor(W.heat)-1;let alive=0;for(const e of W.enemies)if(e.kind==='h'&&!e.dead)alive++;
@@ -2510,7 +2510,7 @@ const SKIN_CSS={arctic:'linear-gradient(135deg,#e8eef2 0 32%,#9aa4ac 32% 62%,#4a
  urban:'conic-gradient(#2a2d30 25%,#9aa0a6 0 50%,#5a5f66 0 75%,#d0d4d8 0) 0 0/14px 14px',hazard:'repeating-linear-gradient(45deg,#f2c40a 0 10px,#141414 10px 20px)',rust:'radial-gradient(circle at 30% 40%,#c0601a,#8a3a12 40%,#3a1a0a)',
  neon:'repeating-linear-gradient(100deg,#0c0c12 0 14px,#ff2ad4 14px 17px,#0c0c12 17px 22px,#2ad4ff 22px 25px)',toxic:'linear-gradient(180deg,#7aff3a 0 30%,#1a2410 70%)',carbon:'repeating-conic-gradient(#1a1b1e 0 25%,#34363c 0 50%) 0 0/8px 8px',
  dragon:'radial-gradient(circle at 50% 100%,#e0a030 0 5px,#b01818 6px 9px,#3a0808 10px) 0 0/12px 10px',galaxy:'radial-gradient(circle at 20% 30%,#fff 0 1px,transparent 2px) 0 0/17px 13px,linear-gradient(120deg,#0a0620,#2a1060,#1a3a90,#5a2aa0)',molten:'radial-gradient(circle at 40% 60%,#ffd04a,#ff6a10 20%,#141012 55%)'};
-const DRIP_COST=10,DRIP_TIER=['Common','Rare','Legendary'],DRIP_DUP=[20000,60000,150000];
+const DRIP_COST=5,DRIP_TIER=['Common','Rare','Legendary'],DRIP_DUP=[20000,60000,150000];
 let dripBusy=false;
 function dripPool(){const o=[];for(const w of SKINNABLE)if(owns(w))for(const k in SKINS)o.push({w:w,k:k,rare:SKINS[k].rare,n:SKINS[k].n});
   if(owns('butterfly'))for(const k of ['crimson','fade','doppler','gold','neon','toxic','galaxy','molten'])o.push({w:'butterfly',k:k,rare:k==='crimson'?0:k==='galaxy'||k==='molten'?2:1,n:BF_SKINS[k].n});return o;}
