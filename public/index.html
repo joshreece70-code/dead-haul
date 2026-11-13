@@ -304,7 +304,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">7 minute raid. 2 exfils open. Build 43, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 44, hosted.</small>
     </div>
     <section id="stashS"><h2>Stash <small id="stInfo"></small></h2>
       <div class="stW"><div class="stash" id="stG"></div></div>
@@ -382,7 +382,7 @@ const fmt=n=>'$'+Math.round(n).toLocaleString('en-US');
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;}
 
 /* ================= data ================= */
-const N=4,BLOCK=40,ROAD=12,PITCH=52,HALF=104,WH=3.2,TH=0.4,RAID_TIME=420;
+const N=4,BLOCK=40,ROAD=12,PITCH=52,HALF=104,WH=3.2,TH=0.4,RAID_TIME=900;
 const RAR=['c','u','r','e','l'];
 const IT=[
  ['bolts','Box of bolts','c',40,.6,'junk'],['tape','Duct tape','c',55,.2,'junk'],['smokes','Pack of smokes','c',70,.1,'junk'],
@@ -774,7 +774,8 @@ function charGeo(p){
   if(p.pack)body.push([gBox(.34,.42,.17),p.pack,0,1.27,.25],[gBox(.24,.16,.06),p.pack,0,1.16,.36]);
   return charCache[k]={
     body:bake(body),
-    leg:bake([[gCyl(.105,.075,.74,7),p.pants,0,-.37,0],[gCyl(.085,.082,.1,7),dark,0,-.69,0],[gBox(.16,.11,.3),dark,0,-.775,-.045]]),
+    thigh:bake([[gCyl(.105,.088,.4,7),p.pants,0,-.19,0]]),
+    shin:bake([[gCyl(.09,.075,.36,7),p.pants,0,-.17,0],[gIco(.09,0),p.pants,0,0,0],[gCyl(.085,.082,.1,7),dark,0,-.32,0],[gBox(.16,.11,.3),dark,0,-.405,-.045]]),
     arm:bake([[gCyl(.078,.058,.6,7),p.shirt,0,-.3,0],[gIco(.064,0),p.skin,0,-.64,0]])
   };
 }
@@ -782,7 +783,9 @@ function makeChar(p,armed,wid){
   const g=new T.Group();g.rotation.order='YXZ';const cg=charGeo(p);
   const add=(geo,m,x,y,z)=>{const o=new T.Mesh(geo,m);o.position.set(x,y,z);o.castShadow=true;g.add(o);return o;};
   add(cg.body,CHAR_MAT,0,0,0);
-  const c={g:g,legL:add(cg.leg,CHAR_MAT,-.115,.87,0),legR:add(cg.leg,CHAR_MAT,.115,.87,0),armL:add(cg.arm,CHAR_MAT,-.335,1.5,0),armR:add(cg.arm,CHAR_MAT,.335,1.5,0),gun:null,wid:wid||'pistol'};
+  const shin=leg=>{const o=new T.Mesh(cg.shin,CHAR_MAT);o.position.set(0,-.37,0);o.castShadow=true;leg.add(o);return o;};
+  const lL=add(cg.thigh,CHAR_MAT,-.115,.87,0),lR=add(cg.thigh,CHAR_MAT,.115,.87,0);
+  const c={g:g,legL:lL,legR:lR,shinL:shin(lL),shinR:shin(lR),armL:add(cg.arm,CHAR_MAT,-.335,1.5,0),armR:add(cg.arm,CHAR_MAT,.335,1.5,0),gun:null,wid:wid||'pistol'};
   if(armed){const gun=new T.Mesh(GUNS[c.wid],gunMat(c.wid));gun.position.set(0,-.66,-.02);gun.rotation.x=-HPI;gun.castShadow=true;c.armR.add(gun);c.gun=gun;c.armR.rotation.x=1.4;c.armL.rotation.x=1.1;c.armL.rotation.z=.42;c.armR.rotation.z=-.1;}
   else{c.armL.rotation.x=1.3;c.armR.rotation.x=1.3;}
   return c;
@@ -1718,9 +1721,12 @@ function updCamera(dt){
 function updView(){
   const m=P.c,melee=!!WPN[P.weapon].melee&&!(P.mini>0),wm=P.mini>0?'minigun':P.weapon;
   const dual=!!(WPN[wm]&&WPN[wm].dual),k=P.dvT,back=P.dvF<-.35;
+  P.mvT=(P.mvT||0)+((P.moving?1:0)-(P.mvT||0))*Math.min(1,(RDT||.016)*8);
+  const cr=P.slide>0?0:P.crT,kn=cr*(1-P.mvT),cw=cr*P.mvT,st=1-cr,sn=P.moving?Math.sin(P.anim):0;
+  const legDrop=P.slide>0?.38*P.crT:cw*.24+kn*.45;
   {const fx=-Math.sin(P.yaw),fz=-Math.cos(P.yaw),off=(back?.8:-.8)*k;
     m.g.visible=view!==1&&!P.car;
-    m.g.position.set(P.x+fx*off,.06+P.base+P.y-.38*P.crT*(1-k)+(P.dive?.5:.1)*k,P.z+fz*off);
+    m.g.position.set(P.x+fx*off,.06+P.base+P.y-legDrop*(1-k)+(P.dive?.5:.1)*k,P.z+fz*off);
     m.g.rotation.y=P.yaw;
     m.g.rotation.x=k>.02?(back?1.32:-1.42)*k:(P.slide>0?.5:-.1*P.sprT);
     m.g.rotation.z=k>.02&&!back?-P.dvS*.55*k:0;}
@@ -1733,9 +1739,15 @@ function updView(){
   if(k>.5){
     /* dive pose: body flat, legs trailing straight, both arms locked out toward the aim */
     const sc=P.dive?Math.sin(performance.now()*.004)*.08:P.moving?Math.sin(P.anim)*.22:0,ax=back?.42+P.pitch*.5:Math.PI-.1+P.pitch*.6;
-    m.legL.rotation.x=sc;m.legR.rotation.x=-sc;m.armR.rotation.x=ax;m.armL.rotation.x=ax;m.armL.rotation.z=.07;m.armR.rotation.z=-.07;
+    m.legL.rotation.x=sc;m.legR.rotation.x=-sc;m.shinL.rotation.x=0;m.shinR.rotation.x=0;m.armR.rotation.x=ax;m.armL.rotation.x=ax;m.armL.rotation.z=.07;m.armR.rotation.z=-.07;
   }else{
-    m.legL.rotation.x=sw+P.crT;m.legR.rotation.x=-sw+P.crT;
+    if(P.slide>0){m.legL.rotation.x=sw+P.crT;m.legR.rotation.x=-sw+P.crT;m.shinL.rotation.x=m.shinR.rotation.x=0;}
+    else{
+      /* standing walk bends the trailing knee; crouch-walk keeps both knees bent and alternates; still crouch kneels on the right knee */
+      const wL=-Math.max(0,-sn)*.7,wR=-Math.max(0,sn)*.7;
+      m.legL.rotation.x=st*sw+cw*(.9+.6*sn)+kn*1.5;m.shinL.rotation.x=st*wL+cw*(-1.1+.3*sn)+kn*-1.5;
+      m.legR.rotation.x=st*-sw+cw*(.9-.6*sn)+kn*-.05;m.shinR.rotation.x=st*wR+cw*(-1.1-.3*sn)+kn*-1.45;
+    }
     const sf=melee&&P.swing>0?P.swing/.25:0; /* 1 at the top of a swing, 0 at the end */
     m.armR.rotation.x=melee?(sf>0?.25+sf*2.05:.8+P.pitch*.3):1.45+P.pitch*.8;
     m.armL.rotation.x=melee?(sf>0?.3+sf*1.7:.72+P.pitch*.3):dual?1.45+P.pitch*.8:1.1+P.pitch*.6;
