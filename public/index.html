@@ -304,7 +304,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 45, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 46, hosted.</small>
     </div>
     <section id="stashS"><h2>Stash <small id="stInfo"></small></h2>
       <div class="stW"><div class="stash" id="stG"></div></div>
@@ -804,22 +804,22 @@ function tracer(a,b,c,d,e,f,col){const t=tracers[trI++%tracers.length];const p=t
 /* bullets fly as real projectiles, so bullet time slows them with everything else */
 const bulFree=[];let bullets=[];
 for(let i=0;i<110;i++){const m=new T.Mesh(BOX,mat(0xffe9a0,0xffe9a0,.5,0,4));m.visible=false;m.frustumCulled=false;m.castShadow=false;scene.add(m);bulFree.push(m);}
-function fireBullet(x0,y0,z0,x1,y1,z1,speed,col,done){
+function fireBullet(x0,y0,z0,x1,y1,z1,speed,col,done,mine){
   const dx=x1-x0,dy=y1-y0,dz=z1-z0,d=Math.hypot(dx,dy,dz)||.001;
   let m=bulFree.pop();
   if(!m){const ob=bullets.shift();m=ob.m;if(ob.done&&ob.w===W)ob.done();}
   m.material=mat(col,col,.5,0,4);m.visible=true;
-  const b={m:m,w:W,x0:x0,y0:y0,z0:z0,dx:dx/d,dy:dy/d,dz:dz/d,d:d,s:0,v:speed,done:done};bullets.push(b);placeBullet(b);
+  const b={m:m,w:W,x0:x0,y0:y0,z0:z0,dx:dx/d,dy:dy/d,dz:dz/d,d:d,s:0,v:speed,done:done,mine:!!mine};bullets.push(b);placeBullet(b);
 }
 function placeBullet(b){
-  const len=Math.max(.25,Math.min(b.s,b.v*.011)),h=b.s,t=h-len/2;
+  const len=Math.max(.25,Math.min(b.s,b.v*(b.mine&&P&&P.dive?.3:1)*.011)),h=b.s,t=h-len/2;
   b.m.position.set(b.x0+b.dx*t,b.y0+b.dy*t,b.z0+b.dz*t);b.m.scale.set(.05,.05,len);
   b.m.lookAt(b.x0+b.dx*(h+1),b.y0+b.dy*(h+1),b.z0+b.dz*(h+1));
 }
 function updBullets(dt){
   for(let i=bullets.length-1;i>=0;i--){const b=bullets[i];
     if(b.w!==W){b.m.visible=false;bullets.splice(i,1);bulFree.push(b.m);continue;}
-    b.s+=b.v*dt;
+    b.s+=b.v*dt*(b.mine&&P&&P.dive?.3:1); /* your own rounds crawl even slower while you dive */
     if(b.s>=b.d){b.m.visible=false;bullets.splice(i,1);bulFree.push(b.m);if(b.done)b.done();if(state!=='raid')return;continue;}
     placeBullet(b);
   }
@@ -1342,7 +1342,7 @@ function shoot(){
     fireBullet(mx,my,mz,hx,hy,hz,mini?280:240,mini?0xffc070:0xffe9a0,()=>{
       if(bp){mpHit(bp,w.dmg*(bh?2.2:1),bh);burst(hx,hy,hz,0x8a1c16,3,2);}
       else if(be){if(!be.dead)damageEnemy(be,w.dmg*(bh?(be.kind==='z'?10:2.2):1),bh);burst(hx,hy,hz,0x8a1c16,3,2);}else if(tw<140)burst(hx,hy,hz,0xcfc7a6,2,1.5);
-    });MP.fx=[+hx.toFixed(1),+hy.toFixed(1),+hz.toFixed(1)];
+    },true);MP.fx=[+hx.toFixed(1),+hy.toFixed(1),+hz.toFixed(1)];
   }
   MP.fn=(MP.fn+1)%1000000;MP.sendT=0;
   mflash.position.set(mx,my,mz);mflash.intensity=2.2;P.recoil+=w.kick*(1-.35*P.adsT);shake=Math.max(shake,w.pel?.25:.07);
