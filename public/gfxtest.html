@@ -565,6 +565,7 @@ function resize(){
   if(GFX.high)post.size(BW,BH);
   camera.aspect=w/h;baseFov=w<h?78:62;camera.fov=baseFov;camera.updateProjectionMatrix();
 }
+window.__gfx=q=>setGfx(q);window.__aoOnly=false;
 function setGfx(q){GFX.q=clamp(q|0,0,3);GFX.high=GFX.q>=1;S.gfx=GQ[GFX.q];save();applyGfx();sizeKey='';resize();}
 
 const BOX=new T.BoxGeometry(1,1,1);
@@ -653,7 +654,7 @@ post.render=function(dt){
     const a=post.mAO.uniforms;a.tDepth.value=post.rtD.texture;a.uPx.value.set(1/post.hw,1/post.hh);a.uNear.value=camera.near;a.uFar.value=camera.far;
     a.uP.value.set(camera.projectionMatrix.elements[0],camera.projectionMatrix.elements[5]);a.uAsp.value=post.hh/post.hw;post.pass(post.mAO,post.rtO);
     g.tSrc.value=post.rtO.texture;g.uDir.value.set(1/post.hw,0);post.pass(post.mG,post.rtO2);g.tSrc.value=post.rtO2.texture;g.uDir.value.set(0,1/post.hh);post.pass(post.mG,post.rtO);
-    c.tAO.value=post.rtO.texture;c.uAO.value=1;
+    c.tAO.value=post.rtO.texture;c.uAO.value=1;if(window.__aoOnly){post.mG.uniforms.tSrc.value=post.rtO.texture;post.mG.uniforms.uDir.value.set(0,0);post.pass(post.mG,null);return;}
   }
   if(GFX.q>=2&&post.rtR&&post.mR){
     post.v3.copy(sunSpr.position).project(camera);camera.getWorldDirection(post.v4);
