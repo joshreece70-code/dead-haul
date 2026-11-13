@@ -188,6 +188,13 @@ h1 span{color:var(--cash)}
 .stBar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px 14px;margin-top:8px;max-width:720px;font:400 12px var(--mono);color:var(--dim)}
 .stBtns{display:flex;flex-wrap:wrap;gap:6px}
 #stashS h2 small{font:400 12px var(--mono);letter-spacing:0;color:var(--dim);text-transform:none;margin-left:8px}
+.tabs{display:flex;flex-wrap:wrap;gap:2px 4px;border-bottom:1px solid var(--line);margin:6px 0 16px}
+.tabs button{font:600 15px var(--display);letter-spacing:.14em;text-transform:uppercase;padding:10px 14px 8px;background:transparent;color:var(--dim);border:0;border-bottom:3px solid transparent;cursor:pointer}
+.tabs button:hover{color:var(--text)}
+.tabs button.on{color:var(--cash);border-bottom-color:var(--cash)}
+.tabs i{font:400 11px var(--mono);font-style:normal;color:var(--go);margin-left:3px}
+#menu .tab{max-width:860px}
+#menu .tab[hidden]{display:none}
 .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr));gap:22px 28px}
 section{min-width:0}
 h2{font:600 14px var(--display);letter-spacing:.24em;color:var(--dim);margin:0 0 4px;text-transform:uppercase;border-bottom:1px solid var(--line);padding-bottom:6px}
@@ -304,23 +311,23 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 54, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 55, hosted.</small>
     </div>
-    <section id="stashS"><h2>Stash <small id="stInfo"></small></h2>
+    <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
+    <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
       <div class="stW"><div class="stash" id="stG"></div></div>
       <div class="stBar"><span id="stMsg">Drag items to arrange them, R turns the one you are holding. Click to select, Shift-click sells one straight away.</span>
         <span class="stBtns"><button class="btn plain" type="button" data-act="stjunk">Select cheap</button><button class="btn plain" type="button" data-act="stall">Select all</button><button class="btn plain" type="button" data-act="stclear">Clear</button><button class="btn" type="button" data-act="stkeep" id="stKeep" hidden>Add to loadout</button><button class="btn plain" type="button" data-act="up" data-id="stash" id="stUp">Expand</button><button class="btn" type="button" data-act="stsell" id="stSell">Sell</button></span></div>
     </section>
-    <div class="cols">
-      <section><h2>Slot machine</h2>
+      <section class="tab" data-tab="slots"><h2>Slot machine</h2>
         <div class="reels"><div class="reel" id="r0">7</div><div class="reel" id="r1">7</div><div class="reel" id="r2">7</div></div>
         <div class="row"><span class="nm"><span id="sCoins">0</span> coins<small id="sMsg">Find coins in raids. They only count if you extract.</small></span><button class="btn" type="button" data-act="spin" id="sSpin">Spin · 1 coin</button></div>
         <ul class="pay" id="sPay"></ul>
       </section>
-      <section><h2>Loadout</h2><div id="mLoad"></div></section>
-      <section><h2>Trader</h2><div id="mShop"></div></section>
-      <section><h2>Skills</h2><div id="mUps"></div></section>
-      <section><h2>Multiplayer</h2>
+      <section class="tab" data-tab="loadout"><h2>Loadout</h2><div id="mLoad"></div></section>
+      <section class="tab" data-tab="trader"><h2>Trader</h2><div id="mShop"></div></section>
+      <section class="tab" data-tab="skills"><h2>Skills</h2><div id="mUps"></div></section>
+      <section class="tab" data-tab="mp"><h2>Multiplayer</h2>
         <div class="row"><span class="nm">Status<small id="mMp">Connecting...</small></span></div>
         <div class="row"><span class="nm">Callsign<small>Shown above your head</small></span><input id="mNick" type="text" maxlength="14" autocomplete="off" spellcheck="false" aria-label="Callsign"></div>
         <div class="row"><span class="nm">Lobby code<small>Same code, same squad. Leave blank for the open lobby.</small></span><span style="display:flex;gap:6px;align-items:center"><input id="mCode" type="text" maxlength="12" autocomplete="off" spellcheck="false" aria-label="Lobby code" placeholder="OPEN"><button class="btn plain" type="button" data-act="lobby">Join</button></span></div>
@@ -328,7 +335,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
         <div class="row"><span class="nm">Player damage<small>Off: players cannot hurt you and you cannot hurt them</small></span><button class="btn plain" type="button" data-act="pvp" id="mPvp">On</button></div>
         <ul class="keys"><li>You share the map and can see, shoot and loot each other. Infected, scavs and containers are your own.</li></ul>
       </section>
-      <section><h2>Controls</h2>
+      <section class="tab" data-tab="settings"><h2>Settings and controls</h2>
         <ul class="keys">
           <li><b>Phone</b> left thumb moves, right thumb aims. Push the stick all the way to sprint.</li>
           <li><b>WASD</b> move · <b>Mouse</b> aim · <b>Arrows</b> also aim</li>
@@ -353,7 +360,6 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
         <div class="row"><span class="nm">Fullscreen on deploy<small>Keeps the mouse inside the game</small></span><button class="btn plain" type="button" data-act="full" id="mFull">On</button></div>
         <div class="row"><span class="nm">Save file<small>Stored in this browser only</small></span><button class="btn plain" type="button" data-act="wipe" id="mWipe">Wipe</button></div>
       </section>
-    </div>
   </div></div>
 
   <div id="summary" class="sheet" hidden><div class="wrap">
@@ -2290,7 +2296,7 @@ function stashSell(list){
 }
 let loadOpen=null;
 let wipeArmed=false;
-function renderMenu(){
+function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.coins:'';}
   renderStash();
   $('sCoins').textContent=S.coins||0;$('sSpin').disabled=slotBusy||!(S.coins>0);
   $('mCash').textContent=fmt(S.cash);$('mLvl').textContent=S.level;$('mEx').textContent=S.stats.extracts+' / '+S.stats.raids;$('mBest').textContent=fmt(S.stats.best);$('mStreak').textContent=S.streak+(S.streak?'  (+'+Math.min(S.streak,5)*5+'%)':'');
@@ -2323,10 +2329,17 @@ function renderMenu(){
   for(const k in UPS){const u=UPS[k],lv=S.up[k],max=lv>=5,c=upCost(k);h+='<div class="row"><span class="nm">'+u.n+' '+'▮'.repeat(lv)+'▯'.repeat(5-lv)+'<small>'+u.d+'</small></span><button class="btn" type="button" data-act="up" data-id="'+k+'"'+(max||S.cash<c?' disabled':'')+'>'+(max?'Max':fmt(c))+'</button></div>';}
   $('mUps').innerHTML=h;
 }
+let menuTab='stash';try{menuTab=sessionStorage.getItem('dhTab')||'stash';}catch(e){}
+function showTab(t){menuTab=t;try{sessionStorage.setItem('dhTab',t);}catch(e){}
+  if(!document.querySelectorAll)return;
+  for(const x of document.querySelectorAll('#menu .tab'))x.hidden=x.dataset.tab!==t;
+  for(const b of document.querySelectorAll('#mTabs button'))b.classList.toggle('on',b.dataset.id===t);}
+showTab(menuTab);
 $('menu').addEventListener('click',e=>{
   const b=e.target.closest('[data-act]');if(!b)return;const a=b.dataset.act,id=b.dataset.id;initAudio();
   if(a!=='wipe')wipeArmed=false;
   if(a==='deploy'){startRaid();if(!isTouch){goFull();tryLock();}return;}
+  if(a==='tab'){showTab(id);sfx.click();return;}
   if(a==='spin'){spin();return;}
   if(a==='slot'){loadOpen=loadOpen===id?null:id;renderMenu();return;}
   if(a==='equip'){const q=id.split(':');fixLoad();if(q[1]&&!owns(q[1]))return;S.load[q[0]]=q[1]||'';if(q[0]==='melee'&&!q[1])S.load.melee='knife';if(q[0]==='pack'&&!q[1])S.load.pack='daypack';loadOpen=null;save();sfx.click();renderMenu();return;}
