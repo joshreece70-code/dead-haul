@@ -361,7 +361,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 84, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 85, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -400,7 +400,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
           <li>The <b>Red Rebel</b> ice axe only turns up in airdrops. Carry it and press <b>Space</b> facing the outside wall of a four storey building to climb: <b>W</b>/<b>S</b> up and down, <b>A</b>/<b>D</b> along the wall, <b>Space</b> to let go. Climbing up costs stamina. Falling or jumping next to one of those walls, press <b>Space</b> to dig the axe in and catch yourself.</li>
           <li>Safes and cash registers are locked. With a <b>lock pick</b>, press <b>E</b> and hit <b>Space</b>, <b>E</b> or click while the marker is in the green to set each pin. A miss drops a pin and can snap the pick.</li>
           <li><b>Z</b> or <b>mouse button 5</b> dolphin dive in the direction you are moving. Time slows while you are in the air, but you aim and shoot at nearly full speed. A dive carries you through open windows. You land prone: crawl, press <b>Ctrl</b> to crouch, or <b>Space</b> to stand.</li>
-          <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. It lets go on its own once you are reeled all the way in (popping you over a roof edge), or click again to let go early and keep your swing. The <b>Swing Line</b> from the trader fires the same hook, but it never reels in: the line locks at the length you shot it, so you swing on it while you hold the click (or <b>G</b>), and it drops the moment you let go. Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
+          <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. It lets go on its own once you are reeled all the way in (popping you over a roof edge), or click again to let go early and keep your swing. The <b>Swing Line</b> from the trader is a rope with a hook you throw by hand: hold the click (or <b>G</b>) to swing it round, the longer you wind up the further it flies (8 to 40 m), and let go to throw. It never reels in: the line locks at the length it landed at and you swing on it. Click again to drop the line. Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
           <li><b>Ctrl</b> or <b>mouse button 4</b> crouch: slower and quieter, steadier aim, harder for infected to spot. Press it while sprinting to slide.</li>
           <li><b>R</b> reload · tap <b>Q</b> to bandage and stop bleeding · hold <b>Q</b> for the med menu (mouse or scroll to choose, click, 1-4 or Q again to use, Esc to close) · <b>V</b> swap shoulder · <b>Middle mouse</b> ping what you aim at (your lobby sees it)</li>
           <li>There is no mouse cursor during a raid. The bag and loot window get a small gold in-game pointer.</li>
@@ -470,7 +470,7 @@ const WPN={
  redrebel:{n:'Red Rebel',melee:1,dmg:75,rate:.4,noise:3,range:3.2,climb:1,price:1000000,sell:24000},
  katana:{n:'Katana',melee:1,dmg:62,rate:.42,noise:4,range:3.5,price:9000},
  grapple:{n:'Grapple gun',gadget:1,rate:.35},
- swingline:{n:'Swing Line',gadget:1,hold:1,rate:.35,price:15000},
+ swingline:{n:'Swing Line',gadget:1,hold:1,throwln:1,rate:.35,price:15000},
  saber:{n:'Lightsaber',melee:1,dmg:150,rate:.34,noise:12,range:4,price:38000},
  dual:{n:'Twin P9s',dual:1,dmg:30,rate:.125,mag:24,rl:1.9,spr:.02,am:'9mm',noise:44,kick:.02,heat:.02,price:4500},
  uzis:{n:'Twin Uzis',dual:1,dmg:19,rate:.05,mag:64,rl:2.4,spr:.04,am:'9mm',noise:48,kick:.011,heat:.01,price:14000},
@@ -846,7 +846,7 @@ const GUNS={
 };
 GUNS.dual=bake([[gBox(.03,.034,.19),0x3a3d42,0,.038,-.075],[gBox(.028,.024,.15),0x202226,0,.01,-.055],[gBox(.022,.012,.055),0x202226,0,-.006,-.118],[gBox(.03,.104,.046),0x202226,0,-.052,.013,-.2443],[gBox(.032,.01,.052),0x2c2e33,0,-.108,.027,-.2443],[gBox(.006,.02,.007),0x3a3d42,0,-.016,-.022,.2793],[gCyl(.0085,.0085,.012,8),0x1b1c1f,0,.038,-.176,1.5708],[gBox(.016,.002,.036),0x1b1c1f,.008,.0555,-.06],[gBox(.02,.008,.008),0x1b1c1f,0,.06,.008],[gBox(.005,.008,.008),0x1b1c1f,0,.06,-.16],[gBox(.01,.014,.012),0x1b1c1f,0,.046,.024],[gBox(.01,.005,.055),0x202226,0,-.04,-.0275],[gBox(.01,.028,.005),0x202226,0,-.026,-.055],[gBox(.0305,.026,.003),0x1b1c1f,0,.038,.004],[gBox(.0305,.026,.003),0x1b1c1f,0,.038,.011],[gBox(.0305,.026,.003),0x1b1c1f,0,.038,.018],[gBox(.0305,.026,.003),0x1b1c1f,0,.038,.025],[gBox(.0305,.026,.003),0x1b1c1f,0,.038,.032]]);
 GUNS.grapple=bake([[gBox(.05,.075,.24),0x3a3d42,0,.03,-.06],[gCyl(.032,.032,.12,12),0x1b1c1f,0,.035,-.24,HPI],[gBox(.075,.075,.075),0xb02a20,0,-.035,.02],[gBox(.077,.02,.077),0xd8d0b8,0,-.035,.02],[gBox(.032,.1,.045),0x202226,0,-.07,.1,-.25],[gBox(.008,.03,.012),0x6a6e74,0,-.02,.05]]);
-GUNS.swingline=bake([[gBox(.05,.075,.24),0x3a3d42,0,.03,-.06],[gCyl(.032,.032,.12,12),0x1b1c1f,0,.035,-.24,HPI],[gBox(.075,.075,.075),0x2a6fd0,0,-.035,.02],[gBox(.077,.02,.077),0xf2c40a,0,-.035,.02],[gBox(.032,.1,.045),0x202226,0,-.07,.1,-.25],[gBox(.008,.03,.012),0x6a6e74,0,-.02,.05]]);
+GUNS.swingline=bake([[gBox(.022,.016,.034),0xa0875a,0,0.0550,-0.0600,0.0000],[gBox(.02,.014,.03),0x9a8050,.02,0.0408,-0.0477,0.2000],[gBox(.022,.016,.034),0xb59a6a,0,0.0476,-0.0275,0.4488],[gBox(.02,.014,.03),0x9a8050,.02,0.0294,-0.0225,0.6488],[gBox(.022,.016,.034),0xa0875a,0,0.0268,-0.0014,0.8976],[gBox(.02,.014,.03),0x9a8050,.02,0.0083,-0.0048,1.0976],[gBox(.022,.016,.034),0xb59a6a,0,-0.0033,0.0131,1.3464],[gBox(.02,.014,.03),0x9a8050,.02,-0.0185,0.0020,1.5464],[gBox(.022,.016,.034),0xa0875a,0,-0.0367,0.0131,1.7952],[gBox(.02,.014,.03),0x9a8050,.02,-0.0455,-0.0035,1.9952],[gBox(.022,.016,.034),0xb59a6a,0,-0.0668,-0.0014,2.2440],[gBox(.02,.014,.03),0x9a8050,.02,-0.0675,-0.0202,2.4440],[gBox(.022,.016,.034),0xa0875a,0,-0.0876,-0.0275,2.6928],[gBox(.02,.014,.03),0x9a8050,.02,-0.0801,-0.0447,2.8928],[gBox(.022,.016,.034),0xb59a6a,0,-0.0950,-0.0600,3.1416],[gBox(.02,.014,.03),0x9a8050,.02,-0.0808,-0.0723,3.3416],[gBox(.022,.016,.034),0xa0875a,0,-0.0876,-0.0925,3.5904],[gBox(.02,.014,.03),0x9a8050,.02,-0.0694,-0.0975,3.7904],[gBox(.022,.016,.034),0xb59a6a,0,-0.0668,-0.1186,4.0392],[gBox(.02,.014,.03),0x9a8050,.02,-0.0483,-0.1152,4.2392],[gBox(.022,.016,.034),0xa0875a,0,-0.0367,-0.1331,4.4880],[gBox(.02,.014,.03),0x9a8050,.02,-0.0215,-0.1220,4.6880],[gBox(.022,.016,.034),0xb59a6a,0,-0.0033,-0.1331,4.9368],[gBox(.02,.014,.03),0x9a8050,.02,0.0055,-0.1165,5.1368],[gBox(.022,.016,.034),0xa0875a,0,0.0268,-0.1186,5.3856],[gBox(.02,.014,.03),0x9a8050,.02,0.0275,-0.0998,5.5856],[gBox(.022,.016,.034),0xb59a6a,0,0.0476,-0.0925,5.8344],[gBox(.02,.014,.03),0x9a8050,.02,0.0401,-0.0753,6.0344],[gBox(.03,.05,.03),0x6a5a3a,0,-.02,-.135]]);
 if(S.bfskin&&S.bfskin!=='stock'&&((S.skins||{}).butterfly||[]).indexOf(S.bfskin)<0)S.bfskin='stock';
 GUNS.butterfly=bfGeo(S.bfskin);
 const ADSY={grapple:-.1,swingline:-.1,dual:-.15,uzis:-.15,spas:-.1,pistol:-.092,smg:-.12,shotgun:-.092,rifle:-.135,ak:-.114,sniper:-.142,minigun:-.125,katana:-.105,redrebel:-.105,knife:-.105,butterfly:-.105,karambit:-.105,saber:-.105};
@@ -900,7 +900,9 @@ function setGun(mesh,w){
   mesh.geometry=gunGeo(w);mesh.material=gunMat(w);
   if(w==='saber'&&!mesh.blade){mesh.blade=new T.Group();mesh.blade.add(new T.Mesh(BLADE_GEO,BLADE_MAT));mesh.blade.add(new T.Mesh(GLOW_GEO,GLOW_MAT));mesh.add(mesh.blade);}
   if(mesh.blade)mesh.blade.visible=w==='saber';
-  if(WPN[w]&&WPN[w].gadget&&!mesh.hk){mesh.hk=new T.Mesh(HK(),GUN_MAT);mesh.hk.rotation.y=Math.PI;mesh.hk.position.set(0,.035,-.3);mesh.hk.scale.setScalar(.62);mesh.add(mesh.hk);}
+  if(WPN[w]&&WPN[w].gadget&&!mesh.hk){mesh.hk=new T.Mesh(HK(),GUN_MAT);mesh.hk.scale.setScalar(.62);mesh.add(mesh.hk);
+    mesh.rp=new T.Mesh(BOX,new T.MeshLambertMaterial({color:0xa0875a}));mesh.rp.visible=false;mesh.add(mesh.rp);}
+  if(mesh.hk){mesh.hk.rotation.set(0,0,0);if(WPN[w]&&WPN[w].throwln){mesh.hk.rotation.x=Math.PI/2;mesh.hk.position.set(-.02,-.21,-.06);}else{mesh.hk.rotation.y=Math.PI;mesh.hk.position.set(0,.035,-.3);}}
   if(mesh.hk)mesh.hk.visible=!!(WPN[w]&&WPN[w].gadget);
   if(false&&w==='rifle'&&!mesh.dot){mesh.dot=new T.Group();const d=new T.Mesh(DOT_GEO,DOT_MAT);d.position.set(0,.099,-.09);mesh.dot.add(d);const l=new T.Mesh(LENS_GEO,LENS_MAT);l.position.set(0,.099,-.09);mesh.dot.add(l);mesh.add(mesh.dot);}
   if(mesh.dot)mesh.dot.visible=w==='rifle';
@@ -1895,12 +1897,29 @@ function fireHook(){
   hiss(.18,.45,2600);tone(180,.12,'square',.12,.5);makeNoise(P.x,P.z,16);
 }
 function gadgetId(){return gunList().find(g=>WPN[g]&&WPN[g].gadget);}
-function useGrapple(){if(state!=='raid')return;const g=gadgetId();if(!g)return;if(P.weapon!==g)swapWeapon(g);P.fireCd=0;fireHook();}
+function useGrapple(){if(state!=='raid')return;const g=gadgetId();if(!g)return;if(P.weapon!==g)swapWeapon(g);P.fireCd=0;if(WPN[g].throwln)linePress();else fireHook();}
+function gadgetUp(){if(P&&WPN[P.weapon]&&WPN[P.weapon].throwln)lineRelease();else letGoLine();}
 function letGoLine(){if(state==='raid'&&P&&WPN[P.weapon]&&WPN[P.weapon].hold&&(P.grap||(P.hook&&P.hook.st==='fly')))releaseHook();}
-function updHook(dt){
+/* Swing Line: a rope with a hook. Hold to swing it round over your head, longer = further; let go to throw. Press again to drop the line. */
+const WIND_T=1.2,ZAX=new T.Vector3(0,0,1);let LDT=.016;
+function linePress(){if(state!=='raid'||P.car||P.vault||P.loot||bagOpen)return;
+  if(P.grap||(P.hook&&P.hook.st==='fly')){releaseHook();P.fireCd=.2;P.wind=0;return;}
+  if(P.hook||P.grapCd>0||P.fireCd>0)return;P.wind=.001;P.wtick=0;hiss(.08,.15,900);}
+function lineRelease(){if(!P||!(P.wind>0))return;const c=Math.max(.12,Math.min(1,P.wind/WIND_T));P.wind=0;if(state!=='raid'||P.car)return;throwLine(c);}
+function throwLine(c){
+  const R=8+32*c,V=17+29*c,G=12,pit=view===2?.35:clamp(P.pitch,-1.3,1.3),cp=Math.cos(pit);
+  let dx=-Math.sin(P.yaw)*cp,dy=Math.sin(pit),dz=-Math.cos(P.yaw)*cp;
+  const ox=view===2?P.x:CAM.x,oy=view===2?P.base+P.y+1.4:CAM.y,oz=view===2?P.z:CAM.z;
+  const t=rayCol(ox,oy,oz,dx,dy,dz,R),h=hookHand();let tx=ox+dx*t,ty=oy+dy*t,tz=oz+dz*t;
+  {const ax=tx-h[0],az=tz-h[2],hz=Math.hypot(ax,az);ty+=G*hz*hz/(2*V*V);const ay=ty-h[1],l=Math.hypot(ax,ay,az)||1;dx=ax/l;dy=ay/l;dz=az/l;}/* lob it so the arc lands where you aimed */
+  P.hook={x:h[0],y:h[1],z:h[2],vx:dx*V,vy:dy*V,vz:dz*V,st:'fly',g:G,max:R};
+  P.fireCd=.3;P.stam=Math.max(0,P.stam-4-6*c);hiss(.22,.35+.3*c,1400);tone(140,.1,'triangle',.08);makeNoise(P.x,P.z,8);}
+
+function updHook(dt){LDT=dt;
+  if(P.wind>0){if(P.weapon!=='swingline'||P.car||P.hook){P.wind=0;}else{P.wind=Math.min(WIND_T*1.5,P.wind+dt);P.wtick=(P.wtick||0)+dt*(1.3+2.2*Math.min(1,P.wind/WIND_T));if(P.wtick>1){P.wtick=0;hiss(.07,.12+.1*Math.min(1,P.wind/WIND_T),700+500*Math.min(1,P.wind/WIND_T));}}}
   const h=P.hook;if(!h)return;
   if(h.st==='fly'){
-    h.vy-=7*dt;const sp=Math.hypot(h.vx,h.vy,h.vz),step=sp*dt,dx=h.vx/sp,dy=h.vy/sp,dz=h.vz/sp;
+    h.vy-=(h.g||7)*dt;const sp=Math.hypot(h.vx,h.vy,h.vz),step=sp*dt,dx=h.vx/sp,dy=h.vy/sp,dz=h.vz/sp;
     let t=rayCol(h.x,h.y,h.z,dx,dy,dz,step),gr=false;
     if(h.y+dy*step<=.05&&dy<0){const tg=(h.y-.05)/-dy;if(tg<t){t=tg;gr=true;}}
     const nx=h.x+dx*Math.min(t,step),ny=h.y+dy*Math.min(t,step),nz=h.z+dz*Math.min(t,step);
@@ -1912,14 +1931,19 @@ function updHook(dt){
       h.x=nx;h.y=ay;h.z=nz;h.st='set';P.grap={x:nx,y:ay,z:nz,t:0};
       if(WPN[P.weapon]&&WPN[P.weapon].hold){const f=P.base+P.y;P.grap.L=Math.max(1.5,Math.hypot(nx-P.x,ay+.4-(f+1.1),nz-P.z));}
       tone(1300,.05,'square',.12);tone(700,.08,'square',.08,0,.04);shake=Math.max(shake,.12);burst(nx,ay+.05,nz,0xcfc7a6,4,1.5);
-    }else{h.x=nx;h.y=ny;h.z=nz;const hd=hookHand();if(Math.hypot(h.x-hd[0],h.y-hd[1],h.z-hd[2])>46){h.st='back';tone(300,.1,'square',.05);}}
+    }else{h.x=nx;h.y=ny;h.z=nz;const hd=hookHand();if(Math.hypot(h.x-hd[0],h.y-hd[1],h.z-hd[2])>(h.max||46)){h.st='back';tone(300,.1,'square',.05);}}
   }else if(h.st==='back'){
     const hd=hookHand(),ax=hd[0]-h.x,ay=hd[1]-h.y,az=hd[2]-h.z,l=Math.hypot(ax,ay,az);
     if(l<1.2){P.hook=null;return;}const s=Math.min(l,75*dt);h.x+=ax/l*s;h.y+=ay/l*s;h.z+=az/l*s;
   }
 }
 function drawRope(){
-  if(P){const loaded=!P.hook;const isG=w=>!!(WPN[w]&&WPN[w].gadget);if(vmGun.hk)vmGun.hk.visible=isG(vmGun.wid)&&loaded;if(P.c&&P.c.gun&&P.c.gun.hk)P.c.gun.hk.visible=isG(P.c.wid)&&loaded;}
+  if(P){const loaded=!P.hook;const isG=w=>!!(WPN[w]&&WPN[w].gadget);if(vmGun.hk)vmGun.hk.visible=isG(vmGun.wid)&&loaded;
+    if(vmGun.hk&&vmGun.wid==='swingline'){const hk=vmGun.hk,rp=vmGun.rp,c=P.wind>0?Math.min(1,P.wind/WIND_T):0;
+      if(c>0&&loaded){P.wang=(P.wang||0)+(9+16*c)*(LDT||.016);const r=.1+.2*c,a=P.wang;hk.position.set(-.02+Math.cos(a)*r*.35,-.06+Math.sin(a)*r,-.06+Math.cos(a)*r);hk.rotation.set(a,0,0);}
+      else{hk.position.set(-.02,-.21,-.06);hk.rotation.set(Math.PI/2,0,0);}
+      if(rp){rp.visible=loaded;if(loaded){const ox=-.02,oy=-.06,oz=-.06,dx=hk.position.x-ox,dy=hk.position.y-oy,dz=hk.position.z-oz,l=Math.hypot(dx,dy,dz)||.01;
+        rp.position.set(ox+dx/2,oy+dy/2,oz+dz/2);rp.scale.set(.006,.006,l);rp.quaternion.setFromUnitVectors(ZAX,new T.Vector3(dx/l,dy/l,dz/l));}}}if(P.c&&P.c.gun&&P.c.gun.hk)P.c.gun.hk.visible=isG(P.c.wid)&&loaded;}
   const h=P&&state==='raid'?P.hook:null;ROPE.visible=HOOK_MESH.visible=!!h;if(!h)return;
   const a=hookHand(),pos=ROPE.geometry.attributes.position,len=Math.hypot(h.x-a[0],h.y-a[1],h.z-a[2]),sag=h.st==='set'&&P.grap?0:Math.min(1.6,len*.05);
   for(let i=0;i<ROPE_N;i++){const t=i/(ROPE_N-1);pos.setXYZ(i,a[0]+(h.x-a[0])*t,a[1]+(h.y-a[1])*t-Math.sin(t*Math.PI)*sag,a[2]+(h.z-a[2])*t);}
@@ -2038,7 +2062,8 @@ function updPlayer(dt){
     if(P.sprint){if(!(P.adren>0)&&P.y<=0)P.stam-=18*dt/(1+.25*S.up.lungs);P.noiseT-=dt;if(P.noiseT<=0){P.noiseT=.6;makeNoise(P.x,P.z,9);}}else P.stam=Math.min(100,P.stam+(P.moving?9:16)*dt);
   }
   {const gw=P.mini>0?null:WPN[P.weapon];
-   if(gw&&gw.gadget){if(firing&&!P.fPrev)shoot();else if(!firing&&P.fPrev&&gw.hold)letGoLine();}
+   if(gw&&gw.throwln){if(firing&&!P.fPrev)linePress();else if(!firing&&P.fPrev)lineRelease();}
+   else if(gw&&gw.gadget){if(firing&&!P.fPrev)shoot();else if(!firing&&P.fPrev&&gw.hold)letGoLine();}
    else if(firing)shoot();P.fPrev=firing;}
   if(state!=='raid')return;
   if(P.search){const s=P.search;s.t+=dt;if(P.car||Math.hypot(P.x-s.x,P.z-s.z)>3.4)P.search=null;else if(s.t>=s.dur){P.search=null;finishSearch(s.c);}}
@@ -2228,7 +2253,7 @@ function updHud(){
     if(hudKey.hb!==hk){hudKey.hb=hk;el('hotbar').innerHTML=L.map((id,i)=>{const w=WPN[id],on=id===P.weapon,ic=ICON['w_'+(on&&mini?'minigun':id)],n=w&&w.am&&!(on&&mini)?(P.mag[id]||0):null,eq=equipped().indexOf(id)>=0;
       return '<button type="button" class="hb'+(on?' on':'')+(n===0?' dry':'')+(eq?'':' found')+'" data-hb="'+i+'" title="'+(on&&mini?'Minigun':w?w.n:id)+'"'+(ic?' style="background-image:url('+ic+')"':'')+'><i>'+(i+1)+'</i>'+(n!=null?'<b>'+n+'</b>':'')+'</button>';}).join('');}}
   const w=WPN[P.weapon];setT('wname',P.mini>0?'MINIGUN':w.n);
-  setH('ammo',P.mini>0?P.mini.toFixed(1)+' <small>sec</small>':w.gadget?'<small>'+(P.grap?(P.grap.L?'swinging · '+P.grap.L.toFixed(0)+' m line':'reeling in'):P.hook?(P.hook.st==='fly'?'line out':'winding back'):'hook ready')+'</small>':w.melee?'<small>melee</small>':(P.reloading>0?'<small>reloading</small>':P.mag[P.weapon]+' <small>/ '+S.ammo[w.am]+'</small>'));
+  setH('ammo',P.mini>0?P.mini.toFixed(1)+' <small>sec</small>':w.gadget?'<small>'+(P.wind>0?'winding up · '+Math.round(8+32*Math.min(1,P.wind/WIND_T))+' m throw':P.grap?(P.grap.L?'swinging · '+P.grap.L.toFixed(0)+' m line':'reeling in'):P.hook?(P.hook.st==='fly'?'line out':'winding back'):(w.throwln?'hold to wind up, let go to throw':'hook ready'))+'</small>':w.melee?'<small>melee</small>':(P.reloading>0?'<small>reloading</small>':P.mag[P.weapon]+' <small>/ '+S.ammo[w.am]+'</small>'));
   setW('hpB',P.hp/P.maxHp*100);setW('stB',P.stam);
   setT('carT',P.car?'Car '+Math.max(0,Math.round(P.car.hp))+'%':'');
   const ui=!!P.loot||bagOpen;
@@ -2454,7 +2479,7 @@ window.addEventListener('keydown',e=>{
     case 'Digit1':case 'Digit2':case 'Digit3':case 'Digit4':case 'Digit5':case 'Digit6':swapWeapon(+e.code.slice(5)-1);break;
   }
 });
-window.addEventListener('keyup',e=>{keys[e.code]=false;if(e.code==='KeyQ')medUp();if(e.code==='KeyG')letGoLine();});
+window.addEventListener('keyup',e=>{keys[e.code]=false;if(e.code==='KeyQ')medUp();if(e.code==='KeyG')gadgetUp();});
 /* mouse button 4 (the back side button) crouches, button 5 (the forward one) dives; the side buttons never navigate away mid-raid */
 window.addEventListener('mousedown',e=>{if(state!=='raid')return;
   if(QT&&QT.open&&e.button===0){e.preventDefault();e.stopPropagation();medUse();return;}
@@ -2530,7 +2555,7 @@ function tap(id,fn){const b=$(id);
   b.addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();setTouch();initAudio();fn();},{passive:false});
   b.addEventListener('mousedown',e=>{e.preventDefault();e.stopPropagation();initAudio();fn();});}
 (function(){const hb=$('hotbar');const pick=e=>{const b=e.target.closest('[data-hb]');if(!b||state!=='raid')return;e.preventDefault();e.stopPropagation();swapWeapon(+b.dataset.hb);};hb.addEventListener('mousedown',pick);hb.addEventListener('touchstart',pick,{passive:false});})();
-tap('bAim',()=>{ads=!ads;});tap('bJump',()=>{jumpHeld=true;jump();});for(const t of ['touchend','touchcancel','mouseup','mouseleave'])$('bJump').addEventListener(t,()=>{jumpHeld=false;});tap('bCrouch',crouch);tap('bDive',dive);tap('bHook',useGrapple);for(const t of ['touchend','touchcancel','mouseup'])$('bHook').addEventListener(t,letGoLine);tap('bUse',()=>{if(P&&P.pick)pickPress();else if(P&&P.loot)takeAll();else interact();});tap('bReload',reload);tap('bSwap',()=>{if(state==='raid')swapWeapon();});tap('bHeal',heal);tap('bView',()=>{if(state==='raid')toggleView();});tap('bBag',toggleBag);
+tap('bAim',()=>{ads=!ads;});tap('bJump',()=>{jumpHeld=true;jump();});for(const t of ['touchend','touchcancel','mouseup','mouseleave'])$('bJump').addEventListener(t,()=>{jumpHeld=false;});tap('bCrouch',crouch);tap('bDive',dive);tap('bHook',useGrapple);for(const t of ['touchend','touchcancel','mouseup'])$('bHook').addEventListener(t,gadgetUp);tap('bUse',()=>{if(P&&P.pick)pickPress();else if(P&&P.loot)takeAll();else interact();});tap('bReload',reload);tap('bSwap',()=>{if(state==='raid')swapWeapon();});tap('bHeal',heal);tap('bView',()=>{if(state==='raid')toggleView();});tap('bBag',toggleBag);
 $('bFire').addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();setTouch();if(state!=='raid')return;const t=e.changedTouches[0];fireTouch=t.identifier;firing=true;if(look.id===null){look.id=t.identifier;look.x=t.clientX;look.y=t.clientY;}},{passive:false});
 
 /* ================= menu ================= */
@@ -2804,7 +2829,7 @@ function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.c
     arm+='<h4>'+SLOTN[k]+'</h4><div class="agrid">'+opts.map(o=>{const ic=loIcon(o);return '<div class="aitem'+(S.load[k]===o?' eq':'')+'" data-item="'+o+'" title="'+nm(o)+'">'+(ic?'<i class="ai" style="background-image:url('+ic+')"></i>':'')+'<span>'+nm(o)+'</span></div>';}).join('')+'</div>';}
   h+='<div class="lo"><div class="doll">'+fig+ds+'</div><div class="arm"><p class="lohint">Drag gear onto a slot on the body, or tap it to equip. Drag a slot off the body to empty it.</p>'+arm+'</div></div>';
   if(loadOpen&&SLOT[loadOpen]){const k=loadOpen,id=S.load[k],w=id?(WPN[id]||PACKS[id]):null;
-    const sub=!w?'Empty':k==='pack'?psub(id):w.gadget?(w.hold?'Hold click or G to swing, let go to drop the line':'Click or G fires it, click again to let go'):w.melee?'Melee · '+w.dmg+' damage a swing':w.am+' · '+(id==='pistol'?'free mag each raid · ':'')+S.ammo[w.am]+' in reserve';
+    const sub=!w?'Empty':k==='pack'?psub(id):w.gadget?(w.throwln?'Hold click or G to wind up, let go to throw, click again to drop it':w.hold?'Hold click or G to swing, let go to drop the line':'Click or G fires it, click again to let go'):w.melee?'Melee · '+w.dmg+' damage a swing':w.am+' · '+(id==='pistol'?'free mag each raid · ':'')+S.ammo[w.am]+' in reserve';
     h+='<div class="row"><span class="nm">'+SLOTN[k]+': '+(w?w.n:'Empty')+'<small>'+sub+'</small></span></div>';
     if(k!=='melee'&&k!=='pack'&&id)h+='<div class="opts"><button type="button" class="btn plain" data-act="equip" data-id="'+k+':">Leave '+SLOTN[k].toLowerCase()+' empty</button></div>';}
   {const have=SKINNABLE.filter(w=>owns(w)&&(S.skins[w]||[]).length);
@@ -2815,7 +2840,7 @@ function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.c
   $('mLoad').innerHTML=h;
   h='';
   SHOP.forEach((s,i)=>{let name,sub,price=s.price,own=false;
-    if(s.k==='w'){const w=WPN[s.id];name=w.n;sub=s.id==='swingline'?'Gadget · a hook on a fixed length line: no reel, you swing on it until you let go of the click':s.id==='redrebel'?'Ice axe · climbs four storey walls · '+w.dmg+' dmg':w.melee?'Melee · '+w.dmg+' dmg · cuts through anything':w.am+' · '+(w.pel?w.pel+' pellets':Math.round(60/w.rate)+' rpm')+' · '+w.dmg+' dmg';price=w.price;own=S.weapons.indexOf(s.id)>=0;}
+    if(s.k==='w'){const w=WPN[s.id];name=w.n;sub=s.id==='swingline'?'Gadget · a rope and hook you throw: wind it up for distance, then swing on the fixed line':s.id==='redrebel'?'Ice axe · climbs four storey walls · '+w.dmg+' dmg':w.melee?'Melee · '+w.dmg+' dmg · cuts through anything':w.am+' · '+(w.pel?w.pel+' pellets':Math.round(60/w.rate)+' rpm')+' · '+w.dmg+' dmg';price=w.price;own=S.weapons.indexOf(s.id)>=0;}
     else if(s.k==='a'){name=s.n+' x '+s.id;sub='You have '+S.ammo[s.id];}
     else if(s.k==='m'){name=s.n;sub='You have '+S.meds[s.id];}
     else if(s.k==='p'){const q=PACKS[s.id];name=q.n;sub=q.c+' x '+q.r+' grid · +'+q.kg+' kg · '+q.d;price=q.price;own=owns(s.id);}
