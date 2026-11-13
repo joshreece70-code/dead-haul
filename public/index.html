@@ -292,7 +292,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">7 minute raid. 2 exfils open. Build 36, hosted.</small>
+      <small id="mGo">7 minute raid. 2 exfils open. Build 37, hosted.</small>
     </div>
     <section id="stashS"><h2>Stash <small id="stInfo"></small></h2>
       <div class="stW"><div class="stash" id="stG"></div></div>
@@ -426,7 +426,7 @@ const UPS={
  stash:{n:'Bigger stash',d:'+2 rows of stash space',base:2000}
 };
 const SHOP=[
- {k:'w',id:'dual'},{k:'w',id:'smg'},{k:'w',id:'uzis'},{k:'w',id:'shotgun'},{k:'w',id:'spas'},{k:'w',id:'ak'},{k:'w',id:'rifle'},{k:'w',id:'sniper'},{k:'w',id:'saber'},{k:'g',id:'grapple',n:'Grapple gun',price:12000},
+ {k:'w',id:'dual'},{k:'w',id:'smg'},{k:'w',id:'uzis'},{k:'w',id:'shotgun'},{k:'w',id:'spas'},{k:'w',id:'ak'},{k:'w',id:'rifle'},{k:'w',id:'sniper'},{k:'w',id:'saber'},{k:'p',id:'assault'},{k:'p',id:'raid'},{k:'p',id:'hauler'},{k:'g',id:'grapple',n:'Grapple gun',price:12000},
  {k:'a',id:'9mm',n:30,price:150},{k:'a',id:'12ga',n:12,price:180},{k:'a',id:'5.56',n:30,price:320},{k:'a',id:'7.62',n:20,price:480},
  {k:'m',id:'bandage',n:'Bandage',price:80},{k:'m',id:'medkit',n:'First aid kit',price:450},{k:'m',id:'morphine',n:'Morphine injector',price:900},
  {k:'v',price:1200}
@@ -435,7 +435,7 @@ const EXF=[['North Gate',0,-HALF],['South Gate',0,HALF],['East Checkpoint',HALF,
 
 /* ================= save ================= */
 const SAVE_KEY='deadhaul.v1';
-function defSave(){return {cash:500,xp:0,level:1,streak:0,weapons:['pistol'],ammo:{'9mm':36,'12ga':0,'5.56':0,'7.62':0},meds:{bandage:2,painkillers:0,medkit:0,morphine:0},armor:0,stash:[],grapple:false,coins:1,bob:true,bhop:true,full:true,gfx:'high',gfxLock:false,pvp:true,nick:'',lobby:'',adsToggle:false,up:{pack:0,vit:0,lungs:0,hands:0,luck:0,stash:0},stats:{raids:0,extracts:0,best:0,kills:0},view:0,muted:false};}
+function defSave(){return {cash:500,xp:0,level:1,streak:0,weapons:['pistol'],ammo:{'9mm':36,'12ga':0,'5.56':0,'7.62':0},meds:{bandage:2,painkillers:0,medkit:0,morphine:0},armor:0,stash:[],packs:[],grapple:false,coins:1,bob:true,bhop:true,full:true,gfx:'high',gfxLock:false,pvp:true,nick:'',lobby:'',adsToggle:false,up:{pack:0,vit:0,lungs:0,hands:0,luck:0,stash:0},stats:{raids:0,extracts:0,best:0,kills:0},view:0,muted:false};}
 let S=defSave();
 try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s&&Array.isArray(s.weapons)){const d=defSave();for(const k in d){if(s[k]==null)continue;if(typeof d[k]==='object'&&!Array.isArray(d[k]))Object.assign(d[k],s[k]);else d[k]=s[k];}S=d;}}catch(e){}
 if(!S.nick)S.nick='Raider-'+(100+Math.floor(Math.random()*900));
@@ -919,28 +919,33 @@ const GC=6,ISZ={g_pistol:[2,1],g_smg:[3,2],g_shotgun:[5,1],g_spas:[5,2],g_ak:[5,
 let DRAG=null,bagAuto=false;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function isz(it){const s=ISZ[it.id]||[1,1];return it.rot?[s[1],s[0]]:s;}
-function bagRows(){return 5+S.up.pack;}
+function bagRows(){return curPack().r+S.up.pack;}
 const GUNR={pistol:'u',smg:'u',shotgun:'u',ak:'r',spas:'r',rifle:'r',sniper:'e'},GUNW={pistol:.9,smg:3,shotgun:3.5,spas:4.4,ak:3.6,rifle:3.4,sniper:6};
 function gunItem(gid,part){const w=WPN[gid];return {id:'g_'+gid,gid:gid,k:'gun',name:w.n,r:GUNR[gid]||'u',val:Math.round((w.price||2000)*.4),w:GUNW[gid]||3,mag:part?randi(Math.ceil(w.mag/3),w.mag):w.mag};}
 function foundGuns(){const o=[];for(const it of P.bag)if(it.k==='gun'&&o.indexOf(it.gid)<0)o.push(it.gid);return o;}
-const SLOT={primary:['smg','shotgun','spas','ak','rifle','sniper'],secondary:['pistol','dual','uzis'],melee:['katana','saber'],gadget:['grapple']},SLOTN={primary:'Primary',secondary:'Sidearm',melee:'Melee',gadget:'Gadget'};
-function owns(id){return id==='katana'||(id==='grapple'?!!S.grapple:S.weapons.indexOf(id)>=0);}
+const SLOT={primary:['smg','shotgun','spas','ak','rifle','sniper'],secondary:['pistol','dual','uzis'],melee:['katana','saber'],gadget:['grapple'],pack:['sling','daypack','assault','raid','hauler']},SLOTN={pack:'Backpack',primary:'Primary',secondary:'Sidearm',melee:'Melee',gadget:'Gadget'};
+function owns(id){if(PACKS[id])return !PACKS[id].price||(S.packs||[]).indexOf(id)>=0;return id==='katana'||(id==='grapple'?!!S.grapple:S.weapons.indexOf(id)>=0);}
 function fixLoad(){
   const L=S.load||(S.load={});
   for(const k in SLOT){if(L[k]&&(!owns(L[k])||SLOT[k].indexOf(L[k])<0))L[k]='';
-    if(L[k]==null){const o=SLOT[k].filter(owns);L[k]=k==='primary'?(o[o.length-1]||''):k==='secondary'?(owns('pistol')?'pistol':o[0]||''):k==='melee'?(owns('saber')?'saber':'katana'):(owns('grapple')?'grapple':'');}}
-  if(!L.melee)L.melee='katana';
+    if(L[k]==null){const o=SLOT[k].filter(owns);L[k]=k==='primary'?(o[o.length-1]||''):k==='secondary'?(owns('pistol')?'pistol':o[0]||''):k==='melee'?(owns('saber')?'saber':'katana'):k==='pack'?'daypack':(owns('grapple')?'grapple':'');}}
+  if(!L.melee)L.melee='katana';if(!L.pack)L.pack='daypack';
 }
 function autoEquip(id){fixLoad();for(const k in SLOT)if(SLOT[k].indexOf(id)>=0&&!S.load[k])S.load[k]=id;}
 function equipped(){fixLoad();return ['primary','secondary','melee','gadget'].map(k=>S.load[k]).filter(Boolean);}
 function gunList(){const e=equipped();return P?e.concat(foundGuns().filter(g=>e.indexOf(g)<0)):e;}
 function instant(it){return !!(it.coin||it.cash||it.k==='ammo'||it.k==='med');}
+const PACKS={sling:{n:'Sling bag',c:4,r:3,kg:-6,d:'Small and light'},daypack:{n:'Daypack',c:6,r:5,kg:0,d:'The pack you started with'},assault:{n:'Assault pack',c:6,r:7,kg:6,price:9000,d:'Two more rows'},raid:{n:'Raid backpack',c:8,r:7,kg:12,price:22000,d:'Wide enough for long guns sideways'},hauler:{n:'Hauler frame',c:8,r:9,kg:18,price:45000,d:'Huge, and a little slower to carry',slow:.06}};
+function curPack(){fixLoad();return PACKS[S.load.pack]||PACKS.daypack;}
+function bagCols(){return curPack().c;}
 function gridFree(list,rows,x,y,w,h,skip){
+  const GC=P&&list===P.bag?bagCols():6;
   if(x<0||y<0||x+w>GC||y+h>rows)return false;
   for(const o of list){if(o===skip||o.gx==null)continue;const s=isz(o);if(x<o.gx+s[0]&&x+w>o.gx&&y<o.gy+s[1]&&y+h>o.gy)return false;}
   return true;
 }
 function gridPlace(list,rows,it){
+  const GC=P&&list===P.bag?bagCols():6;
   for(let t=0;t<2;t++){const s=isz(it);for(let y=0;y<=rows-s[1];y++)for(let x=0;x<=GC-s[0];x++)if(gridFree(list,rows,x,y,s[0],s[1],it)){it.gx=x;it.gy=y;return true;}it.rot=!it.rot;}
   return false;
 }
@@ -999,9 +1004,9 @@ function cellHtml(it,i,src,known){
 }
 function renderInv(){
   if(!P)return;const rows=bagRows();let used=0;for(const it of P.bag){const s=isz(it);used+=s[0]*s[1];}
-  $('bagG').style.height='calc(var(--cs)*'+rows+')';
+  $('bagG').style.height='calc(var(--cs)*'+rows+')';$('bagG').style.width='calc(var(--cs)*'+bagCols()+')';
   $('bagG').innerHTML=P.bag.map((it,i)=>cellHtml(it,i,'bag',true)).join('');
-  $('bagW').textContent=P.weight.toFixed(1)+' / '+P.cap+' kg · '+used+'/'+rows*GC+' cells';
+  $('bagW').textContent=P.weight.toFixed(1)+' / '+P.cap+' kg · '+used+'/'+rows*bagCols()+' cells';
   $('bagF').textContent=(P.loose?fmt(P.loose)+' loose cash · ':'')+(P.coins?P.coins+' slot coin'+(P.coins>1?'s':'')+' · ':'')+(isTouch?'Drag to move. Tap an item to send it across'+(P.loot?'.':' or drop it.'):'Drag to move, R turns the item you are holding. Shift-click sends an item '+(P.loot?'across.':'to the ground.'));
   if(P.loot){const c=P.loot.c;$('lootN').textContent=CT[c.type].n;$('lootW').textContent=c.shown<c.items.length?'searching...':c.items.length+(c.items.length===1?' item':' items');
     $('lootG').style.height='calc(var(--cs)*'+lootRows(c)+')';
@@ -1025,7 +1030,7 @@ function dropItem(i){
   it.gx=null;c.items.splice(c.shown,0,it);c.shown++;c.done=false;layout(c);if(bagOpen)renderInv();
 }
 /* pointer handling: works with the real mouse, the in-game pointer while the mouse is locked, and touch */
-function csize(){return $('bagG').getBoundingClientRect().width/GC||42;}
+function csize(){return $('bagG').getBoundingClientRect().width/bagCols()||42;}
 function invAt(x,y){const el=document.elementFromPoint(x,y);if(!el||!el.closest)return {};return {gi:el.closest('.gi'),grid:el.closest('.grid'),pane:el.closest('#loot,#bag'),all:el.closest('#lootAll')};}
 function invItem(gi){
   const src=gi.dataset.src,i=+gi.dataset.i;
@@ -1099,7 +1104,7 @@ function startRaid(){
   MP.lastHit=null;MP.killer='';
   const sp=W.spawn;
   P={x:sp.x,z:sp.z,yaw:Math.atan2(sp.x,sp.z),pitch:0,recoil:0,hp:100+15*S.up.vit,maxHp:100+15*S.up.vit,stam:100,bleed:false,armor:S.armor?60:0,
-     weapon:'pistol',mag:{},fireCd:0,reloading:0,healCd:0,bag:[],loose:0,weight:0,cap:22+6*S.up.pack,over:false,car:null,search:null,loot:null,exT:0,panic:0,near:0,
+     weapon:'pistol',mag:{},fireCd:0,reloading:0,healCd:0,bag:[],loose:0,weight:0,cap:22+6*S.up.pack+curPack().kg,over:false,car:null,search:null,loot:null,exT:0,panic:0,near:0,
      anim:0,moving:false,sprint:false,swing:0,y:0,vy:0,adsT:0,vx:0,vz:0,crouch:false,crT:0,slide:0,sdx:0,sdz:0,bobA:0,land:0,lean:0,sprT:0,swx:0,swy:0,stepN:0,hops:0,base:0,grap:null,hook:null,grapCd:0,dive:false,diveSlide:false,prone:false,dvWin:false,diveCd:0,dvT:0,dvF:1,dvS:0,dualSide:false,kL:0,kR:0,coins:0,mini:0,adren:0,jug:0,vault:null,canVault:false,lookIdle:9,xp:0,kills:0,zk:0,sk:0,peakHeat:0,noiseT:0,c:null};
   P.c=makeChar({skin:0xd0a582,shirt:0x2e4d6b,pants:0x3b3530,hair:0x3a2a1c,pack:0x4f5a36},true,'pistol');W.g.add(P.c.g);
   const eq=equipped();for(const id of eq){const w=WPN[id];if(!w||w.melee||!w.am)continue;if(id==='pistol'){P.mag[id]=w.mag;continue;}const n=Math.min(w.mag,S.ammo[w.am]);S.ammo[w.am]-=n;P.mag[id]=n;}
@@ -1489,7 +1494,7 @@ function updPlayer(dt){
       if(P.dive){P.dive=false;P.diveSlide=true;P.hops=0;P.land=.2;P.diveCd=1;const s0=Math.hypot(P.vx,P.vz)||1;P.slide=.5;P.sdx=P.vx/s0;P.sdz=P.vz/s0;hiss(.4,.2,700);}
       else if(S.bhop!==false&&(keys.Space||jumpHeld)&&P.stam>=2&&!P.over&&!P.loot&&!bagOpen){P.hops++;P.stam-=2;P.vy=5.8;P.y=.01;P.land=.03;const s0=Math.hypot(P.vx,P.vz);if(s0>3&&s0<12){const k=Math.min(1.07,12/s0);P.vx*=k;P.vz*=k;}}
       else{P.hops=0;P.land=Math.min(.24,.06+fall*.022);}}}
-    const spd=4.3*(P.sprint?1.6:1)*(P.over?.6:1)*(1-.45*P.adsT)*(P.adren>0?1.4:1)*(1-.5*P.crT)*(P.prone?.5:1);
+    const spd=4.3*(P.sprint?1.6:1)*(P.over?.6:1)*(1-(curPack().slow||0))*(1-.45*P.adsT)*(P.adren>0?1.4:1)*(1-.5*P.crT)*(P.prone?.5:1);
     const sy=Math.sin(P.yaw),cy=Math.cos(P.yaw);
     let wx=(-sy*iy+cy*ix)*spd,wz=(-cy*iy-sy*ix)*spd;
     if(P.slide>0){P.slide-=dt;const k=Math.max(0,P.slide/.7);wx=P.sdx*(3.5+7.5*k);wz=P.sdz*(3.5+7.5*k);if(P.slide<=0){if(P.diveSlide){P.prone=true;P.crouch=false;}else P.crouch=true;P.diveSlide=false;}}
@@ -2112,12 +2117,13 @@ function renderMenu(){
   $('mMute').textContent=S.muted?'Off':'On';$('mFull').textContent=S.full?'On':'Off';$('mGfx').textContent=GFX.high?'High':'Low';$('mBob').textContent=S.bob===false?'Off':'On';$('mBhop').textContent=S.bhop===false?'Off':'On';$('mPvp').textContent=S.pvp?'On':'Off';{const n=$('mNick');if(document.activeElement!==n)n.value=S.nick;}mpStatus();$('mWipe').textContent=wipeArmed?'Tap again to wipe':'Wipe';
   let h='<div class="row"><span class="nm">Katana<small>Quiet. Never runs dry.</small></span></div>';
   fixLoad();
-  for(const k of ['primary','secondary','melee','gadget']){
-    const id=S.load[k],w=id?WPN[id]:null,open=loadOpen===k;
-    const sub=!w?'Empty. Click to pick one.':w.gadget?'G fires it, Space lets go':w.melee?'Melee · '+w.dmg+' damage a swing':w.am+' · '+(id==='pistol'?'free mag each raid · ':'')+S.ammo[w.am]+' in reserve';
-    h+='<button type="button" class="slot'+(open?' open':'')+'" data-act="slot" data-id="'+k+'"><span class="sk">'+(k==='gadget'?'G':['primary','secondary','melee'].indexOf(k)+1)+' · '+SLOTN[k]+'</span><b>'+(w?w.n:'Empty')+'</b><small>'+sub+'</small></button>';
+  const nm=o=>WPN[o]?WPN[o].n:PACKS[o].n,psub=o=>{const q=PACKS[o];return q.c+' x '+q.r+(S.up.pack?' + '+S.up.pack+' rows':'')+' grid · '+(22+6*S.up.pack+q.kg)+' kg'+(q.slow?' · '+Math.round(q.slow*100)+'% slower':'');};
+  for(const k of ['primary','secondary','melee','gadget','pack']){
+    const id=S.load[k],w=id?(WPN[id]||PACKS[id]):null,open=loadOpen===k;
+    const sub=!w?'Empty. Click to pick one.':k==='pack'?psub(id):w.gadget?'G fires it, Space lets go':w.melee?'Melee · '+w.dmg+' damage a swing':w.am+' · '+(id==='pistol'?'free mag each raid · ':'')+S.ammo[w.am]+' in reserve';
+    h+='<button type="button" class="slot'+(open?' open':'')+'" data-act="slot" data-id="'+k+'"><span class="sk">'+(k==='gadget'?'G':k==='pack'?'Tab':['primary','secondary','melee'].indexOf(k)+1)+' · '+SLOTN[k]+'</span><b>'+(w?w.n:'Empty')+'</b><small>'+sub+'</small></button>';
     if(open){const opts=SLOT[k].filter(owns);
-      h+='<div class="opts">'+opts.map(o=>'<button type="button" class="btn'+(o===id?'':' plain')+'" data-act="equip" data-id="'+k+':'+o+'">'+WPN[o].n+'</button>').join('')+(k!=='melee'&&id?'<button type="button" class="btn plain" data-act="equip" data-id="'+k+':">Leave empty</button>':'')+(opts.length<SLOT[k].length?'<small>More at the trader'+(k==='primary'?' or found on scavs and hunters':'')+'.</small>':'')+'</div>';}
+      h+='<div class="opts">'+opts.map(o=>'<button type="button" class="btn'+(o===id?'':' plain')+'" data-act="equip" data-id="'+k+':'+o+'">'+nm(o)+(k==='pack'?' · '+PACKS[o].c+'x'+PACKS[o].r:'')+'</button>').join('')+(k!=='melee'&&k!=='pack'&&id?'<button type="button" class="btn plain" data-act="equip" data-id="'+k+':">Leave empty</button>':'')+(opts.length<SLOT[k].length?'<small>More at the trader'+(k==='primary'?' or found on scavs and hunters':'')+'.</small>':'')+'</div>';}
   }
   h+='<div class="row"><span class="nm">Armor vest<small>'+(S.armor?'Equipped. Soaks half of each bullet until it breaks.':'None. Lost when you die.')+'</small></span></div>';
   h+='<div class="row"><span class="nm">Pack<small>'+(22+6*S.up.pack)+' kg before you slow down</small></span></div>';
@@ -2127,6 +2133,7 @@ function renderMenu(){
     if(s.k==='w'){const w=WPN[s.id];name=w.n;sub=w.melee?'Melee · '+w.dmg+' dmg · cuts through anything':w.am+' · '+(w.pel?w.pel+' pellets':Math.round(60/w.rate)+' rpm')+' · '+w.dmg+' dmg';price=w.price;own=S.weapons.indexOf(s.id)>=0;}
     else if(s.k==='a'){name=s.n+' x '+s.id;sub='You have '+S.ammo[s.id];}
     else if(s.k==='m'){name=s.n;sub='You have '+S.meds[s.id];}
+    else if(s.k==='p'){const q=PACKS[s.id];name=q.n;sub=q.c+' x '+q.r+' grid · +'+q.kg+' kg · '+q.d;price=q.price;own=owns(s.id);}
     else if(s.k==='g'){name=s.n;sub='Fires a hook on a rope and reels you in. Reaches rooftops.';own=!!S.grapple;}
     else{name='Armor vest';sub='Kept if you extract with it intact';own=!!S.armor;}
     h+='<div class="row"><span class="nm">'+name+'<small>'+sub+'</small></span><button class="btn" type="button" data-act="buy" data-id="'+i+'"'+(own||S.cash<price?' disabled':'')+'>'+(own?'Owned':fmt(price))+'</button></div>';});
@@ -2141,7 +2148,7 @@ $('menu').addEventListener('click',e=>{
   if(a==='deploy'){startRaid();if(!isTouch){goFull();tryLock();}return;}
   if(a==='spin'){spin();return;}
   if(a==='slot'){loadOpen=loadOpen===id?null:id;renderMenu();return;}
-  if(a==='equip'){const q=id.split(':');fixLoad();if(q[1]&&!owns(q[1]))return;S.load[q[0]]=q[1]||'';if(q[0]==='melee'&&!q[1])S.load.melee='katana';loadOpen=null;save();sfx.click();renderMenu();return;}
+  if(a==='equip'){const q=id.split(':');fixLoad();if(q[1]&&!owns(q[1]))return;S.load[q[0]]=q[1]||'';if(q[0]==='melee'&&!q[1])S.load.melee='katana';if(q[0]==='pack'&&!q[1])S.load.pack='daypack';loadOpen=null;save();sfx.click();renderMenu();return;}
   if(a==='st'){const it=S.stash[+id];if(!it)return;if(e.shiftKey){stashSell([it]);renderMenu();return;}if(stSel.has(it))stSel.delete(it);else stSel.add(it);renderStash();return;}
   if(a==='stall'){for(const it of S.stash)stSel.add(it);renderStash();return;}
   if(a==='stjunk'){stSel.clear();for(const it of S.stash)if(it.val<500&&it.k!=='gun')stSel.add(it);$('stMsg').textContent=stSel.size?'Selected everything worth under $500.':'Nothing cheap to sell.';renderStash();return;}
@@ -2156,9 +2163,9 @@ $('menu').addEventListener('click',e=>{
   if(a==='lobby'){mpJoin($('mCode').value);return;}
   if(a==='mute'){toggleMute();return;}
   if(a==='wipe'){if(wipeArmed){S=defSave();view=0;wipeArmed=false;save();}else wipeArmed=true;renderMenu();return;}
-  if(a==='buy'){const s=SHOP[+id],price=s.k==='w'?WPN[s.id].price:s.price;if(S.cash<price)return;
+  if(a==='buy'){const s=SHOP[+id],price=s.k==='w'?WPN[s.id].price:s.k==='p'?PACKS[s.id].price:s.price;if(S.cash<price)return;
     if(s.k==='w'){if(S.weapons.indexOf(s.id)>=0)return;S.weapons.push(s.id);if(!WPN[s.id].melee)S.ammo[WPN[s.id].am]+=WPN[s.id].mag*2;autoEquip(s.id);}
-    else if(s.k==='a')S.ammo[s.id]+=s.n;else if(s.k==='m')S.meds[s.id]++;else if(s.k==='g'){if(S.grapple)return;S.grapple=true;autoEquip('grapple');}else{if(S.armor)return;S.armor=1;}
+    else if(s.k==='a')S.ammo[s.id]+=s.n;else if(s.k==='m')S.meds[s.id]++;else if(s.k==='p'){if(owns(s.id))return;(S.packs||(S.packs=[])).push(s.id);fixLoad();S.load.pack=s.id;}else if(s.k==='g'){if(S.grapple)return;S.grapple=true;autoEquip('grapple');}else{if(S.armor)return;S.armor=1;}
     S.cash-=price;sfx.cash();}
   if(a==='up'){const c=upCost(id);if(S.up[id]>=5||S.cash<c)return;S.cash-=c;S.up[id]++;sfx.loot(2);}
   save();renderMenu();
