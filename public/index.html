@@ -98,6 +98,15 @@ button{font-family:inherit;color:inherit;border-radius:0}
 #exbar{position:absolute;left:50%;top:33%;transform:translateX(-50%);width:210px;text-align:center;font:600 16px var(--display);letter-spacing:.14em;color:var(--go);text-shadow:0 1px 0 #000}
 #exB{background:var(--go)}
 #bc{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:150px;text-align:center}
+#hotbar{position:relative;left:50%;transform:translateX(-50%);display:flex;gap:4px;width:max-content;margin-bottom:6px}
+.hb{position:relative;width:76px;height:42px;padding:0;pointer-events:auto;cursor:pointer;background:rgba(12,16,12,.66) no-repeat 50% 58%/88% auto;border:1px solid var(--line);border-bottom:2px solid var(--line)}
+.hb.on{border-color:var(--cash);border-bottom-color:var(--cash);background-color:rgba(230,193,74,.18);box-shadow:0 0 12px -3px var(--cash)}
+.hb.dry{opacity:.55}
+.hb i{position:absolute;left:3px;top:1px;font:600 11px var(--display);font-style:normal;color:var(--dim);text-shadow:0 1px 0 #000}
+.hb.on i{color:var(--cash)}
+.hb b{position:absolute;right:3px;bottom:1px;font:400 10px var(--mono);color:var(--text);text-shadow:0 1px 2px #000}
+.hb.found{border-style:dashed}
+.touch .hb{width:52px;height:32px}
 #ammo{font:400 20px var(--mono);text-shadow:0 1px 0 #000;line-height:1.1}
 #ammo small{font-size:12px;color:var(--dim)}
 #wname,#carT,#hint{font:600 12px var(--display);letter-spacing:.14em;color:var(--dim);text-shadow:0 1px 0 #000;text-transform:uppercase}
@@ -255,6 +264,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div id="combo"></div>
     <div id="bc">
       <div id="hint"></div><div id="carT"></div>
+      <div id="hotbar"></div>
       <div id="wname"></div><div id="ammo"></div>
       <div class="bar"><div id="hpB"></div></div>
       <div class="bar st"><div id="stB"></div></div>
@@ -292,7 +302,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">7 minute raid. 2 exfils open. Build 37, hosted.</small>
+      <small id="mGo">7 minute raid. 2 exfils open. Build 38, hosted.</small>
     </div>
     <section id="stashS"><h2>Stash <small id="stInfo"></small></h2>
       <div class="stW"><div class="stash" id="stG"></div></div>
@@ -1691,6 +1701,9 @@ function updHud(){
   const st=Math.floor(W.heat),pk=Math.floor(P.peakHeat);
   setH('stars','<b>'+'★'.repeat(st)+'</b>'+'★'.repeat(5-st));
   setT('bonus',pk?'heat bonus +'+pk*10+'%':'');
+  {const L=gunList(),mini=P.mini>0,hk=L.join()+'|'+P.weapon+'|'+mini+'|'+L.map(id=>P.mag[id]==null?'':P.mag[id]).join();
+    if(hudKey.hb!==hk){hudKey.hb=hk;el('hotbar').innerHTML=L.map((id,i)=>{const w=WPN[id],on=id===P.weapon,ic=ICON['w_'+(on&&mini?'minigun':id)],n=w&&w.am&&!(on&&mini)?(P.mag[id]||0):null,eq=equipped().indexOf(id)>=0;
+      return '<button type="button" class="hb'+(on?' on':'')+(n===0?' dry':'')+(eq?'':' found')+'" data-hb="'+i+'" title="'+(on&&mini?'Minigun':w?w.n:id)+'"'+(ic?' style="background-image:url('+ic+')"':'')+'><i>'+(i+1)+'</i>'+(n!=null?'<b>'+n+'</b>':'')+'</button>';}).join('');}}
   const w=WPN[P.weapon];setT('wname',P.mini>0?'MINIGUN':w.n);
   setH('ammo',P.mini>0?P.mini.toFixed(1)+' <small>sec</small>':w.gadget?'<small>'+(P.grap?'reeling in':P.hook?(P.hook.st==='fly'?'line out':'winding back'):'hook ready')+'</small>':w.melee?'<small>melee</small>':(P.reloading>0?'<small>reloading</small>':P.mag[P.weapon]+' <small>/ '+S.ammo[w.am]+'</small>'));
   setW('hpB',P.hp/P.maxHp*100);setW('stB',P.stam);
@@ -1907,7 +1920,7 @@ window.addEventListener('keydown',e=>{
     case 'KeyZ':dive();break;
     case 'KeyG':useGrapple();break;
     case 'KeyM':toggleMute();break;
-    case 'Digit1':case 'Digit2':case 'Digit3':case 'Digit4':case 'Digit5':swapWeapon(+e.code.slice(5)-1);break;
+    case 'Digit1':case 'Digit2':case 'Digit3':case 'Digit4':case 'Digit5':case 'Digit6':swapWeapon(+e.code.slice(5)-1);break;
   }
 });
 window.addEventListener('keyup',e=>{keys[e.code]=false;});
@@ -1978,6 +1991,7 @@ document.addEventListener('touchend',touchEnd);document.addEventListener('touchc
 function tap(id,fn){const b=$(id);
   b.addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();setTouch();initAudio();fn();},{passive:false});
   b.addEventListener('mousedown',e=>{e.preventDefault();e.stopPropagation();initAudio();fn();});}
+(function(){const hb=$('hotbar');const pick=e=>{const b=e.target.closest('[data-hb]');if(!b||state!=='raid')return;e.preventDefault();e.stopPropagation();swapWeapon(+b.dataset.hb);};hb.addEventListener('mousedown',pick);hb.addEventListener('touchstart',pick,{passive:false});})();
 tap('bAim',()=>{ads=!ads;});tap('bJump',()=>{jumpHeld=true;jump();});for(const t of ['touchend','touchcancel','mouseup','mouseleave'])$('bJump').addEventListener(t,()=>{jumpHeld=false;});tap('bCrouch',crouch);tap('bDive',dive);tap('bHook',useGrapple);tap('bUse',interact);tap('bReload',reload);tap('bSwap',()=>{if(state==='raid')swapWeapon();});tap('bHeal',heal);tap('bView',()=>{if(state==='raid')toggleView();});tap('bBag',toggleBag);
 $('bFire').addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();setTouch();if(state!=='raid')return;const t=e.changedTouches[0];fireTouch=t.identifier;firing=true;if(look.id===null){look.id=t.identifier;look.x=t.clientX;look.y=t.clientY;}},{passive:false});
 
@@ -2070,17 +2084,20 @@ function makeIcons(){
     const jobs=[];
     for(const k in IM)jobs.push([k,IM[k],false]);
     for(const g of ['pistol','smg','shotgun','spas','ak','rifle','sniper'])jobs.push(['g_'+g,g,true]);
+    for(const g of ['pistol','dual','uzis','smg','shotgun','spas','ak','rifle','sniper','katana','saber','grapple','minigun'])if(GUNS[g])jobs.push(['w_'+g,g,true]);
     for(const [k,def,gun] of jobs){
       let geo,mat=M;
+      let mesh2=null;
       if(gun){geo=GUNS[def];mat=GUN_MAT;}else{try{geo=bake(def.map(q=>q.slice()));}catch(e){continue;}}
       const mesh=new T.Mesh(geo,mat);
-      if(gun)mesh.rotation.set(.18,-Math.PI/2,0);else mesh.rotation.set(.42,-.62,0);
+      if(gun&&k[0]==='w'){setGun(mesh,def);if(WPN[def]&&WPN[def].dual){mesh2=new T.Mesh(geo,mat);mesh2.position.set(0,-.07,.09);mesh.add(mesh2);}}
+      if(gun&&k[0]==='w'&&WPN[def]&&WPN[def].melee)mesh.rotation.set(.18,-Math.PI/2,-.5);else if(gun)mesh.rotation.set(.18,-Math.PI/2,0);else mesh.rotation.set(.42,-.62,0);
       sc.add(mesh);mesh.updateMatrixWorld(true);box.setFromObject(mesh);box.getCenter(ctr);box.getSize(sz);
-      const s=ISZ[k]||[1,1],W=Math.min(576,s[0]*96),H=s[1]*96,asp=W/H;
+      const s=k[0]==='w'&&k[1]==='_'?[3,1.25]:ISZ[k]||[1,1],W=Math.min(576,s[0]*96),H=Math.round(s[1]*96),asp=W/H;
       let hw=Math.max(sz.x/2,sz.y/2*asp)*1.12,hh=hw/asp;
       cam.left=ctr.x-hw;cam.right=ctr.x+hw;cam.top=ctr.y+hh;cam.bottom=ctr.y-hh;cam.position.set(0,0,ctr.z+10);cam.updateProjectionMatrix();
       r.setSize(W,H,false);r.render(sc,cam);ICON[k]=cv.toDataURL('image/png');
-      sc.remove(mesh);if(!gun)geo.dispose();
+      sc.remove(mesh);if(mesh2)mesh.remove(mesh2);if(!gun)geo.dispose();
     }
     M.dispose();
   }catch(e){}
