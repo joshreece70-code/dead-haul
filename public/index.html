@@ -78,6 +78,13 @@ button{font-family:inherit;color:inherit;border-radius:0}
 .moo span{color:var(--text);text-shadow:0 1px 0 #000}
 #prompt{position:absolute;left:50%;top:58%;transform:translateX(-50%);font:600 17px var(--display);letter-spacing:.06em;text-shadow:0 1px 0 #000,0 0 8px #000;white-space:nowrap}
 #prompt kbd{font:400 13px var(--mono);border:1px solid var(--text);padding:0 5px;margin-right:6px}
+#medUI{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(340px,86vw);padding:10px 12px;background:rgba(9,11,9,.9);border:1px solid var(--line);border-top:3px solid var(--go);font:400 12px var(--mono);color:var(--text);pointer-events:none;z-index:7}
+#medUI h3{margin:0 0 6px;font:600 15px var(--display);letter-spacing:.14em;color:var(--go);text-transform:uppercase}#medUI h3 small{float:right;font:400 10px var(--mono);letter-spacing:0;color:var(--dim);text-transform:none;margin-top:3px}
+#medUI .mi{display:grid;grid-template-columns:22px 1fr auto;grid-template-rows:auto auto;column-gap:8px;padding:6px 8px;border:1px solid transparent;margin-top:3px}
+#medUI .mi kbd{grid-row:span 2;align-self:center;font:400 11px var(--mono);color:var(--dim);border:1px solid var(--line);text-align:center;padding:2px 0}
+#medUI .mi b{font:600 15px var(--display);color:var(--text)}#medUI .mi em{font-style:normal;color:var(--cash);grid-row:span 2;align-self:center}#medUI .mi span{color:var(--dim);font-size:11px}
+#medUI .mi.on{border-color:var(--go);background:rgba(111,207,90,.12)}#medUI .mi.none{opacity:.4}
+.pping{font-weight:600}
 #pickUI{position:absolute;left:50%;top:60%;transform:translate(-50%,-50%);width:min(420px,88vw);padding:12px 16px 10px;background:rgba(9,11,9,.9);border:1px solid var(--line);border-top:3px solid var(--cash);font:400 12px var(--mono);color:var(--text);pointer-events:none;z-index:6}
 #pickUI h3{margin:0 0 8px;font:600 16px var(--display);letter-spacing:.14em;color:var(--cash);text-transform:uppercase}
 #pickUI h3 small{float:right;font:400 11px var(--mono);letter-spacing:0;color:var(--dim);text-transform:none}
@@ -274,6 +281,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
       <div id="moodles"></div>
     </div>
     <div id="prompt"></div>
+    <div id="medUI" hidden></div>
     <div id="pickUI" hidden><h3>Picking the <span id="pickN">lock</span> <small id="pickLeft"></small></h3><div id="pickPins"></div><div id="pickTrack"><i id="pickZone"></i><b id="pickMark"></b></div><p id="pickMsg"></p></div>
     <div id="search" hidden><span id="searchL">Searching</span><div class="bar"><div id="searchB"></div></div></div>
     <div id="exbar" hidden><span id="exL">EXTRACTING</span><div class="bar"><div id="exB"></div></div></div>
@@ -320,7 +328,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 68, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 69, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -355,7 +363,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
           <li><b>Z</b> or <b>mouse button 5</b> dolphin dive in the direction you are moving. Time slows while you are in the air, but you aim and shoot at nearly full speed. A dive carries you through open windows. You land prone: crawl, press <b>Ctrl</b> to crouch, or <b>Space</b> to stand.</li>
           <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. Fire again, or press <b>Space</b>, to let go and keep your swing. Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
           <li><b>Ctrl</b> or <b>mouse button 4</b> crouch: slower and quieter, steadier aim, harder for infected to spot. Press it while sprinting to slide.</li>
-          <li><b>R</b> reload · <b>Q</b> bandage, stops bleeding · <b>V</b> med item: first aid kit, painkillers or morphine, whichever fits how hurt you are</li>
+          <li><b>R</b> reload · tap <b>Q</b> for the med menu (mouse or scroll to choose, click, 1-4 or Q again to use, Esc to close) · hold <b>Q</b> bandage, stops bleeding · <b>V</b> swap shoulder · <b>Middle mouse</b> ping what you aim at (your lobby sees it)</li>
           <li>There is no mouse cursor during a raid. The bag and loot window get a small gold in-game pointer.</li>
           <li>Click anywhere on the game to lock the mouse. If it will not lock, the mouse still aims, and the screen edges keep turning you.</li>
           <li><b>E</b> search containers and bodies, take all, drive · <b>Shift+E</b> close the loot window · <b>Shift</b> sprint</li>
@@ -470,7 +478,7 @@ const EXF=[['North Gate',0,-HALF],['South Gate',0,HALF],['East Checkpoint',HALF,
 
 /* ================= save ================= */
 const SAVE_KEY='deadhaul.v1';
-function defSave(){return {picks:2,kmig:0,skins:{},skinOn:{},bfskin:'stock',cash:500,xp:0,level:1,streak:0,weapons:['pistol'],ammo:{'9mm':36,'12ga':0,'5.56':0,'7.62':0},meds:{bandage:2,painkillers:0,medkit:0,morphine:0},armor:0,keepGear:false,load:{},stash:[],packs:[],grapple:false,coins:1,bob:true,bhop:true,full:true,gfx:'high',gfxLock:false,pvp:true,nick:'',lobby:'',adsToggle:false,up:{pack:0,vit:0,lungs:0,hands:0,luck:0,stash:0},stats:{raids:0,extracts:0,best:0,kills:0},view:0,muted:false};}
+function defSave(){return {shoulder:1,picks:2,kmig:0,skins:{},skinOn:{},bfskin:'stock',cash:500,xp:0,level:1,streak:0,weapons:['pistol'],ammo:{'9mm':36,'12ga':0,'5.56':0,'7.62':0},meds:{bandage:2,painkillers:0,medkit:0,morphine:0},armor:0,keepGear:false,load:{},stash:[],packs:[],grapple:false,coins:1,bob:true,bhop:true,full:true,gfx:'high',gfxLock:false,pvp:true,nick:'',lobby:'',adsToggle:false,up:{pack:0,vit:0,lungs:0,hands:0,luck:0,stash:0},stats:{raids:0,extracts:0,best:0,kills:0},view:0,muted:false};}
 let S=defSave();
 try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s&&Array.isArray(s.weapons)){const d=defSave();for(const k in d){if(s[k]==null)continue;if(typeof d[k]==='object'&&!Array.isArray(d[k]))Object.assign(d[k],s[k]);else d[k]=s[k];}S=d;}}catch(e){}
 if(!S.kmig){S.kmig=1;if((S.xp>0||S.cash!==500)&&S.weapons.indexOf('katana')<0)S.weapons.push('katana');}
@@ -1373,7 +1381,7 @@ function startRaid(){
   banner('RAID STARTED','Loot the town. Reach a green flare to extract.','go');
   S.stats.raids++;save();
 }
-function endRaid(res){$('pickUI').hidden=true;if(P)P.pick=null;
+function endRaid(res){$('pickUI').hidden=true;if(P)P.pick=null;QT=null;$('medUI').hidden=true;for(const p of PINGS){scene.remove(p.g);p.el.remove();}PINGS.length=0;MP.pg=null;
   if(state!=='raid')return;
   if(P.car){P.car=null;}engineOff();closeLoot();bagOpen=false;bagAuto=false;$('inv').hidden=true;$('bt').style.opacity=0;$('scope').hidden=true;ROPE.visible=HOOK_MESH.visible=false;$('app').classList.remove('nocur');$('cur').hidden=true;ads=false;camera.fov=baseFov;camera.updateProjectionMatrix();
   mpDeath(res);
@@ -1445,7 +1453,7 @@ function addHeat(v){const b=Math.floor(W.heat);W.heat=clamp(W.heat+v,0,5);if(W.h
 function hurt(d,bite){
   if(state!=='raid')return;if(P.jug>0)d*=.25;
   if(!bite&&P.armor>0){const a=Math.min(P.armor,d*.5);P.armor-=a;d-=a;}
-  P.hp-=d;if((bite&&Math.random()<.22)||(!bite&&Math.random()<.15)){if(!P.bleed){P.bleed=true;card('You are bleeding',0,'c','Q to bandage');}}
+  P.hp-=d;if((bite&&Math.random()<.22)||(!bite&&Math.random()<.15)){if(!P.bleed){P.bleed=true;card('You are bleeding',0,'c','hold Q to bandage');}}
   hurtFx();sfx.hurt();shake=Math.max(shake,.25);
   if(P.hp<=0){P.hp=0;endRaid('kia');}
 }
@@ -1483,7 +1491,7 @@ function swapWeapon(to){if(P)P.insp=0;
   if(id===P.weapon)return;P.weapon=id;P.reloading=0;P.fireCd=.25;sfx.click();
 }
 function shoot(){
-  const mini=P.mini>0,w=mini?MINI:WPN[P.weapon];if(P.pick||(P.reloading>0&&!mini)||P.fireCd>0)return;P.insp=0;
+  const mini=P.mini>0,w=mini?MINI:WPN[P.weapon];if((QT&&QT.open)||P.pick||(P.reloading>0&&!mini)||P.fireCd>0)return;P.insp=0;
   if(w.gadget){fireHook();return;}
   const sy=Math.sin(P.yaw),cy=Math.cos(P.yaw),bx=P.car?P.car.x:P.x,bz=P.car?P.car.z:P.z;
   if(w.melee){
@@ -1551,10 +1559,53 @@ function updPowers(dt){
     else p.mesh.visible=p.t>5||Math.sin(p.t*14)>0;
   }
 }
+/* tap Q: a menu of every med. Hold Q: bandage, stops bleeding. */
+const MEDS=[['bandage','Bandage','+12 hp, stops bleeding',12,1],['painkillers','Painkillers','+22 hp',22,0],['medkit','First aid kit','+50 hp, stops bleeding',50,1],['morphine','Morphine','+100 hp, stops bleeding',100,1]];
+let QT=null;
+function medDown(){if(state!=='raid'||!P||P.car)return;if(QT&&QT.open){QT.tap=1;return;}if(QT)return;QT={t:performance.now(),open:false,held:false,sel:0,acc:0};}
+function medOpen(){const m=S.meds,miss=P.maxHp-P.hp;let s=P.bleed&&m.bandage>0?0:miss>=70&&m.morphine>0?3:m.medkit>0&&miss>=30?2:m.painkillers>0?1:m.medkit>0?2:m.morphine>0?3:0;
+  QT.open=true;QT.sel=s;$('medUI').hidden=false;renderMed();tone(900,.03,'square',.04);}
+function renderMed(){if(!QT)return;const m=S.meds;$('medUI').innerHTML='<h3>Meds <small>mouse or scroll to choose · click, 1-4 or Q to use · Esc closes</small></h3>'+MEDS.map((q,i)=>'<div class="mi'+(i===QT.sel?' on':'')+(m[q[0]]>0?'':' none')+'"><kbd>'+(i+1)+'</kbd><b>'+q[1]+'</b><span>'+q[2]+'</span><em>x'+(m[q[0]]||0)+'</em></div>').join('');}
+function medPick(d){if(!QT||!QT.open)return;QT.sel=(QT.sel+d+MEDS.length)%MEDS.length;renderMed();tone(1200,.02,'square',.03);}
+function medUse(){if(!QT)return;const s=QT.sel;QT=null;$('medUI').hidden=true;if(state==='raid'&&P)useMedId(MEDS[s][0]);}
+function medClose(){QT=null;$('medUI').hidden=true;}
+function medUp(){if(!QT)return;if(QT.open){if(QT.tap)medUse();return;}if(QT.held){QT=null;return;}medOpen();}
+function useMedId(id){
+  if(state!=='raid'||P.healCd>0)return;const m=S.meds,q=MEDS.find(x=>x[0]===id);if(!q)return;
+  if(!(m[id]>0)){card('No '+q[1].toLowerCase()+' left',0,'c');return;}
+  if(P.hp>=P.maxHp-1&&!(P.bleed&&q[4])){card('No need to heal',0,'c');return;}
+  m[id]--;const was=P.bleed;P.hp=Math.min(P.maxHp,P.hp+q[3]);if(q[4])P.bleed=false;P.healCd=id==='bandage'?1.2:1.4;sfx.heal();
+  card(was&&q[4]?'Bleeding stopped':'Used '+q[1].toLowerCase(),0,'u','+'+q[3]+' hp · '+m[id]+' left');$('hurt').style.opacity=P.hp<P.maxHp*.35?.45:0;
+}
 /* Q: bandage only. Stops bleeding and patches a little. */
+/* pings: middle mouse marks what you aim at, for you and your lobby */
+const PINGS=[],PING_GEO=new T.OctahedronGeometry(.32,0),BEAM_GEO=new T.CylinderGeometry(.035,.035,7,6),PV=new T.Vector3();
+function addPing(x,y,z,who,enemy,remote){
+  if(PINGS.length>=6){const o=PINGS.shift();scene.remove(o.g);o.el.remove();}
+  const col=remote?0xff9a3c:enemy?0xff4a3a:0x5fe0ff,g=new T.Group(),mt=new T.MeshBasicMaterial({color:col,fog:false,transparent:true,opacity:.9,depthTest:false});
+  const d=new T.Mesh(PING_GEO,mt);d.renderOrder=5;g.add(d);const b=new T.Mesh(BEAM_GEO,new T.MeshBasicMaterial({color:col,fog:false,transparent:true,opacity:.28,depthWrite:false}));b.position.y=3.6;g.add(b);
+  g.position.set(x,y+.6,z);scene.add(g);const el=document.createElement('div');el.className='pop ptag pping';el.style.color='#'+col.toString(16).padStart(6,'0');$('pops').appendChild(el);
+  const p={g:g,d:d,el:el,x:x,y:y,z:z,life:9,who:who||'',enemy:enemy};PINGS.push(p);tone(remote?880:1320,.06,'triangle',.08);tone(remote?1320:1760,.08,'triangle',.06,0,.06);return p;}
+function doPing(){
+  if(!P||P.car)return;const pit=clamp(P.pitch,-1.3,1.3),cp=Math.cos(pit),sy=Math.sin(P.yaw),cy=Math.cos(P.yaw);
+  let ox,oy,oz,dx,dy,dz;if(view===2){ox=P.x;oy=1.4+P.base+P.y;oz=P.z;dx=-sy;dy=-.15;dz=-cy;const l=Math.hypot(dx,dy,dz);dx/=l;dy/=l;dz/=l;}else{ox=CAM.x;oy=CAM.y;oz=CAM.z;dx=-sy*cp;dy=Math.sin(pit);dz=-cy*cp;}
+  let t=rayCol(ox,oy,oz,dx,dy,dz,220);if(dy<-.001)t=Math.min(t,(oy-.02)/-dy);let foe=null;
+  for(const e of W.enemies){if(e.dead)continue;const h=raySph(ox,oy,oz,dx,dy,dz,e.x,1.2,e.z,.7);if(h>0&&h<t){t=h;foe=e;}}
+  if(t>=220&&!foe){card('Nothing to ping',0,'c');return;}
+  const x=foe?foe.x:ox+dx*t,y=foe?1.6:oy+dy*t,z=foe?foe.z:oz+dz*t,p=addPing(x,y,z,'',!!foe,false);if(foe)p.foe=foe;
+  MP.pgn=(MP.pgn||0)+1;MP.pg=[MP.pgn,+x.toFixed(1),+y.toFixed(1),+z.toFixed(1),foe?1:0];MP.sendT=0;
+}
+function updPings(rdt){
+  for(let i=PINGS.length-1;i>=0;i--){const p=PINGS[i];p.life-=rdt;
+    if(p.life<=0||state!=='raid'){scene.remove(p.g);p.el.remove();PINGS.splice(i,1);continue;}
+    if(p.foe&&!p.foe.dead){p.x=p.foe.x;p.z=p.foe.z;p.g.position.set(p.x,p.y+.6,p.z);}
+    p.d.rotation.y+=rdt*2.5;p.d.position.y=Math.sin(p.life*4)*.12;const fade=Math.min(1,p.life/1.5);p.d.material.opacity=.9*fade;
+    PV.set(p.x,p.y+1.4,p.z).project(camera);const dist=Math.hypot(p.x-P.x,p.z-P.z);
+    if(PV.z<1&&PV.z>-1){p.el.textContent=(p.who?p.who+' · ':'')+(p.enemy?'ENEMY · ':'')+Math.round(dist)+' m';p.el.style.transform='translate('+((PV.x*.5+.5)*VW).toFixed(1)+'px,'+((-PV.y*.5+.5)*VH).toFixed(1)+'px) translate(-50%,-50%)';p.el.style.opacity=fade;}else p.el.style.opacity=0;}
+}
 function bandage(){
   if(state!=='raid'||P.healCd>0)return;const m=S.meds;
-  if(!(m.bandage>0)){card('No bandages',0,'c',P.bleed?'V for a first aid kit':'');P.healCd=.4;return;}
+  if(!(m.bandage>0)){card('No bandages',0,'c',P.bleed?'tap Q for a first aid kit':'');P.healCd=.4;return;}
   if(!P.bleed&&P.hp>=P.maxHp-1){card('Not bleeding',0,'c');P.healCd=.4;return;}
   m.bandage--;const was=P.bleed;P.bleed=false;P.hp=Math.min(P.maxHp,P.hp+12);P.healCd=1.2;sfx.heal();
   card(was?'Bleeding stopped':'Used bandage',0,'u','+12 hp · '+m.bandage+' left');$('hurt').style.opacity=P.hp<P.maxHp*.35?.45:0;
@@ -1923,7 +1974,8 @@ function updFx(dt){
   if(mflash.intensity>0)mflash.intensity=Math.max(0,mflash.intensity-dt*30);
   if(comboT>0){comboT-=dt;if(comboT<=0){combo=0;$('combo').style.opacity=0;}}
 }
-function updCamera(dt){
+let shC=1;
+function updCamera(dt){shC+=((S.shoulder||1)-shC)*Math.min(1,dt*10);
   const c=P.car,pit=clamp(P.pitch+P.recoil,-1.3,1.3),sy=Math.sin(P.yaw),cy=Math.cos(P.yaw);
   const ba=c||S.bob===false?0:P.bobA*(1-.75*P.adsT)*(view===1?1:.35),bobY=Math.sin(P.anim*2)*.05*ba*(1+.35*P.sprT),bobX=Math.cos(P.anim)*.035*ba;
   const roll=c?0:(S.bob===false?0:-P.lean*.03-Math.cos(P.anim)*.006*ba)-(P.slide>0?.06:0)-P.dvS*.2*P.dvT;
@@ -1931,8 +1983,8 @@ function updCamera(dt){
   if(view===1){CAM.x=ex;CAM.y=ey;CAM.z=ez;camera.rotation.set(pit,P.yaw,roll);}
   else{
     let dist,side,up,p2=pit;
-    if(view===2){dist=17;side=0;up=0;p2=-.95;}else if(c){dist=7.5;side=0;up=1.2;p2=pit-.12;}else{dist=3.4-1.6*P.adsT;side=.7-.15*P.adsT;up=.3;}
-    if(side>0){const t=rayCol(ex,ey+up,ez,cy,0,-sy,side+.35);side=clamp(t-.35,0,side);}
+    if(view===2){dist=17;side=0;up=0;p2=-.95;}else if(c){dist=7.5;side=0;up=1.2;p2=pit-.12;}else{dist=3.4-1.6*P.adsT;side=(.7-.15*P.adsT)*shC;up=.3;}
+    if(Math.abs(side)>.01){const sg=Math.sign(side),t=rayCol(ex,ey+up,ez,cy*sg,0,-sy*sg,Math.abs(side)+.35);side=sg*clamp(t-.35,0,Math.abs(side));}
     const px=ex+cy*side,py=ey+up,pz=ez-sy*side,cp=Math.cos(p2),bx=sy*cp,by=-Math.sin(p2),bz=cy*cp;
     let d=dist;if(view!==2){const t=rayCol(px,py,pz,bx,by,bz,dist+.4);d=clamp(t-.35,.3,dist);}
     CAM.x=px+bx*d;CAM.y=Math.max(.35,py+by*d);CAM.z=pz+bz*d;camera.rotation.set(p2,P.yaw,view===2?0:roll*.6);
@@ -2135,6 +2187,7 @@ function mpSync(list){
     }
     r.live=live&&state==='raid';
     const kb=s.kb;if(kb&&typeof kb==='object'&&typeof kb.n==='number'){if(r.kbn>=0&&kb.n!==r.kbn&&kb.p===me&&state==='raid'&&P){banner('RAIDER DOWN',r.nick+' is out of the raid','gold');P.xp+=150;P.kills++;addHeat(.5);sfx.win();}r.kbn=kb.n;}else if(r.kbn<0)r.kbn=0;
+    {const pg=s.pg;if(Array.isArray(pg)&&pg.length>=4&&typeof pg[0]==='number'){if(r.pgn!=null&&pg[0]!==r.pgn&&live&&state==='raid'){const p=addPing(num(pg[1],-200,200,0),num(pg[2],-5,60,0),num(pg[3],-200,200,0),r.nick,pg[4]===1,true);}r.pgn=pg[0];}else if(r.pgn==null)r.pgn=-1;}
     const dr=s.drop;if(dr&&typeof dr==='object'&&typeof dr.n==='number'){if(r.dropn>=0&&dr.n!==r.dropn&&state==='raid'&&W&&dr.sd===W.seed)mpDrop(dr,r.nick);r.dropn=dr.n;}else if(r.dropn<0)r.dropn=0;
   }
   for(const [id,r] of MP.peers){if(seen.has(id))continue;peerG.remove(r.c.g);if(r.tag.parentNode)r.tag.parentNode.removeChild(r.tag);MP.peers.delete(id);delete MP.dm[id];}
@@ -2163,7 +2216,7 @@ function mpTick(dt){
   }
   if(!MP.room)return;
   MP.sendT-=dt;if(MP.sendT>0)return;MP.sendT=.066;
-  const pr=state==='raid'&&P&&W?{r:1,sd:W.seed,x:+P.x.toFixed(2),z:+P.z.toFixed(2),y:+(P.base+P.y).toFixed(2),yaw:+P.yaw.toFixed(3),w:P.mini>0?'minigun':P.weapon,mv:P.moving?1:0,pv:S.pvp?1:0,nk:S.nick,f:[MP.fn,MP.fx[0],MP.fx[1],MP.fx[2]],dm:MP.dm,kb:MP.kb,drop:MP.drop}
+  const pr=state==='raid'&&P&&W?{pg:MP.pg||null,r:1,sd:W.seed,x:+P.x.toFixed(2),z:+P.z.toFixed(2),y:+(P.base+P.y).toFixed(2),yaw:+P.yaw.toFixed(3),w:P.mini>0?'minigun':P.weapon,mv:P.moving?1:0,pv:S.pvp?1:0,nk:S.nick,f:[MP.fn,MP.fx[0],MP.fx[1],MP.fx[2]],dm:MP.dm,kb:MP.kb,drop:MP.drop}
     :{r:0,sd:null,x:null,z:null,y:null,yaw:null,w:null,mv:null,f:null,pv:S.pvp?1:0,nk:S.nick,dm:MP.dm,kb:MP.kb,drop:MP.drop};
   const js=JSON.stringify(pr);if(js===MP.last)return;MP.last=js;
   try{const q=MP.room.presence(pr);if(q&&q.catch)q.catch(()=>{});}catch(e){}
@@ -2212,7 +2265,7 @@ function update(rdt){
   if(P.car){P.x=P.car.x;P.z=P.car.z;}
   updEnemies(dt);if(state!=='raid')return;
   updBullets(dt);if(state!=='raid')return;
-  updPick(rdt);
+  updPick(rdt);if(QT&&!QT.open&&!QT.held&&performance.now()-QT.t>350){QT.held=true;bandage();}updPings(rdt);
   W.heat=Math.max(0,W.heat-dt*.012);
   W.hunterT-=dt;
   if(W.heat>=2&&W.hunterT<=0){W.hunterT=36;const want=Math.floor(W.heat)-1;let alive=0;for(const e of W.enemies)if(e.kind==='h'&&!e.dead)alive++;
@@ -2241,12 +2294,14 @@ window.addEventListener('keydown',e=>{
   if(e.code==='Tab'||e.code==='Space'||e.code.indexOf('Arrow')===0||e.ctrlKey)e.preventDefault();
   if(keys[e.code])return;keys[e.code]=true;
   if(e.code!=='Escape'&&e.code!=='Tab'&&e.code!=='KeyI')relock();
+  if(QT&&QT.open&&/^Digit[1-4]$/.test(e.code)){QT.sel=+e.code.slice(5)-1;medUse();return;}
+  if(QT&&QT.open&&e.code==='Escape'){medClose();return;}
   if(P&&P.pick){if(e.code==='Space'||e.code==='KeyE'||e.code==='KeyF')pickPress();else if(e.code==='Escape')stopPick();return;}
   switch(e.code){
     case 'KeyE':case 'KeyF':if(P&&P.loot){if(e.shiftKey)closeLoot();else takeAll();}else interact();break;
     case 'KeyR':if(DRAG)invRotate();else if(P&&P.loot)takeAll();else reload();break;
-    case 'KeyQ':bandage();break;
-    case 'KeyV':useMed();break;
+    case 'KeyQ':medDown();break;
+    case 'KeyV':S.shoulder=-(S.shoulder||1);save();tone(700,.03,'square',.04);break;
     case 'KeyC':case 'KeyO':toggleView();break;
     case 'Tab':case 'KeyI':toggleBag();break;
     case 'Escape':closeLoot();break;
@@ -2259,9 +2314,12 @@ window.addEventListener('keydown',e=>{
     case 'Digit1':case 'Digit2':case 'Digit3':case 'Digit4':case 'Digit5':case 'Digit6':swapWeapon(+e.code.slice(5)-1);break;
   }
 });
-window.addEventListener('keyup',e=>{keys[e.code]=false;});
+window.addEventListener('keyup',e=>{keys[e.code]=false;if(e.code==='KeyQ')medUp();});
 /* mouse button 4 (the back side button) crouches, button 5 (the forward one) dives; the side buttons never navigate away mid-raid */
-window.addEventListener('mousedown',e=>{if(state!=='raid')return;if(e.button===3||e.button===4)e.preventDefault();if(e.button===3&&!uiOpen())crouch();if(e.button===4&&!uiOpen())dive();},true);
+window.addEventListener('mousedown',e=>{if(state!=='raid')return;
+  if(QT&&QT.open&&e.button===0){e.preventDefault();e.stopPropagation();medUse();return;}
+  if(e.button===1){e.preventDefault();if(!uiOpen())doPing();return;}
+  if(e.button===3||e.button===4)e.preventDefault();if(e.button===3&&!uiOpen())crouch();if(e.button===4&&!uiOpen())dive();},true);
 for(const t of ['mouseup','auxclick','pointerup'])window.addEventListener(t,e=>{if(state==='raid'&&(e.button===3||e.button===4))e.preventDefault();},true);
 window.addEventListener('blur',()=>{for(const k in keys)keys[k]=false;firing=false;mouseDown=false;ads=false;});
 document.addEventListener('contextmenu',e=>{if(state==='raid')e.preventDefault();});
@@ -2294,12 +2352,13 @@ window.addEventListener('mousemove',e=>{
   if(state!=='raid')return;
   mouseIn=true;mnx=VW?(e.clientX/VW)*2-1:0;
   const mvx=clamp(e.movementX||0,-160,160),mvy=clamp(e.movementY||0,-160,160);
+  if(QT&&QT.open){QT.acc+=mvy;if(Math.abs(QT.acc)>45){medPick(QT.acc>0?1:-1);QT.acc=0;}return;}
   if(P.loot||bagOpen){if(locked){cx=clamp(cx+mvx,0,VW-2);cy=clamp(cy+mvy,0,VH-2);}else{cx=e.clientX;cy=e.clientY;}placeCur();invMove(cx,cy);return;}
   P.swx=clamp(P.swx-mvx*.00009,-.03,.03);P.swy=clamp(P.swy+mvy*.00009,-.03,.03);
   const sens=.0023*(1-(P.weapon==='sniper'&&!(P.mini>0)?.82:.4)*P.adsT);
   P.yaw-=mvx*sens;P.pitch-=mvy*sens;P.lookIdle=0;
 });
-layer.addEventListener('wheel',e=>{if(state!=='raid')return;e.preventDefault();if(uiOpen()){$('inv').scrollTop+=e.deltaY;placeCur();}else swapWeapon();},{passive:false});
+layer.addEventListener('wheel',e=>{if(state!=='raid')return;e.preventDefault();if(QT&&QT.open){medPick(e.deltaY>0?1:-1);return;}if(uiOpen()){$('inv').scrollTop+=e.deltaY;placeCur();}else swapWeapon();},{passive:false});
 layer.addEventListener('contextmenu',e=>e.preventDefault());
 
 const joyB=$('joyB'),joyK=$('joyK');
