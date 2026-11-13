@@ -304,7 +304,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 50, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 51, hosted.</small>
     </div>
     <section id="stashS"><h2>Stash <small id="stInfo"></small></h2>
       <div class="stW"><div class="stash" id="stG"></div></div>
@@ -334,6 +334,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
           <li><b>WASD</b> move · <b>Mouse</b> aim · <b>Arrows</b> also aim</li>
           <li><b>Left click</b> fire (hold for auto) · <b>Right click</b> aim down sights on/off · <b>Space</b> jump, or vault through a window you are facing</li>
           <li><b>Hold Space</b> to bunny hop: you re-jump the instant you land and build speed. Strafe with <b>A</b> or <b>D</b> while turning the same way to gain more.</li>
+          <li><b>X</b> inspects the weapon in your hands.</li>
           <li><b>Z</b> dolphin dive in the direction you are moving. Time slows while you are in the air, but you aim and shoot at nearly full speed. A dive carries you through open windows. You land prone: crawl, press <b>C</b> to crouch, or <b>Space</b> to stand.</li>
           <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. Fire again, or press <b>Space</b>, to let go and keep your swing. Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
           <li><b>C</b> crouch: slower and quieter, steadier aim, harder for infected to spot. Press it while sprinting to slide.</li>
@@ -1305,14 +1306,18 @@ function assist(ox,oy,oz,dx,dy,dz,cone){
     if(c>bc){bc=c;best=[lx/l,ly/l,lz/l];}}
   return best;
 }
-function reload(){const w=WPN[P.weapon];if(w.melee||w.gadget||P.reloading>0)return;if(P.mag[P.weapon]>=w.mag||S.ammo[w.am]<=0)return;P.reloading=w.rl;sfx.reload();}
-function swapWeapon(to){
+/* weapon inspect (X): lift the gun, show one side, flip to the other, settle back */
+const INSP_T=2.6,INSP_K=[[0,0,0,0,0,0,0],[.18,.15,-1.2,.55,-.12,.06,.08],[.45,.05,-1.35,.7,-.12,.07,.09],[.62,.25,.9,-.5,-.08,.05,.07],[.82,.1,1,-.6,-.08,.05,.07],[1,0,0,0,0,0,0]];
+function inspect(){if(!P||P.car||P.reloading>0||P.swing>0||P.dive||P.adsT>.2)return;P.insp=INSP_T;tone(520,.04,'square',.05);tone(380,.05,'square',.05,0,.5);}
+function inspPose(){const t=1-P.insp/INSP_T,K=INSP_K;let i=0;while(i<K.length-2&&t>K[i+1][0])i++;const a=K[i],b=K[i+1],u=clamp((t-a[0])/(b[0]-a[0]),0,1),e=u*u*(3-2*u),o=[];for(let j=1;j<7;j++)o.push(a[j]+(b[j]-a[j])*e);return o;}
+function reload(){P.insp=0;const w=WPN[P.weapon];if(w.melee||w.gadget||P.reloading>0)return;if(P.mag[P.weapon]>=w.mag||S.ammo[w.am]<=0)return;P.reloading=w.rl;sfx.reload();}
+function swapWeapon(to){if(P)P.insp=0;
   const list=gunList();let id=to;
   if(typeof to==='number'){id=list[to];if(!id)return;}else if(!to){id=list[(list.indexOf(P.weapon)+1)%list.length];}
   if(id===P.weapon)return;P.weapon=id;P.reloading=0;P.fireCd=.25;sfx.click();
 }
 function shoot(){
-  const mini=P.mini>0,w=mini?MINI:WPN[P.weapon];if((P.reloading>0&&!mini)||P.fireCd>0)return;
+  const mini=P.mini>0,w=mini?MINI:WPN[P.weapon];if((P.reloading>0&&!mini)||P.fireCd>0)return;P.insp=0;
   if(w.gadget){fireHook();return;}
   const sy=Math.sin(P.yaw),cy=Math.cos(P.yaw),bx=P.car?P.car.x:P.x,bz=P.car?P.car.z:P.z;
   if(w.melee){
@@ -1738,6 +1743,7 @@ function updView(){
   if(dual&&!m.gunL){m.gunL=new T.Mesh(GUNS.pistol,GUN_MAT);m.gunL.position.set(0,-.66,-.02);m.gunL.rotation.x=-HPI;m.gunL.castShadow=true;m.armL.add(m.gunL);}
   if(dual&&m.gunL.wid!==wm){m.gunL.wid=wm;setGun(m.gunL,wm);}
   if(m.gunL)m.gunL.visible=dual;
+  if(P.insp>0){P.insp=Math.max(0,P.insp-(RDT||.016));if(P.adsT>.2||P.dive||P.car)P.insp=0;}
   const sw=P.moving?Math.sin(P.anim)*.7*(1-.5*P.crT):0;
   if(k>.5){
     /* dive pose: body flat, legs trailing straight, both arms locked out toward the aim */
@@ -1755,13 +1761,17 @@ function updView(){
     m.armR.rotation.x=melee?(sf>0?.25+sf*2.05:.8+P.pitch*.3):1.45+P.pitch*.8;
     m.armL.rotation.x=melee?(sf>0?.3+sf*1.7:.72+P.pitch*.3):dual?1.45+P.pitch*.8:1.1+P.pitch*.6;
     m.armL.rotation.z=melee?.5:dual?.1:.42;m.armR.rotation.z=melee?(sf>0?-.55+sf*.8:-.28):-.1;
+    if(P.insp>0){const q=inspPose(),e=Math.sin(Math.PI*(1-P.insp/INSP_T));m.armR.rotation.x+=(1.15-m.armR.rotation.x)*e;m.armR.rotation.z-=.3*e;m.gun.rotation.y+=q[1];m.gun.rotation.z+=q[2]*.6;}
   }
   const scoped=view===1&&P.weapon==='sniper'&&!(P.mini>0)&&P.adsT>.75&&!P.car;setHid('scope',!scoped);
   {const o=scoped||(view===1&&wm==='rifle'&&P.adsT>.6&&!P.car)?0:1;if(hudKey.crossO!==o){hudKey.crossO=o;el('cross').style.opacity=o;}}
   vm.visible=view===1&&!scoped;
   if(vm.visible){const vb=S.bob===false?0:P.bobA*(1-.8*P.adsT);vm.position.z=P.recoil*1.6;vm.position.x=Math.cos(P.anim)*.012*vb+P.swx;vm.position.y=(P.reloading>0?-.16:0)-Math.abs(Math.sin(P.anim))*.014*vb+P.swy-P.land*.25-.05*P.sprT*(1-P.adsT);vm.rotation.z=-P.lean*.05;vm.rotation.y=.22*P.sprT*(1-P.adsT);vmGun.position.x=.2*(1-P.adsT);vmGun.position.y=-.2+(.2+(ADSY[wm]||-.105))*P.adsT;{const sf=melee&&P.swing>0?P.swing/.25:0;vm.rotation.x=sf>0?.45-1.5*(1-sf):0;if(sf>0)vm.rotation.y+=.45*(1-sf)-.15;}vmGun.rotation.set(melee?.75:0,melee?.5:0,melee?.3:0);if(vmGun.wid!==wm){vmGun.wid=wm;setGun(vmGun,wm);}
     if(dual){vmGun.position.x=.2-.07*P.adsT;vmGun.position.y=-.2+.05*P.adsT;vmGun.position.z=-.48+P.kR;vmGunL.position.set(-vmGun.position.x,vmGun.position.y,-.48+P.kL);}else vmGun.position.z=-.48;
-    if(melee)vmGun.position.set(.27,-.3,-.42);}
+    if(melee)vmGun.position.set(.27,-.3,-.42);
+    if(P.insp>0){const q=inspPose();vmGun.rotation.x+=q[0];vmGun.rotation.y+=q[1];vmGun.rotation.z+=q[2];vmGun.position.x+=q[3];vmGun.position.y+=q[4];vmGun.position.z+=q[5];
+      if(dual){vmGunL.rotation.set(q[0],-q[1],-q[2]);vmGunL.position.x-=q[3];vmGunL.position.y+=q[4];vmGunL.position.z+=q[5];}}
+    else if(dual)vmGunL.rotation.set(0,0,0);}
   if(dual&&vmGunL.wid!==wm){vmGunL.wid=wm;setGun(vmGunL,wm);}
   vmGunL.visible=vm.visible&&dual;
   drawRope();
@@ -2023,6 +2033,7 @@ window.addEventListener('keydown',e=>{
     case 'Space':jump();break;
     case 'KeyC':crouch();break;
     case 'KeyZ':dive();break;
+    case 'KeyX':inspect();break;
     case 'KeyG':useGrapple();break;
     case 'KeyM':toggleMute();break;
     case 'Digit1':case 'Digit2':case 'Digit3':case 'Digit4':case 'Digit5':case 'Digit6':swapWeapon(+e.code.slice(5)-1);break;
