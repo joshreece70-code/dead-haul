@@ -328,7 +328,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 70, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 71, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -679,6 +679,7 @@ post.render=function(dt){
     /* depth of the visible scene, without the sky, sun and clouds, then ambient occlusion from it */
     const au=renderer.shadowMap.autoUpdate;renderer.shadowMap.autoUpdate=false;
     const hid=[];for(const o of [sky,clouds,sunSpr])if(o.visible){o.visible=false;hid.push(o);}
+    for(const q of PUFFS)if(q&&q.s.visible){q.s.visible=false;hid.push(q.s);}for(const q of PINGS)if(q.g.visible){q.g.visible=false;hid.push(q.g);}
     renderer.getClearColor(post.tmpC);const ca=renderer.getClearAlpha();renderer.setClearColor(0xffffff,1);
     scene.overrideMaterial=post.depthMat;renderer.setRenderTarget(post.rtD);renderer.clear();renderer.render(scene,camera);scene.overrideMaterial=null;
     renderer.setClearColor(post.tmpC,ca);for(const o of hid)o.visible=true;renderer.shadowMap.autoUpdate=au;
@@ -1149,14 +1150,14 @@ function addDrop(b){
 const SMOKE_TEX=canvasTex(64,(x,s)=>{const g=x.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);g.addColorStop(0,'rgba(255,255,255,.95)');g.addColorStop(.45,'rgba(255,255,255,.5)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,s,s);});
 const PUFFS=[];let puI=0;
 function puff(x,y,z){let p=PUFFS[puI%160];
-  if(!p){const sp=new T.Sprite(new T.SpriteMaterial({map:SMOKE_TEX,color:0xc8321e,transparent:true,depthWrite:false,fog:false,opacity:0}));sp.visible=false;scene.add(sp);p=PUFFS[puI%160]={s:sp,life:0,max:1};}
+  if(!p){const sp=new T.Sprite(new T.SpriteMaterial({map:SMOKE_TEX,color:0xe0331c,transparent:true,depthWrite:false,fog:false,opacity:0}));sp.visible=false;scene.add(sp);p=PUFFS[puI%160]={s:sp,life:0,max:1};}
   puI++;p.max=p.life=rand(5,7.5);p.vx=rand(-.35,.35)+.5;p.vy=rand(1.6,2.4);p.vz=rand(-.35,.35)+.2;p.s0=rand(.8,1.3);p.s.position.set(x+rand(-.2,.2),y,z+rand(-.2,.2));p.s.visible=true;p.s.material.rotation=rand(0,6.28);}
 function updSmoke(dt){
-  if(W.smokes)for(const k of W.smokes){if(k.c.done){if(k.c.beacon)k.c.beacon.visible=false;continue;}k.t-=dt;if(k.t<=0){k.t=.14;puff(k.x,k.y,k.z);}
+  if(W.smokes)for(const k of W.smokes){if(k.c.done){if(k.c.beacon)k.c.beacon.visible=false;continue;}k.t-=dt;if(k.t<=0){k.t=.1;puff(k.x,k.y,k.z);}
     if(k.c.beacon){k.bt=(k.bt||0)+dt;k.c.beacon.visible=(k.bt%1)<.5;}}
   for(const p of PUFFS){if(!p||!p.s.visible)continue;p.life-=dt;if(p.life<=0){p.s.visible=false;continue;}
     const a=1-p.life/p.max;p.s.position.x+=p.vx*dt;p.s.position.y+=p.vy*dt*(1-a*.5);p.s.position.z+=p.vz*dt;
-    const sc=p.s0+a*6.5;p.s.scale.set(sc,sc,1);p.s.material.opacity=Math.min(1,a*6)*(1-a)*.75;}
+    const sc=p.s0+a*7.5;p.s.scale.set(sc,sc,1);p.s.material.opacity=Math.min(1,a*6)*(1-a)*.85;}
 }
 function genWorldRaw(){
   if(W){scene.remove(W.g);W.stat.geometry.dispose();if(W.lamp)W.lamp.geometry.dispose();for(const b of W.buildings)if(b.lv)for(const m of b.lv)m.geometry.dispose();}
