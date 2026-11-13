@@ -28,6 +28,10 @@ def B(mat, sx, sy, sz, x, y, z, rx=0):
 def C(mat, r, length, x, y, z, seg=10, r2=None, rx=0):
     return ("cyl", mat, (r, r if r2 is None else r2, length, seg), (x, y, z), rx)
 
+def R(mat, r_in, r_out, thick, x, y, z, seg=24):
+    """Flat ring facing along the barrel (an aperture sight)."""
+    return ("ring", mat, (r_in, r_out, thick, seg), (x, y, z), 0)
+
 def guard(y0, y1, z, mat="poly"):
     """Trigger guard: a bottom strap and a front strap."""
     return [B(mat, .010, y1 - y0, .005, 0, (y0 + y1) / 2, z), B(mat, .010, .005, -z - .012, 0, y1, (z - .012) / 2)]
@@ -100,7 +104,9 @@ def rifle():
         C("steel", .009, .200, 0, .540, .035, 8),
         B("dark", .024, .030, .040, 0, .455, .040),
         C("dark", .013, .050, 0, .665, .035, 8),
-        B("dark", .012, .020, .020, 0, .455, .078),
+        B("dark", .008, .012, .040, 0, .455, .080),
+        B("dark", .004, .012, .040, -.014, .455, .082),
+        B("dark", .004, .012, .040, .014, .455, .082),
         C("dark", .016, .200, 0, -.140, .030, 8),
         B("tan", .040, .140, .080, 0, -.200, .012),
         B("rubber", .042, .020, .110, 0, -.280, .000),
@@ -108,10 +114,8 @@ def rifle():
         B("steel", .006, .007, .020, 0, .005, -.020, 16),
         B("dark", .030, .020, .010, 0, -.045, .062),
         B("steel", .002, .070, .025, .0225, .070, .035),
-        B("dark", .030, .080, .012, 0, .090, .074),
-        B("dark", .005, .030, .046, -.0155, .090, .099),
-        B("dark", .005, .030, .046, .0155, .090, .099),
-        B("dark", .036, .030, .005, 0, .090, .1245),
+        B("dark", .004, .005, .026, 0, .020, .080),
+        R("dark", .0059, .0085, .003, 0, .020, .100),
     ]
     return p + guard(-.020, .050, -.036)
 
@@ -261,6 +265,28 @@ def part_faces(part):
     """Return (material, verts, faces) with faces as lists of vertex indices, wound to face outward."""
     kind, mat, dims, loc, rx = part
     verts, faces = [], []
+    if kind == "ring":
+        r_in, r_out, thick, seg = dims
+        for i in range(seg):
+            a = 2 * math.pi * i / seg
+            ca, sa = math.cos(a), math.sin(a)
+            for r, yy in ((r_in, -thick / 2), (r_out, -thick / 2), (r_out, thick / 2), (r_in, thick / 2)):
+                verts.append((r * ca + loc[0], yy + loc[1], r * sa + loc[2]))
+        out = []
+        for i in range(seg):
+            j = (i + 1) % seg
+            v = lambda n, k: n * 4 + k
+            a = 2 * math.pi * (i + .5) / seg
+            radial = (math.cos(a), 0, math.sin(a))
+            for f, want in (([v(i, 1), v(j, 1), v(j, 2), v(i, 2)], radial),
+                            ([v(i, 0), v(i, 3), v(j, 3), v(j, 0)], tuple(-c for c in radial)),
+                            ([v(i, 0), v(j, 0), v(j, 1), v(i, 1)], (0, -1, 0)),
+                            ([v(i, 3), v(i, 2), v(j, 2), v(j, 3)], (0, 1, 0))):
+                n = face_normal(verts, f)
+                if n[0] * want[0] + n[1] * want[1] + n[2] * want[2] < 0:
+                    f = f[::-1]
+                out.append(f)
+        return mat, verts, out
     if kind == "box":
         hx, hy, hz = dims[0] / 2, dims[1] / 2, dims[2] / 2
         for sz in (-1, 1):
