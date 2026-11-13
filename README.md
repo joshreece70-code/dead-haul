@@ -11,7 +11,6 @@ A raid-and-extract looter that runs in the browser. This repository holds the ga
 | `public/models/` | The weapon models the game loads |
 | `tools/blender_build_weapons.py` | Builds the weapons inside Blender, or writes the model files without it |
 | `tools/blender_export.py` | Exports weapon models from Blender into `public/models/` |
-| `.github/workflows/deploy.yml` | Optional: deploys on every push to `main` |
 
 ## 1. Put it on GitHub
 
@@ -39,9 +38,7 @@ npx wrangler login
 npx wrangler deploy
 ```
 
-**From GitHub Actions.** Add two repository secrets, `CLOUDFLARE_API_TOKEN` (a token with the "Edit Cloudflare Workers" template) and `CLOUDFLARE_ACCOUNT_ID`. The included workflow then deploys on each push to `main`. Delete the workflow file if you use the dashboard route instead, so the two do not both deploy.
-
-Any of the three gives you an address like `https://dead-haul.YOUR-SUBDOMAIN.workers.dev`. Send that link to friends. Nobody needs an account to play.
+Either way you get an address like `https://dead-haul.YOUR-SUBDOMAIN.workers.dev`. Send that link to friends. Nobody needs an account to play.
 
 To try it locally first, run `npx wrangler dev` and open the address it prints.
 
