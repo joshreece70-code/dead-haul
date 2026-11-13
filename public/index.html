@@ -320,7 +320,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 65, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 66, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -354,7 +354,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
           <li>Safes and cash registers are locked. With a <b>lock pick</b>, press <b>E</b> and hit <b>Space</b>, <b>E</b> or click while the marker is in the green to set each pin. A miss drops a pin and can snap the pick.</li>
           <li><b>Z</b> dolphin dive in the direction you are moving. Time slows while you are in the air, but you aim and shoot at nearly full speed. A dive carries you through open windows. You land prone: crawl, press <b>Ctrl</b> to crouch, or <b>Space</b> to stand.</li>
           <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. Fire again, or press <b>Space</b>, to let go and keep your swing. Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
-          <li><b>Ctrl</b> crouch: slower and quieter, steadier aim, harder for infected to spot. Press it while sprinting to slide.</li>
+          <li><b>Ctrl</b> or <b>mouse button 5</b> crouch: slower and quieter, steadier aim, harder for infected to spot. Press it while sprinting to slide.</li>
           <li><b>R</b> reload · <b>Q</b> bandage, stops bleeding · <b>V</b> med item: first aid kit, painkillers or morphine, whichever fits how hurt you are</li>
           <li>There is no mouse cursor during a raid. The bag and loot window get a small gold in-game pointer.</li>
           <li>Click anywhere on the game to lock the mouse. If it will not lock, the mouse still aims, and the screen edges keep turning you.</li>
@@ -2260,6 +2260,9 @@ window.addEventListener('keydown',e=>{
   }
 });
 window.addEventListener('keyup',e=>{keys[e.code]=false;});
+/* mouse button 5 (the forward side button) crouches; the side buttons never navigate away mid-raid */
+window.addEventListener('mousedown',e=>{if(state!=='raid')return;if(e.button===3||e.button===4)e.preventDefault();if(e.button===4&&!uiOpen())crouch();},true);
+for(const t of ['mouseup','auxclick','pointerup'])window.addEventListener(t,e=>{if(state==='raid'&&(e.button===3||e.button===4))e.preventDefault();},true);
 window.addEventListener('blur',()=>{for(const k in keys)keys[k]=false;firing=false;mouseDown=false;ads=false;});
 document.addEventListener('contextmenu',e=>{if(state==='raid')e.preventDefault();});
 document.addEventListener('fullscreenchange',()=>{relock();});
