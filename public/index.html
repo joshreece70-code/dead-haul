@@ -328,7 +328,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 69, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 70, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -456,7 +456,8 @@ const CT={
  pile:{n:'dropped pile',s:[.5,.3,.5],c:0x55603b,t:.3,q:[0,0],tb:[1,0,0,0,0],soft:1},
  corpse:{n:'scav body',t:1.2,q:[1,3],tb:[40,38,18,3.5,.5],ammo:1,cash:[20,160]},
  pbody:{n:"raider's bag",t:.3,q:[0,0],tb:[1,0,0,0,0]},
- hcorpse:{n:'hunter body',t:1.2,q:[2,4],tb:[10,40,38,10,2],ammo:1,cash:[80,400]}
+ hcorpse:{n:'hunter body',t:1.2,q:[2,4],tb:[10,40,38,10,2],ammo:1,cash:[80,400]},
+ airdrop:{n:'airdrop',s:[1.6,1.05,1.6],c:0x4a5332,t:2.6,q:[4,6],tb:[0,8,46,34,12],ammo:1,cash:[600,2500],heat:.7}
 };
 const EN={z:{hp:60,spd:1.5,sight:13,xp:10},s:{hp:85,spd:3.2,sight:26,xp:45},h:{hp:95,spd:3.3,sight:30,xp:90}};
 const UPMAX=10;
@@ -1049,6 +1050,7 @@ function addBuilding(B,cx,cz,w,d,o){
 /* container trim: [x, y from the floor, z, sx, sy, sz, colour, mirror] in the container's own axes; mirror copies it to the other side(s) */
 let CB=null;
 const CDET={
+ airdrop:[[.79,.52,.79,.1,1.06,.1,0x2f3622,'xz'],[0,.52,0,1.64,.1,1.64,0x2f3622],[0,.52,.81,.14,1.06,.03,0xc9b25a,'z'],[.81,.52,0,.03,1.06,.14,0xc9b25a,'x'],[0,1.14,0,1.0,.16,.7,0x8a8466],[0,1.24,0,.85,.06,.55,0xb0aa86],[.3,.62,.812,.42,.12,.01,0xe8e4d0,'z']],
  crate:[[.465,.4,.465,.09,.82,.09,0x4a3420,'xz'],[0,.4,0,1.025,.08,1.025,0x5a4026],[0,.79,0,1.03,.04,1.03,0x5a4026],[0,.4,.51,.9,.05,.02,0x3a2a1a,'z'],[0,.6,.51,.25,.12,.01,0x22201c,'z']],
  shelf:[[0,.45,0,1.74,.05,.54,0x4c504b],[0,.95,0,1.74,.05,.54,0x4c504b],[0,1.45,0,1.74,.05,.54,0x4c504b],[.84,.8,0,.06,1.6,.54,0x3e423d,'x']],
  fridge:[[0,1.2,.405,.79,.025,.015,0x8a8e88,'z'],[.3,1.42,.42,.045,.4,.045,0x9aa0a6,'z'],[.3,.65,.42,.045,.3,.045,0x9aa0a6,'z'],[0,.1,.405,.7,.12,.015,0x2a2e2c,'z']],
@@ -1136,9 +1138,29 @@ const BLOCKS={
    addCar(cx+rand(-12,-6),cz+rand(-12,12),rand(0,6.28));addCar(cx+rand(6,12),cz+rand(-12,12),rand(0,6.28));trees(B,cx,cz,3,17);for(let i=0;i<3;i++)spawn('z',cx+rand(-14,14),cz+rand(-14,14));}
 };
 function genWorld(seed){const mr=Math.random;Math.random=mulberry(seed==null?(mr()*1e9)|0:seed);try{genWorldRaw();}finally{Math.random=mr;}W.seed=seed==null?-1:seed;}
+/* airdrops: a supply crate on a tall roof, red smoke pouring off it until it is emptied */
+function addDrop(b){
+  const left=b.side!==2,x=left?b.x1-2.8:b.x0+2.8,z=b.cz+rand(-2,2),y=b.rh,top=b.lv[b.lv.length-1];
+  const DB=new Batch(),keep=CB;CB=DB;const c=addContainer('airdrop',x,z,Math.random()<.5,y);CB=keep;
+  const dm=DB.build(STATIC_MAT);dm.castShadow=true;top.add(dm);W.g.remove(c.mesh);top.add(c.mesh);
+  const bc=new T.Mesh(BOX,mat(0xff2a1a,0xff2a1a,.4,0,3));bc.scale.set(.14,.12,.14);bc.position.set(x,y+1.42,z);top.add(bc);c.beacon=bc;
+  W.smokes.push({c:c,x:x,y:y+1.3,z:z,t:0});
+}
+const SMOKE_TEX=canvasTex(64,(x,s)=>{const g=x.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);g.addColorStop(0,'rgba(255,255,255,.95)');g.addColorStop(.45,'rgba(255,255,255,.5)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,s,s);});
+const PUFFS=[];let puI=0;
+function puff(x,y,z){let p=PUFFS[puI%160];
+  if(!p){const sp=new T.Sprite(new T.SpriteMaterial({map:SMOKE_TEX,color:0xc8321e,transparent:true,depthWrite:false,fog:false,opacity:0}));sp.visible=false;scene.add(sp);p=PUFFS[puI%160]={s:sp,life:0,max:1};}
+  puI++;p.max=p.life=rand(5,7.5);p.vx=rand(-.35,.35)+.5;p.vy=rand(1.6,2.4);p.vz=rand(-.35,.35)+.2;p.s0=rand(.8,1.3);p.s.position.set(x+rand(-.2,.2),y,z+rand(-.2,.2));p.s.visible=true;p.s.material.rotation=rand(0,6.28);}
+function updSmoke(dt){
+  if(W.smokes)for(const k of W.smokes){if(k.c.done){if(k.c.beacon)k.c.beacon.visible=false;continue;}k.t-=dt;if(k.t<=0){k.t=.14;puff(k.x,k.y,k.z);}
+    if(k.c.beacon){k.bt=(k.bt||0)+dt;k.c.beacon.visible=(k.bt%1)<.5;}}
+  for(const p of PUFFS){if(!p||!p.s.visible)continue;p.life-=dt;if(p.life<=0){p.s.visible=false;continue;}
+    const a=1-p.life/p.max;p.s.position.x+=p.vx*dt;p.s.position.y+=p.vy*dt*(1-a*.5);p.s.position.z+=p.vz*dt;
+    const sc=p.s0+a*6.5;p.s.scale.set(sc,sc,1);p.s.material.opacity=Math.min(1,a*6)*(1-a)*.75;}
+}
 function genWorldRaw(){
   if(W){scene.remove(W.g);W.stat.geometry.dispose();if(W.lamp)W.lamp.geometry.dispose();for(const b of W.buildings)if(b.lv)for(const m of b.lv)m.geometry.dispose();}
-  decals.forEach(m=>{m.visible=false;});parts.forEach(p=>{p.m.visible=false;p.life=0;});
+  decals.forEach(m=>{m.visible=false;});PUFFS.forEach(p=>{if(p){p.s.visible=false;p.life=0;}});parts.forEach(p=>{p.m.visible=false;p.life=0;});
   const g=new T.Group();scene.add(g);
   W={g:g,col:[],solid:[],buildings:[],containers:[],cars:[],enemies:[],exfils:[],time:RAID_TIME,heat:0,hunterT:30,zT:6,contract:null,warn:false,stat:null,spawn:null,bodies:[],windows:[],pickups:[]};
   const B=new Batch(),L=new Batch();CB=B;
@@ -1166,6 +1188,8 @@ function genWorldRaw(){
   for(let i=0;i<38;i++){const p=roadPoint();spawn('z',p.x,p.z);}
   for(let i=0;i<3;i++){const p=roadPoint(50,400,W.spawn.x,W.spawn.z);spawn('s',p.x,p.z);}
   for(let i=W.enemies.length-1;i>=0;i--){const e=W.enemies[i];if(Math.hypot(e.x-W.spawn.x,e.z-W.spawn.z)<30){g.remove(e.mesh);W.enemies.splice(i,1);}}
+  {const tall=W.buildings.filter(b=>b.lv);let n=0;W.smokes=[];
+   tall.forEach((b,i)=>{if(Math.random()<.5||(n===0&&i===tall.length-1)){addDrop(b);n++;}});W.drops=n;}
   CB=null;W.stat=B.build(STATIC_MAT);W.stat.castShadow=true;W.stat.receiveShadow=true;g.add(W.stat);W.lamp=L.build(LAMP_MAT);g.add(W.lamp);
 }
 
@@ -1237,10 +1261,10 @@ function fillLoot(c){
   const d=CT[c.type];c.items=[];const n=randi(d.q[0],d.q[1]);for(let i=0;i<n;i++)c.items.push(Object.assign({},rollItem(d.tb,d.f)));
   if(d.cash){const v=randi(d.cash[0],d.cash[1]);c.items.push({cash:v,name:'Loose cash',val:v,w:0,r:v>300?'u':'c',k:'cash'});}
   if(d.ammo){const id=pick(['a9','a9','a9','a12','a556','a762']);c.items.push(Object.assign({},IT.find(i=>i.id===id)));}
-  {const pool={weaponcase:[.55,['shotgun','smg','ak','ak','rifle','spas','sniper']],locker:[.12,['pistol','smg','shotgun']],safe:[.1,['pistol','pistol','sniper']],duffel:[.07,['pistol','smg','shotgun']],crate:[.04,['pistol','shotgun','smg']],trunk:[.08,['pistol','shotgun']]}[c.type];
+  {const pool={airdrop:[.7,['ak','rifle','sniper','spas','sniper','uzis']],weaponcase:[.55,['shotgun','smg','ak','ak','rifle','spas','sniper']],locker:[.12,['pistol','smg','shotgun']],safe:[.1,['pistol','pistol','sniper']],duffel:[.07,['pistol','smg','shotgun']],crate:[.04,['pistol','shotgun','smg']],trunk:[.08,['pistol','shotgun']]}[c.type];
    if(c.gun&&Math.random()<(c.type==='hcorpse'?.7:.4))c.items.push(gunItem(c.type==='hcorpse'&&Math.random()<.12?'sniper':c.gun,true));
    else if(pool&&Math.random()<pool[0])c.items.push(gunItem(pick(pool[1]),false));}
-  {const ch=c.type==='safe'?.85:c.type==='register'?.75:c.type==='hcorpse'?.45:c.type==='zbody'?.12:c.type==='pile'?0:.22;if(Math.random()<ch){const n=1+(Math.random()<.4?1:0)+((c.type==='safe'||c.type==='register')&&Math.random()<.35?1:0);c.items.push({coin:n,name:n>1?'Slot coins':'Slot coin',val:0,w:0,r:'r',k:'coin'});}}
+  {const ch=c.type==='airdrop'?1:c.type==='safe'?.85:c.type==='register'?.75:c.type==='hcorpse'?.45:c.type==='zbody'?.12:c.type==='pile'?0:.22;if(Math.random()<ch){const n=1+(Math.random()<.4?1:0)+((c.type==='safe'||c.type==='register')&&Math.random()<.35?1:0);c.items.push({coin:n,name:n>1?'Slot coins':'Slot coin',val:0,w:0,r:'r',k:'coin'});}}
 }
 function emptied(c){
   c.done=true;if(c.type==='pile'){if(c.mesh)W.g.remove(c.mesh);const i=W.containers.indexOf(c);if(i>=0)W.containers.splice(i,1);}
@@ -1379,6 +1403,7 @@ function startRaid(){
   $('menu').hidden=true;$('summary').hidden=true;$('hud').hidden=false;$('cross').hidden=false;$('inv').hidden=true;$('loot').hidden=true;bagAuto=false;$('bHook').hidden=equipped().indexOf('grapple')<0;$('feed').innerHTML='';
   mpResync();
   banner('RAID STARTED','Loot the town. Reach a green flare to extract.','go');
+  if(W.drops)card((W.drops>1?W.drops+' airdrops':'Airdrop')+' on the rooftops',0,'l','follow the red smoke');
   S.stats.raids++;save();
 }
 function endRaid(res){$('pickUI').hidden=true;if(P)P.pick=null;QT=null;$('medUI').hidden=true;for(const p of PINGS){scene.remove(p.g);p.el.remove();}PINGS.length=0;MP.pg=null;
@@ -2265,7 +2290,7 @@ function update(rdt){
   if(P.car){P.x=P.car.x;P.z=P.car.z;}
   updEnemies(dt);if(state!=='raid')return;
   updBullets(dt);if(state!=='raid')return;
-  updPick(rdt);if(QT&&!QT.open&&!QT.held&&performance.now()-QT.t>350){QT.held=true;bandage();}updPings(rdt);
+  updSmoke(dt);updPick(rdt);if(QT&&!QT.open&&!QT.held&&performance.now()-QT.t>350){QT.held=true;bandage();}updPings(rdt);
   W.heat=Math.max(0,W.heat-dt*.012);
   W.hunterT-=dt;
   if(W.heat>=2&&W.hunterT<=0){W.hunterT=36;const want=Math.floor(W.heat)-1;let alive=0;for(const e of W.enemies)if(e.kind==='h'&&!e.dead)alive++;
