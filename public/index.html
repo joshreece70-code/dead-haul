@@ -172,6 +172,13 @@ h1 span{color:var(--cash)}
 .stat span{font:600 12px var(--display);letter-spacing:.18em;color:var(--dim);text-transform:uppercase}
 .stat.c b{color:var(--cash)}
 .reels{display:flex;gap:8px;margin:10px 0 4px}
+.dripWin{position:relative;height:124px;overflow:hidden;background:#070907;border:1px solid var(--line);border-bottom:3px solid var(--cash);margin:10px 0 6px}
+.dripStrip{position:absolute;left:0;top:10px;display:flex;gap:6px;will-change:transform}
+.dc{flex:0 0 120px;height:104px;box-sizing:border-box;border:1px solid #2a3128;border-bottom:4px solid #9aa4ac;background:#111410;position:relative;overflow:hidden;font:600 13px var(--display);color:#fff;padding:4px 6px;text-shadow:0 1px 2px #000,0 0 4px #000;display:flex;flex-direction:column;justify-content:flex-end}
+.dc.rare{border-bottom-color:var(--rl)}.dc .sw{position:absolute;left:0;right:0;top:0;height:62px;opacity:.9}
+.dc .ic{position:absolute;left:6px;right:6px;top:6px;height:52px;background-size:contain;background-repeat:no-repeat;background-position:center;filter:drop-shadow(0 2px 2px #000)}
+.dc small{font:400 10px var(--mono);color:#c9cdc6}.dc.win{outline:2px solid var(--cash);outline-offset:-2px;box-shadow:inset 0 0 18px rgba(230,193,74,.45)}
+.dripMark{position:absolute;left:50%;top:0;bottom:0;width:2px;margin-left:-1px;background:var(--cash);box-shadow:0 0 8px var(--cash);z-index:2}
 .reel{flex:1;min-width:0;height:84px;display:grid;place-items:center;font:700 46px/1 var(--display);background:#090b09;border:1px solid var(--line);border-bottom:3px solid var(--cash)}
 .reel.small{font-size:30px}
 .reel.win{border-color:var(--rl);box-shadow:0 0 20px -2px var(--rl)}
@@ -328,9 +335,9 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 73, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 74, hosted.</small>
     </div>
-    <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
+    <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
       <div class="stW"><div class="stash" id="stG"></div></div>
       <div class="stBar"><span id="stMsg">Drag items to arrange them, R turns the one you are holding. Click to select, Shift-click sells one straight away.</span>
@@ -340,6 +347,11 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
         <div class="reels"><div class="reel" id="r0">7</div><div class="reel" id="r1">7</div><div class="reel" id="r2">7</div></div>
         <div class="row"><span class="nm"><span id="sCoins">0</span> coins<small id="sMsg">Find coins in raids. They only count if you extract.</small></span><button class="btn" type="button" data-act="spin" id="sSpin">Spin · 1 coin</button></div>
         <ul class="pay" id="sPay"></ul>
+      </section>
+      <section class="tab" data-tab="drip"><h2>Drip Drop <small style="font:400 12px var(--mono);letter-spacing:0;text-transform:none;color:var(--dim)">weapon skins</small></h2>
+        <div class="dripWin"><div class="dripStrip" id="dStrip"></div><i class="dripMark"></i></div>
+        <div class="row"><span class="nm"><span id="dCoins">0</span> coins<small id="dMsg">One slot coin a roll. Always a skin for a weapon you own. Doubles pay cash.</small></span><button class="btn" type="button" data-act="drip" id="dRoll">Roll · 1 coin</button></div>
+        <ul class="pay"><li><b>Common · 75%</b> Arctic Camo, Tiger Tooth, Crimson Web</li><li><b>Rare · 25%</b> Fade, Doppler, Gold</li><li><b>Double</b> common $5,000 · rare $15,000</li></ul>
       </section>
       <section class="tab" data-tab="loadout"><h2>Loadout</h2><div id="mLoad"></div></section>
       <section class="tab" data-tab="trader"><h2>Trader</h2><div id="mShop"></div></section>
@@ -801,6 +813,7 @@ const GUNS={
 };
 GUNS.dual=GUNS.pistol;
 GUNS.grapple=bake([[gBox(.05,.075,.24),0x3a3d42,0,.03,-.06],[gCyl(.032,.032,.12,12),0x1b1c1f,0,.035,-.24,HPI],[gBox(.075,.075,.075),0xb02a20,0,-.035,.02],[gBox(.077,.02,.077),0xd8d0b8,0,-.035,.02],[gBox(.032,.1,.045),0x202226,0,-.07,.1,-.25],[gBox(.008,.03,.012),0x6a6e74,0,-.02,.05],[gIco(.035,0),0xa4a8ae,0,.035,-.31],[gBox(.012,.05,.012),0xa4a8ae,0,.06,-.3,.6],[gBox(.012,.05,.012),0xa4a8ae,0,.01,-.3,-.6]]);
+if(S.bfskin&&S.bfskin!=='stock'&&((S.skins||{}).butterfly||[]).indexOf(S.bfskin)<0)S.bfskin='stock';
 GUNS.butterfly=bfGeo(S.bfskin);
 const ADSY={grapple:-.1,dual:-.15,uzis:-.15,spas:-.1,pistol:-.092,smg:-.12,shotgun:-.092,rifle:-.135,ak:-.114,sniper:-.142,minigun:-.125,katana:-.105,redrebel:-.105,knife:-.105,butterfly:-.105,karambit:-.105,saber:-.105};
 const BLADE_GEO=new T.CylinderGeometry(.011,.011,.84,8);BLADE_GEO.rotateX(HPI);BLADE_GEO.translate(0,0,-.54);
@@ -2453,7 +2466,7 @@ $('bFire').addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagatio
 /* ================= menu ================= */
 function toggleMute(){S.muted=!S.muted;if(master)master.gain.value=S.muted?0:.5;save();if(state==='menu')renderMenu();}
 /* slot machine: one coin a spin, three reels drawn independently from weighted symbols */
-const SYM=[{s:'$',c:'var(--go)',w:40,p3:1500,p2:150},{s:'\u2666',c:'var(--rr)',w:22,p3:4000,p2:300},{s:'\u2605',c:'var(--re)',w:16,p3:9000,p2:600},{s:'BAR',c:'var(--text)',w:12,p3:20000,p2:1200},{s:'7',c:'var(--rl)',w:8,p3:100000,p2:3000},{s:'\u2620',c:'var(--blood)',w:4,p3:0,p2:0},{s:'GUN',c:'var(--re)',w:11,item:'gun',d3:'a top gun',d2:'a gun'},{s:'\u2694',c:'var(--rr)',w:11,item:'blade',d3:'the lightsaber',d2:'a knife'},{s:'VEST',c:'var(--go)',w:12,item:'vest',d3:'armor vest + $5,000',d2:'armor vest'},{s:'SKIN',c:'var(--rl)',w:12,item:'skin',d3:'a rare skin (Fade, Doppler, Gold)',d2:'a weapon skin'}];
+const SYM=[{s:'$',c:'var(--go)',w:40,p3:1500,p2:150},{s:'\u2666',c:'var(--rr)',w:22,p3:4000,p2:300},{s:'\u2605',c:'var(--re)',w:16,p3:9000,p2:600},{s:'BAR',c:'var(--text)',w:12,p3:20000,p2:1200},{s:'7',c:'var(--rl)',w:8,p3:100000,p2:3000},{s:'\u2620',c:'var(--blood)',w:4,p3:0,p2:0},{s:'GUN',c:'var(--re)',w:11,item:'gun',d3:'a top gun',d2:'a gun'},{s:'\u2694',c:'var(--rr)',w:11,item:'blade',d3:'the lightsaber',d2:'a knife'},{s:'VEST',c:'var(--go)',w:12,item:'vest',d3:'armor vest + $5,000',d2:'armor vest'}];
 const SYM_W=SYM.reduce((a,y)=>a+y.w,0);
 /* item prizes: something you do not own yet, otherwise half its price in cash */
 function slotItem(kind,three){
@@ -2473,6 +2486,34 @@ function slotItem(kind,three){
   return WPN[id].n;
 }
 let slotBusy=false;
+/* Drip Drop: one reel of skin cards that whips past and stops on your skin */
+const SKIN_CSS={arctic:'linear-gradient(135deg,#e8eef2 0 32%,#9aa4ac 32% 62%,#4a565e 62%)',tiger:'repeating-linear-gradient(115deg,#e0882a 0 11px,#1a1208 11px 17px)',web:'repeating-radial-gradient(circle at 30% 40%,#8a1018 0 7px,#120a0a 7px 8px)',
+ crimson:'repeating-radial-gradient(circle at 70% 30%,#9a1420 0 7px,#120a0a 7px 8px)',fade:'linear-gradient(90deg,#f2d45c,#f08aa8,#c06ad8,#6a4ae8)',doppler:'linear-gradient(90deg,#1a1640,#4a2a9a,#7a3ab8,#2f5fd0)',gold:'linear-gradient(135deg,#f2cc5a,#8a6420 55%,#f2cc5a)'};
+let dripBusy=false;
+function dripPool(){const o=[];for(const w of SKINNABLE)if(owns(w))for(const k in SKINS)o.push({w:w,k:k,rare:!!SKINS[k].rare,n:SKINS[k].n});
+  if(owns('butterfly'))for(const k of ['crimson','fade','doppler','gold'])o.push({w:'butterfly',k:k,rare:k!=='crimson',n:BF_SKINS[k].n});return o;}
+function dripPick(pool){const rare=Math.random()<.25,sub=pool.filter(p=>p.rare===rare);return pick(sub.length?sub:pool);}
+function dripCard(p,win){return '<div class="dc'+(p.rare?' rare':'')+(win?' win':'')+'"><span class="sw" style="background:'+SKIN_CSS[p.k]+'"></span><span class="ic" style="'+(ICON['w_'+p.w]?'background-image:url('+ICON['w_'+p.w]+')':'')+'"></span>'+p.n+'<small>'+WPN[p.w].n+'</small></div>';}
+function dripIdle(){const el=$('dStrip');if(!el||dripBusy)return;const pool=dripPool();el.style.transition='none';el.style.transform='translateX(0)';el.innerHTML=Array.from({length:12},()=>dripCard(dripPick(pool),false)).join('');}
+function dripOwned(p){return p.w==='butterfly'?(S.skins.butterfly||[]).indexOf(p.k)>=0:(S.skins[p.w]||[]).indexOf(p.k)>=0;}
+function dripRoll(){
+  if(dripBusy||!(S.coins>0))return;const pool=dripPool();if(!pool.length)return;
+  S.coins--;save();dripBusy=true;$('dRoll').disabled=true;$('dMsg').textContent='Rolling...';$('dCoins').textContent=S.coins;
+  const win=dripPick(pool),N=48,WI=40,cards=[];for(let i=0;i<N;i++)cards.push(i===WI?win:dripPick(pool));
+  const el=$('dStrip'),box=el.parentNode.clientWidth||600,step=126,target=WI*step-(box/2-60)+rand(-46,46);
+  el.style.transition='none';el.style.transform='translateX(0)';el.innerHTML=cards.map(c=>dripCard(c,false)).join('');void el.offsetWidth;
+  const T=5.4;el.style.transition='transform '+T+'s cubic-bezier(.1,.65,.12,1)';el.style.transform='translateX('+(-target)+'px)';
+  for(let i=1;i<=WI;i++){const t=T*(1-Math.pow(1-i/WI,1/2.6));setTimeout(()=>tone(900+i*8,.025,'square',.04),t*1000);}
+  setTimeout(()=>{
+    dripBusy=false;const msg=$('dMsg');el.children[WI].classList.add('win');
+    if(dripOwned(win)){const c=win.rare?15000:5000;S.cash+=c;msg.textContent='Double: '+win.n+' on the '+WPN[win.w].n+'. You get '+fmt(c)+'.';sfx.cash();}
+    else{(S.skins[win.w]||(S.skins[win.w]=[])).push(win.k);
+      if(win.w==='butterfly'){S.bfskin=win.k;GUNS.butterfly=bfGeo(win.k);}else S.skinOn[win.w]=win.k;
+      vmGun.wid=null;vmGunL.wid=null;try{makeIcons();}catch(e){}
+      msg.textContent=(win.rare?'RARE. ':'')+win.n+' for the '+WPN[win.w].n+'. Equipped.';sfx.win();if(win.rare)flashFx('var(--rl)');}
+    save();renderMenu();
+  },T*1000+120);
+}
 function slotPick(){let r=Math.random()*SYM_W;for(let i=0;i<SYM.length;i++){r-=SYM[i].w;if(r<=0)return i;}return 0;}
 function slotShow(k,i,win){const e=$('r'+k),y=SYM[i];e.textContent=y.s;e.style.color=y.c;e.className='reel'+(y.s.length>1?' small':'')+(win?' win':'');}
 function slotPay(a,b,c){
@@ -2635,7 +2676,7 @@ function stashSell(list){
 }
 let loadOpen=null;
 let wipeArmed=false;
-function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.coins:'';}
+function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.coins:'';const dc=$('dCoins');if(dc)dc.textContent=S.coins||0;const dr=$('dRoll');if(dr)dr.disabled=dripBusy||!(S.coins>0);if(!dripBusy&&$('dStrip')&&!$('dStrip').children.length)dripIdle();}
   renderStash();
   $('sCoins').textContent=S.coins||0;$('sSpin').disabled=slotBusy||!(S.coins>0);
   $('mCash').textContent=fmt(S.cash);$('mLvl').textContent=S.level;$('mEx').textContent=S.stats.extracts+' / '+S.stats.raids;$('mBest').textContent=fmt(S.stats.best);$('mStreak').textContent=S.streak+(S.streak?'  (+'+Math.min(S.streak,5)*5+'%)':'');
@@ -2652,9 +2693,9 @@ function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.c
       h+='<div class="opts">'+opts.map(o=>'<button type="button" class="btn'+(o===id?'':' plain')+'" data-act="equip" data-id="'+k+':'+o+'">'+nm(o)+(k==='pack'?' · '+PACKS[o].c+'x'+PACKS[o].r:'')+'</button>').join('')+(k!=='melee'&&k!=='pack'&&id?'<button type="button" class="btn plain" data-act="equip" data-id="'+k+':">Leave empty</button>':'')+(opts.length<SLOT[k].length?'<small>More at the trader'+(k==='primary'?' or found on scavs and hunters':'')+'.</small>':'')+'</div>';}
   }
   {const have=SKINNABLE.filter(w=>owns(w)&&(S.skins[w]||[]).length);
-   if(have.length){h+='<div class="row"><span class="nm">Weapon skins<small>Won on the slot machine</small></span></div>';
+   if(have.length){h+='<div class="row"><span class="nm">Weapon skins<small>Won on Drip Drop</small></span></div>';
     for(const w of have){const on=S.skinOn[w]||'';h+='<div class="opts"><small>'+WPN[w].n+'</small>'+['',...S.skins[w]].map(k=>'<button type="button" class="btn'+(k===on?'':' plain')+'" data-act="skin" data-id="'+w+':'+k+'">'+(k?SKINS[k].n:'Default')+'</button>').join('')+'</div>';}}}
-  if(owns('butterfly'))h+='<div class="row"><span class="nm">Butterfly knife skin<small>'+BF_SKINS[S.bfskin||'stock'].n+'</small></span></div><div class="opts">'+Object.keys(BF_SKINS).map(k=>'<button type="button" class="btn'+(k===(S.bfskin||'stock')?'':' plain')+'" data-act="bfskin" data-id="'+k+'">'+BF_SKINS[k].n+'</button>').join('')+'</div>';
+  if(owns('butterfly'))h+='<div class="row"><span class="nm">Butterfly knife skin<small>'+BF_SKINS[S.bfskin||'stock'].n+'</small></span></div><div class="opts">'+Object.keys(BF_SKINS).filter(k=>k==='stock'||((S.skins.butterfly||[]).indexOf(k)>=0)).map(k=>'<button type="button" class="btn'+(k===(S.bfskin||'stock')?'':' plain')+'" data-act="bfskin" data-id="'+k+'">'+BF_SKINS[k].n+'</button>').join('')+'</div>';
   h+='<div class="row"><span class="nm">Armor vest<small>'+(S.armor?'Equipped. Soaks half of each bullet until it breaks.':'None. Lost when you die.')+'</small></span></div>';
   h+='<div class="row"><span class="nm">Pack<small>'+(22+6*S.up.pack)+' kg before you slow down</small></span></div>';
   $('mLoad').innerHTML=h;
@@ -2686,8 +2727,9 @@ $('menu').addEventListener('click',e=>{
   if(a==='deploy'){startRaid();if(!isTouch){goFull();tryLock();}return;}
   if(a==='tab'){showTab(id);sfx.click();return;}
   if(a==='skin'){const q=id.split(':');if(q[1]&&!((S.skins[q[0]]||[]).indexOf(q[1])>=0))return;if(q[1])S.skinOn[q[0]]=q[1];else delete S.skinOn[q[0]];save();vmGun.wid=null;vmGunL.wid=null;try{makeIcons();}catch(e){}sfx.click();renderMenu();return;}
-  if(a==='bfskin'){if(!BF_SKINS[id])return;S.bfskin=id;save();GUNS.butterfly=bfGeo(id);vmGun.wid=null;vmGunL.wid=null;try{makeIcons();}catch(e){}sfx.click();renderMenu();return;}
+  if(a==='bfskin'){if(!BF_SKINS[id]||(id!=='stock'&&(S.skins.butterfly||[]).indexOf(id)<0))return;S.bfskin=id;save();GUNS.butterfly=bfGeo(id);vmGun.wid=null;vmGunL.wid=null;try{makeIcons();}catch(e){}sfx.click();renderMenu();return;}
   if(a==='spin'){spin();return;}
+  if(a==='drip'){dripRoll();return;}
   if(a==='slot'){loadOpen=loadOpen===id?null:id;renderMenu();return;}
   if(a==='equip'){const q=id.split(':');fixLoad();if(q[1]&&!owns(q[1]))return;S.load[q[0]]=q[1]||'';if(q[0]==='melee'&&!q[1])S.load.melee='knife';if(q[0]==='pack'&&!q[1])S.load.pack='daypack';loadOpen=null;save();sfx.click();renderMenu();return;}
   if(a==='st'){if(stSuppress)return;const it=S.stash[+id];if(!it)return;if(e.shiftKey){stashSell([it]);renderMenu();return;}if(stSel.has(it))stSel.delete(it);else stSel.add(it);renderStash();return;}
