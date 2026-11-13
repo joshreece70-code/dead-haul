@@ -291,7 +291,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
       <button class="tb" id="bHook" type="button" hidden>HOOK</button>
     </div>
     <div id="inv" hidden>
-      <div id="loot" class="pnl gp" hidden><h3><span id="lootN"></span><small id="lootW"></small></h3><div class="grid" id="lootG"></div><button id="lootAll" type="button">TAKE ALL</button></div>
+      <div id="loot" class="pnl gp" hidden><h3><span id="lootN"></span><small id="lootW"></small></h3><div class="grid" id="lootG"></div><button id="lootAll" type="button">TAKE ALL (R)</button></div>
       <div id="bag" class="pnl gp"><h3><span>Backpack</span><small id="bagW"></small></h3><div class="grid" id="bagG"></div><p id="bagF"></p></div>
     </div>
   </div></div>
@@ -311,7 +311,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 57, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 58, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -348,8 +348,8 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
           <li><b>R</b> reload · <b>Q</b> heal</li>
           <li>There is no mouse cursor during a raid. The bag and loot window get a small gold in-game pointer.</li>
           <li>Click anywhere on the game to lock the mouse. If it will not lock, the mouse still aims, and the screen edges keep turning you.</li>
-          <li><b>E</b> search containers and bodies, take all, drive · <b>Shift</b> sprint</li>
-          <li>Searching opens the container next to your backpack. Items take up grid space. Drag them across, press <b>R</b> to turn the one you are holding, or <b>Shift-click</b> to send one straight over. <b>E</b> takes everything that fits.</li>
+          <li><b>E</b> search containers and bodies, open or close the loot window, drive · <b>Shift</b> sprint</li>
+          <li>Searching opens the container next to your backpack. Items take up grid space. Drag them across, press <b>R</b> to turn the one you are holding, or <b>Shift-click</b> to send one straight over. <b>R</b> takes everything that fits.</li>
           <li><b>V</b> switch view: shoulder, first person, classic overhead</li>
           <li><b>1-5</b> weapons · <b>Tab</b> bag · <b>M</b> mute</li>
         </ul>
@@ -1557,7 +1557,7 @@ function updCars(dt){
 
 /* ================= player ================= */
 function interact(){
-  if(state!=='raid')return;if(P.loot){takeAll();return;}if(P.car){exitCar();return;}
+  if(state!=='raid')return;if(P.loot){closeLoot();return;}if(P.car){exitCar();return;}
   const c=ctx;if(!c)return;
   if(c.t==='car')enterCar(c.car);
   else if(c.t==='search'&&c.c.opened)openLoot(c.c);
@@ -2131,7 +2131,7 @@ window.addEventListener('keydown',e=>{
   if(e.code!=='Escape'&&e.code!=='Tab'&&e.code!=='KeyI')relock();
   switch(e.code){
     case 'KeyE':case 'KeyF':interact();break;
-    case 'KeyR':if(DRAG)invRotate();else reload();break;
+    case 'KeyR':if(DRAG)invRotate();else if(P&&P.loot)takeAll();else reload();break;
     case 'KeyQ':heal();break;
     case 'KeyV':case 'KeyO':toggleView();break;
     case 'Tab':case 'KeyI':toggleBag();break;
@@ -2214,7 +2214,7 @@ function tap(id,fn){const b=$(id);
   b.addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();setTouch();initAudio();fn();},{passive:false});
   b.addEventListener('mousedown',e=>{e.preventDefault();e.stopPropagation();initAudio();fn();});}
 (function(){const hb=$('hotbar');const pick=e=>{const b=e.target.closest('[data-hb]');if(!b||state!=='raid')return;e.preventDefault();e.stopPropagation();swapWeapon(+b.dataset.hb);};hb.addEventListener('mousedown',pick);hb.addEventListener('touchstart',pick,{passive:false});})();
-tap('bAim',()=>{ads=!ads;});tap('bJump',()=>{jumpHeld=true;jump();});for(const t of ['touchend','touchcancel','mouseup','mouseleave'])$('bJump').addEventListener(t,()=>{jumpHeld=false;});tap('bCrouch',crouch);tap('bDive',dive);tap('bHook',useGrapple);tap('bUse',interact);tap('bReload',reload);tap('bSwap',()=>{if(state==='raid')swapWeapon();});tap('bHeal',heal);tap('bView',()=>{if(state==='raid')toggleView();});tap('bBag',toggleBag);
+tap('bAim',()=>{ads=!ads;});tap('bJump',()=>{jumpHeld=true;jump();});for(const t of ['touchend','touchcancel','mouseup','mouseleave'])$('bJump').addEventListener(t,()=>{jumpHeld=false;});tap('bCrouch',crouch);tap('bDive',dive);tap('bHook',useGrapple);tap('bUse',()=>{if(P&&P.loot)takeAll();else interact();});tap('bReload',reload);tap('bSwap',()=>{if(state==='raid')swapWeapon();});tap('bHeal',heal);tap('bView',()=>{if(state==='raid')toggleView();});tap('bBag',toggleBag);
 $('bFire').addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();setTouch();if(state!=='raid')return;const t=e.changedTouches[0];fireTouch=t.identifier;firing=true;if(look.id===null){look.id=t.identifier;look.x=t.clientX;look.y=t.clientY;}},{passive:false});
 
 /* ================= menu ================= */
