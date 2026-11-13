@@ -304,7 +304,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 51, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 52, hosted.</small>
     </div>
     <section id="stashS"><h2>Stash <small id="stInfo"></small></h2>
       <div class="stW"><div class="stash" id="stG"></div></div>
@@ -1766,9 +1766,9 @@ function updView(){
   const scoped=view===1&&P.weapon==='sniper'&&!(P.mini>0)&&P.adsT>.75&&!P.car;setHid('scope',!scoped);
   {const o=scoped||(view===1&&wm==='rifle'&&P.adsT>.6&&!P.car)?0:1;if(hudKey.crossO!==o){hudKey.crossO=o;el('cross').style.opacity=o;}}
   vm.visible=view===1&&!scoped;
-  if(vm.visible){const vb=S.bob===false?0:P.bobA*(1-.8*P.adsT);vm.position.z=P.recoil*1.6;vm.position.x=Math.cos(P.anim)*.012*vb+P.swx;vm.position.y=(P.reloading>0?-.16:0)-Math.abs(Math.sin(P.anim))*.014*vb+P.swy-P.land*.25-.05*P.sprT*(1-P.adsT);vm.rotation.z=-P.lean*.05;vm.rotation.y=.22*P.sprT*(1-P.adsT);vmGun.position.x=.2*(1-P.adsT);vmGun.position.y=-.2+(.2+(ADSY[wm]||-.105))*P.adsT;{const sf=melee&&P.swing>0?P.swing/.25:0;vm.rotation.x=sf>0?.45-1.5*(1-sf):0;if(sf>0)vm.rotation.y+=.45*(1-sf)-.15;}vmGun.rotation.set(melee?.75:0,melee?.5:0,melee?.3:0);if(vmGun.wid!==wm){vmGun.wid=wm;setGun(vmGun,wm);}
+  if(vm.visible){const vb=S.bob===false?0:P.bobA*(1-.8*P.adsT);vm.position.z=P.recoil*1.6;vm.position.x=Math.cos(P.anim)*.012*vb+P.swx;vm.position.y=(P.reloading>0?-.16:0)-Math.abs(Math.sin(P.anim))*.014*vb+P.swy-P.land*.25-.05*P.sprT*(1-P.adsT);vm.rotation.z=-P.lean*.05;vm.rotation.y=.22*P.sprT*(1-P.adsT);vmGun.position.x=.2*(1-P.adsT);vmGun.position.y=-.2+(.2+(ADSY[wm]||-.105))*P.adsT;{const sf=melee&&P.swing>0?P.swing/.25:0;vm.rotation.x=sf>0?.45-1.5*(1-sf):0;if(sf>0)vm.rotation.y+=.45*(1-sf)-.15;}if(wm==='knife')vmGun.rotation.set(.55,.35,.25);else vmGun.rotation.set(melee?.75:0,melee?.5:0,melee?.3:0);if(vmGun.wid!==wm){vmGun.wid=wm;setGun(vmGun,wm);}
     if(dual){vmGun.position.x=.2-.07*P.adsT;vmGun.position.y=-.2+.05*P.adsT;vmGun.position.z=-.48+P.kR;vmGunL.position.set(-vmGun.position.x,vmGun.position.y,-.48+P.kL);}else vmGun.position.z=-.48;
-    if(melee)vmGun.position.set(.27,-.3,-.42);
+    if(melee){if(wm==='knife')vmGun.position.set(.19,-.2,-.34);else vmGun.position.set(.27,-.3,-.42);}
     if(P.insp>0){const q=inspPose();vmGun.rotation.x+=q[0];vmGun.rotation.y+=q[1];vmGun.rotation.z+=q[2];vmGun.position.x+=q[3];vmGun.position.y+=q[4];vmGun.position.z+=q[5];
       if(dual){vmGunL.rotation.set(q[0],-q[1],-q[2]);vmGunL.position.x-=q[3];vmGunL.position.y+=q[4];vmGunL.position.z+=q[5];}}
     else if(dual)vmGunL.rotation.set(0,0,0);}
