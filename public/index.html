@@ -335,7 +335,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 82, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 83, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -374,7 +374,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
           <li>The <b>Red Rebel</b> ice axe only turns up in airdrops. Carry it and press <b>Space</b> facing the outside wall of a four storey building to climb: <b>W</b>/<b>S</b> up and down, <b>A</b>/<b>D</b> along the wall, <b>Space</b> to let go. Climbing up costs stamina. Falling or jumping next to one of those walls, press <b>Space</b> to dig the axe in and catch yourself.</li>
           <li>Safes and cash registers are locked. With a <b>lock pick</b>, press <b>E</b> and hit <b>Space</b>, <b>E</b> or click while the marker is in the green to set each pin. A miss drops a pin and can snap the pick.</li>
           <li><b>Z</b> or <b>mouse button 5</b> dolphin dive in the direction you are moving. Time slows while you are in the air, but you aim and shoot at nearly full speed. A dive carries you through open windows. You land prone: crawl, press <b>Ctrl</b> to crouch, or <b>Space</b> to stand.</li>
-          <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. It lets go on its own once you are reeled all the way in (popping you over a roof edge), or click again to let go early and keep your swing. The <b>Swing Line</b> from the trader is the same hook, but you hold the click (or <b>G</b>) and the line drops the moment you let go. Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
+          <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. It lets go on its own once you are reeled all the way in (popping you over a roof edge), or click again to let go early and keep your swing. The <b>Swing Line</b> from the trader fires the same hook, but it never reels in: the line locks at the length you shot it, so you swing on it while you hold the click (or <b>G</b>), and it drops the moment you let go. Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
           <li><b>Ctrl</b> or <b>mouse button 4</b> crouch: slower and quieter, steadier aim, harder for infected to spot. Press it while sprinting to slide.</li>
           <li><b>R</b> reload · tap <b>Q</b> to bandage and stop bleeding · hold <b>Q</b> for the med menu (mouse or scroll to choose, click, 1-4 or Q again to use, Esc to close) · <b>V</b> swap shoulder · <b>Middle mouse</b> ping what you aim at (your lobby sees it)</li>
           <li>There is no mouse cursor during a raid. The bag and loot window get a small gold in-game pointer.</li>
@@ -1884,6 +1884,7 @@ function updHook(dt){
       if(!gr&&rf>0&&ay>1.2)ay=rf; /* the claws drag over the parapet and catch */
       else if(!gr){const r2=roofAt(nx+dx*.7,nz+dz*.7);if(r2>0&&ay>1.5){ay=r2;}}
       h.x=nx;h.y=ay;h.z=nz;h.st='set';P.grap={x:nx,y:ay,z:nz,t:0};
+      if(WPN[P.weapon]&&WPN[P.weapon].hold){const f=P.base+P.y;P.grap.L=Math.max(1.5,Math.hypot(nx-P.x,ay+.4-(f+1.1),nz-P.z));}
       tone(1300,.05,'square',.12);tone(700,.08,'square',.08,0,.04);shake=Math.max(shake,.12);burst(nx,ay+.05,nz,0xcfc7a6,4,1.5);
     }else{h.x=nx;h.y=ny;h.z=nz;const hd=hookHand();if(Math.hypot(h.x-hd[0],h.y-hd[1],h.z-hd[2])>46){h.st='back';tone(300,.1,'square',.05);}}
   }else if(h.st==='back'){
@@ -1962,7 +1963,11 @@ function updPlayer(dt){
     if(P.grap){
       /* the reel pulls you along the rope; gravity still acts, so long ropes swing */
       const g=P.grap;g.t+=dt;const feet=P.base+P.y,hx=g.x-P.x,hz=g.z-P.z,hy=g.y+.4-(feet+1.1),hd=Math.hypot(hx,hz)||.001,d=Math.hypot(hd,hy)||.001;
-      if(d<1.15||(hd<1.2&&g.y-feet<.5)){releaseHook();} /* fully reeled in: the hook lets go on its own */
+      if(g.L){/* fixed length rope: no reel, it only stops you going further than the line, so you swing */
+        if(d>=g.L-.02){const rx=hx/d,ry=hy/d,rz=hz/d,vr=P.vx*rx+P.vy*ry+P.vz*rz;if(vr<0){P.vx-=vr*rx;P.vy-=vr*ry;P.vz-=vr*rz;}
+          const k=(d-g.L)*10;P.vx+=rx*k;P.vy+=ry*k;P.vz+=rz*k;if(P.y<=0&&P.vy>0)P.y=.02;P.dive=false;P.slide=0;P.hops=0;}
+        const sp=Math.hypot(P.vx,P.vy,P.vz);if(sp>19){P.vx*=19/sp;P.vy*=19/sp;P.vz*=19/sp;}}
+      else if(d<1.15||(hd<1.2&&g.y-feet<.5)){releaseHook();} /* fully reeled in: the hook lets go on its own */
       else{const A=40;P.vx+=hx/d*A*dt;P.vz+=hz/d*A*dt;P.vy+=hy/d*A*dt;
         if(hd<1.7&&g.y>feet+.3)P.vy=Math.max(P.vy,6.5); /* walking up the wall on the rope */
         const sp=Math.hypot(P.vx,P.vy,P.vz);if(sp>17){P.vx*=17/sp;P.vy*=17/sp;P.vz*=17/sp;}
@@ -2197,7 +2202,7 @@ function updHud(){
     if(hudKey.hb!==hk){hudKey.hb=hk;el('hotbar').innerHTML=L.map((id,i)=>{const w=WPN[id],on=id===P.weapon,ic=ICON['w_'+(on&&mini?'minigun':id)],n=w&&w.am&&!(on&&mini)?(P.mag[id]||0):null,eq=equipped().indexOf(id)>=0;
       return '<button type="button" class="hb'+(on?' on':'')+(n===0?' dry':'')+(eq?'':' found')+'" data-hb="'+i+'" title="'+(on&&mini?'Minigun':w?w.n:id)+'"'+(ic?' style="background-image:url('+ic+')"':'')+'><i>'+(i+1)+'</i>'+(n!=null?'<b>'+n+'</b>':'')+'</button>';}).join('');}}
   const w=WPN[P.weapon];setT('wname',P.mini>0?'MINIGUN':w.n);
-  setH('ammo',P.mini>0?P.mini.toFixed(1)+' <small>sec</small>':w.gadget?'<small>'+(P.grap?'reeling in':P.hook?(P.hook.st==='fly'?'line out':'winding back'):'hook ready')+'</small>':w.melee?'<small>melee</small>':(P.reloading>0?'<small>reloading</small>':P.mag[P.weapon]+' <small>/ '+S.ammo[w.am]+'</small>'));
+  setH('ammo',P.mini>0?P.mini.toFixed(1)+' <small>sec</small>':w.gadget?'<small>'+(P.grap?(P.grap.L?'swinging · '+P.grap.L.toFixed(0)+' m line':'reeling in'):P.hook?(P.hook.st==='fly'?'line out':'winding back'):'hook ready')+'</small>':w.melee?'<small>melee</small>':(P.reloading>0?'<small>reloading</small>':P.mag[P.weapon]+' <small>/ '+S.ammo[w.am]+'</small>'));
   setW('hpB',P.hp/P.maxHp*100);setW('stB',P.stam);
   setT('carT',P.car?'Car '+Math.max(0,Math.round(P.car.hp))+'%':'');
   const ui=!!P.loot||bagOpen;
@@ -2744,7 +2749,7 @@ function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.c
   $('mLoad').innerHTML=h;
   h='';
   SHOP.forEach((s,i)=>{let name,sub,price=s.price,own=false;
-    if(s.k==='w'){const w=WPN[s.id];name=w.n;sub=s.id==='swingline'?'Gadget · the grapple hook, but the line drops the moment you let go of the click':s.id==='redrebel'?'Ice axe · climbs four storey walls · '+w.dmg+' dmg':w.melee?'Melee · '+w.dmg+' dmg · cuts through anything':w.am+' · '+(w.pel?w.pel+' pellets':Math.round(60/w.rate)+' rpm')+' · '+w.dmg+' dmg';price=w.price;own=S.weapons.indexOf(s.id)>=0;}
+    if(s.k==='w'){const w=WPN[s.id];name=w.n;sub=s.id==='swingline'?'Gadget · a hook on a fixed length line: no reel, you swing on it until you let go of the click':s.id==='redrebel'?'Ice axe · climbs four storey walls · '+w.dmg+' dmg':w.melee?'Melee · '+w.dmg+' dmg · cuts through anything':w.am+' · '+(w.pel?w.pel+' pellets':Math.round(60/w.rate)+' rpm')+' · '+w.dmg+' dmg';price=w.price;own=S.weapons.indexOf(s.id)>=0;}
     else if(s.k==='a'){name=s.n+' x '+s.id;sub='You have '+S.ammo[s.id];}
     else if(s.k==='m'){name=s.n;sub='You have '+S.meds[s.id];}
     else if(s.k==='p'){const q=PACKS[s.id];name=q.n;sub=q.c+' x '+q.r+' grid · +'+q.kg+' kg · '+q.d;price=q.price;own=owns(s.id);}
