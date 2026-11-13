@@ -311,7 +311,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 58, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 59, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -905,9 +905,9 @@ const tmp={x:0,z:0};
 /* ================= collision ================= */
 function pushCol(x0,x1,y0,y1,z0,z1){const c={x0:x0,x1:x1,y0:y0,y1:y1,z0:z0,z1:z1};W.col.push(c);if(y0<1.2)W.solid.push(c);}
 function collide(o,r){
-  let hit=false;const cs=W.solid,over=o===P&&P&&P.dive&&P.y>.15,ph=o===P&&P?P.base+P.y:0;
+  let hit=false;const cs=W.col,over=o===P&&P&&P.dive&&P.y>.15,ph=o===P&&P?P.base+P.y:0;
   for(let i=0;i<cs.length;i++){const c=cs[i];
-    if(ph>=3.1&&c.y1<=ph+.1)continue; /* above the wall tops: nothing to bump into */
+    if(c.y1<=ph+.35||c.y0>=ph+1.7)continue; /* only what is at body height counts */
     if(over&&c.sill)continue; /* a dive carries you over a window sill */
     if(o.x<c.x0-r||o.x>c.x1+r||o.z<c.z0-r||o.z>c.z1+r)continue;
     const nx=clamp(o.x,c.x0,c.x1),nz=clamp(o.z,c.z0,c.z1),dx=o.x-nx,dz=o.z-nz,d2=dx*dx+dz*dz;
@@ -940,26 +940,75 @@ function wallRun(B,hz,fixed,a,b,ops,hex){
   seg(cur,b,0,WH);
 }
 function addRoof(cx,cz,w,d,y,hex){const m=new T.Mesh(BOX,mat(hex,0,.9));m.position.set(cx,y+.15,cz);m.scale.set(w,.3,d);m.castShadow=true;m.receiveShadow=true;W.g.add(m);pushCol(cx-w/2,cx+w/2,y,y+.3,cz-d/2,cz+d/2);return m;}
-/* upper floors: a solid shell above the enterable ground floor, with windows, trim bands and a rooftop */
-function addUpper(b,floors,o){
-  const U=new Batch(),H=WH*floors,x0=b.x0-TH/2,x1=b.x1+TH/2,z0=b.z0-TH/2,z1=b.z1+TH/2,w=x1-x0,d=z1-z0,cx=b.cx,cz=b.cz;
-  U.box(cx,(WH+.3+H)/2,cz,w,H-WH-.3,d,o.wall,.05);
-  pushCol(x0,x1,WH+.3,H,z0,z1);
-  for(let f=1;f<floors;f++){const y=f*WH;if(f>1)U.box(cx,y,cz,w+.24,.22,d+.24,0xd9d3c2,.03);
-    for(const side of [0,1,2,3]){const hz=side<2,len=hz?w:d,fixed=side===0?z0:side===1?z1:side===2?x0:x1,out=side===0||side===2?-1:1,n=Math.max(1,Math.floor((len-1.5)/3.1));
-      for(let q=0;q<n;q++){const at=(hz?x0:z0)+len*(q+1)/(n+1),r=Math.random(),col=r<.18?0xe9cc7c:r<.28?0x6b4a2a:r<.36?0x111417:0x2e3a44;
-        const gx=hz?at:fixed+out*.03,gz=hz?fixed+out*.03:at;
-        U.box(gx,y+1.65,gz,hz?1.3:.06,1.45,hz?.06:1.3,col,.04);
-        U.box(hz?at:fixed+out*.09,y+.88,hz?fixed+out*.09:at,hz?1.55:.18,.1,hz?.18:1.55,0xd9d3c2,.03);
-        U.box(hz?at:fixed+out*.05,y+2.42,hz?fixed+out*.05:at,hz?1.45:.1,.08,hz?.1:1.45,0xd9d3c2,.03);
-        if(col===0x2e3a44)U.box(gx,y+1.65,gz,hz?.05:.07,1.45,hz?.07:.05,0x1a1e22,0);}}}
-  /* rooftop: slab, parapet, stair hut, AC units, a water tank */
-  U.box(cx,H+.15,cz,w+.6,.3,d+.6,o.roof||0x3a3a36,.04);pushCol(x0-.3,x1+.3,H,H+.3,z0-.3,z1+.3);
-  U.box(cx,H+.6,z0-.15,w+.6,.6,.3,o.wall,.05);U.box(cx,H+.6,z1+.15,w+.6,.6,.3,o.wall,.05);U.box(x0-.15,H+.6,cz,.3,.6,d,o.wall,.05);U.box(x1+.15,H+.6,cz,.3,.6,d,o.wall,.05);
-  const hx=cx+rand(-w/4,w/4),hz2=cz+rand(-d/4,d/4);U.box(hx,H+1.4,hz2,2.4,2.5,2.2,o.wall,.08);U.box(hx,H+2.7,hz2,2.6,.12,2.4,0x3a3a36,0);U.box(hx,H+1.2,hz2+1.12,.9,2,.05,0x2a2622,0);
-  for(let i=0;i<2;i++){const ax=cx+rand(-w/2.6,w/2.6),az=cz+rand(-d/2.6,d/2.6);U.box(ax,H+.75,az,1.4,.9,1.1,0x9aa0a0,.06);U.box(ax,H+1.22,az,.9,.04,.9,0x4a4f52,0);}
-  if(Math.random()<.6){const tx=cx+rand(-w/3,w/3),tz=cz+rand(-d/3,d/3);U.geo(TRUNK,tx,H+2.1,tz,1.1,2.2,1.1,0x6b5a44,.1);for(const q of[[-.7,-.7],[.7,-.7],[-.7,.7],[.7,.7]])U.box(tx+q[0],H+.8,tz+q[1],.12,1.1,.12,0x2c2f2e,0);}
-  const m=U.build(STATIC_MAT);m.castShadow=true;m.receiveShadow=true;W.g.add(m);b.upper=m;b.rh=H+.3;
+/* tall buildings: enterable floors joined by a staircase in one corner, open and glazed windows, a rooftop stair hut */
+function upWall(U,hz,fixed,a,b,ops,hex,y0,y1,out){
+  const seg=(p,q,s0,s1,sill)=>{if(q-p<.02||s1-s0<.02)return;const m=(p+q)/2;
+    if(hz){U.box(m,(s0+s1)/2,fixed,q-p,s1-s0,TH,hex,.08);pushCol(p,q,s0,s1,fixed-TH/2,fixed+TH/2);}
+    else{U.box(fixed,(s0+s1)/2,m,TH,s1-s0,q-p,hex,.08);pushCol(fixed-TH/2,fixed+TH/2,s0,s1,p,q);}
+    if(sill)W.col[W.col.length-1].sill=true;};
+  const tr=(at,w,y)=>{if(hz)U.box(at,y,fixed+out*.12,w+.3,.1,.14,0xd9d3c2,.03);else U.box(fixed+out*.12,y,at,.14,.1,w+.3,0xd9d3c2,.03);};
+  let cur=a;ops.sort((p,q)=>p.at-q.at);
+  for(const o of ops){const s=o.at-o.w/2,e=o.at+o.w/2;
+    seg(cur,s,y0,y1);seg(s,e,y0,y0+1,true);seg(s,e,y0+2.2,y1);tr(o.at,o.w,y0+1.03);tr(o.at,o.w,y0+2.23);
+    if(o.open)W.windows.push({hz:hz,fixed:fixed,at:o.at,y:y0});
+    else{const r=Math.random(),col=r<.25?0xe9cc7c:r<.4?0x6b4a2a:0x2e3a44;
+      if(hz){U.box(o.at,y0+1.6,fixed,o.w,1.2,.06,col,.04);pushCol(s,e,y0+1,y0+2.2,fixed-.05,fixed+.05);}
+      else{U.box(fixed,y0+1.6,o.at,.06,1.2,o.w,col,.04);pushCol(fixed-.05,fixed+.05,y0+1,y0+2.2,s,e);}}
+    cur=e;}
+  seg(cur,b,y0,y1);
+}
+function addTall(b,o,floors){
+  const x0=b.x0-TH/2,x1=b.x1+TH/2,z0=b.z0-TH/2,z1=b.z1+TH/2,cx=b.cx,H=WH*floors;
+  b.surf=[];b.lv=[];b.rh=H+.3;
+  const left=b.side!==2,sw=1.7,sxA=left?b.x0+TH/2+.05:b.x1-TH/2-.05-sw,sxB=sxA+sw,zs=b.z0+TH/2+1.4,ze=zs+6,inner=left?sxB:sxA;
+  b.slots=b.slots.filter(s=>!(s.x>sxA-.9&&s.x<sxB+.9&&s.z>zs-1.8&&s.z<ze+.9));
+  const LV=[],pend=[];for(let k=0;k<=floors;k++)LV.push(new Batch());
+  const lvlY=k=>k===0?.07:k*WH+.3;
+  /* one straight flight per storey, stacked in the same stairwell */
+  for(let f=0;f<floors;f++){const U=LV[f],y0=lvlY(f),y1=lvlY(f+1),n=12,rise=(y1-y0)/n,run=(ze-zs)/n,rx=inner+(left?-.05:.05);
+    b.surf.push({x0:sxA,x1:sxB,z0:zs,z1:ze,y0:y0,y1:y1,r:1});
+    for(let i=0;i<n;i++){const ty=y0+(i+1)*rise,tz=zs+(i+.5)*run;
+      U.box((sxA+sxB)/2,ty-.06,tz,sw,.12,run+.03,0x5d605b,.04);
+      U.box((sxA+sxB)/2,ty-.2,tz-run*.4,sw-.1,.16,.05,0x3e413d,0);
+      U.box(rx,ty+.95,tz,.05,.05,run+.02,0x2c2f2e,0);
+      if(i%3===0)U.box(rx,ty+.47,tz,.05,.95,.05,0x2c2f2e,0);}}
+  /* floor slabs (the top one is the roof), each with the stairwell left open */
+  for(let k=1;k<=floors;k++){const U=LV[k],y=k*WH,top=k===floors,col=top?(o.roof||0x3a3a36):(o.floor||0x6d7068),e=top?.3:0,X0=x0-e,X1=x1+e,Z0=z0-e,Z1=z1+e;
+    const pieces=left?[[sxB,X1,Z0,Z1],[X0,sxB,Z0,zs],[X0,sxB,ze,Z1]]:[[X0,sxA,Z0,Z1],[sxA,X1,Z0,zs],[sxA,X1,ze,Z1]];
+    for(const q of pieces){U.box((q[0]+q[1])/2,y+.15,(q[2]+q[3])/2,q[1]-q[0],.3,q[3]-q[2],col,.04);pushCol(q[0],q[1],y,y+.3,q[2],q[3]);b.surf.push({x0:q[0],x1:q[1],z0:q[2],z1:q[3],y:y+.3,roof:top});}
+    if(!top){
+      U.box(inner,y+.8,(zs+ze)/2,.06,1,ze-zs,0x2c2f2e,0);pushCol(inner-.03,inner+.03,y+.3,y+1.3,zs,ze);
+      const by=y+.3,ty=(k+1)*WH;
+      const sides=[[true,b.z0,x0,x1,-1],[true,b.z1,x0,x1,1],[false,b.x0,b.z0+TH/2,b.z1-TH/2,-1],[false,b.x1,b.z0+TH/2,b.z1-TH/2,1]];
+      for(const s of sides){const len=s[3]-s[2],n=Math.max(1,Math.floor((len-1.5)/3.2)),ops=[];
+        for(let q=0;q<n;q++)ops.push({at:s[2]+len*(q+1)/(n+1),w:1.6,open:Math.random()<.5});
+        upWall(U,s[0],s[1],s[2],s[3],ops,o.wall,by,ty,s[4]);}
+      /* trim band on the outside at each floor line */
+      U.box(cx,y+.15,z0-.07,x1-x0+.3,.32,.14,0xd9d3c2,.03);U.box(cx,y+.15,z1+.07,x1-x0+.3,.32,.14,0xd9d3c2,.03);
+      U.box(x0-.07,y+.15,b.cz,.14,.32,z1-z0,0xd9d3c2,.03);U.box(x1+.07,y+.15,b.cz,.14,.32,z1-z0,0xd9d3c2,.03);
+      /* a little loot on each upper floor, away from the stairs */
+      const nC=randi(1,2);for(let t=0,made=0;t<8&&made<nC;t++){const nearZ0=Math.random()<.5,x=rand(b.x0+1.3,b.x1-1.3),z=nearZ0?b.z0+.9:b.z1-.9;
+        if(x>sxA-1.2&&x<sxB+1.2)continue;const ty2=pick(['crate','crate','locker','shelf','duffel','weaponcase','medbox',Math.random()<.2?'safe':'crate']);
+        const oldCB=CB;CB=U;const c=addContainer(ty2,x,z,false,by);CB=oldCB;pend.push([k,c.mesh]);made++;}
+    }else{
+      /* parapet */
+      U.box(cx,y+.6,Z0+.15,X1-X0,.6,.3,o.wall,.05);pushCol(X0,X1,y+.3,y+.9,Z0,Z0+.3);
+      U.box(cx,y+.6,Z1-.15,X1-X0,.6,.3,o.wall,.05);pushCol(X0,X1,y+.3,y+.9,Z1-.3,Z1);
+      U.box(X0+.15,y+.6,b.cz,.3,.6,Z1-Z0,o.wall,.05);pushCol(X0,X0+.3,y+.3,y+.9,Z0,Z1);
+      U.box(X1-.15,y+.6,b.cz,.3,.6,Z1-Z0,o.wall,.05);pushCol(X1-.3,X1,y+.3,y+.9,Z0,Z1);
+      /* stair hut over the stairwell, doorway facing the top of the stairs */
+      const hx0=sxA-.2,hx1=sxB+.2,hz0=zs-.4,hz1=ze+1.4,hb=y+.3,ht=y+2.9,hc=o.wall;
+      const wl=(ax0,ax1,az0,az1)=>{U.box((ax0+ax1)/2,(hb+ht)/2,(az0+az1)/2,ax1-ax0,ht-hb,az1-az0,hc,.08);pushCol(ax0,ax1,hb,ht,az0,az1);};
+      wl(hx0,hx0+.2,hz0,hz1);wl(hx1-.2,hx1,hz0,hz1);wl(hx0,hx1,hz0,hz0+.2);
+      wl(hx0,(hx0+hx1)/2-.6,hz1-.2,hz1);wl((hx0+hx1)/2+.6,hx1,hz1-.2,hz1);
+      U.box((hx0+hx1)/2,ht-.2,hz1-.1,1.2,.4,.2,hc,.08);
+      U.box((hx0+hx1)/2,ht+.1,(hz0+hz1)/2,hx1-hx0+.3,.2,hz1-hz0+.3,0x3a3a36,0);pushCol(hx0,hx1,ht,ht+.2,hz0,hz1);
+      for(let i=0;i<2;i++){const ax=left?rand(cx,x1-2):rand(x0+2,cx),az=rand(z0+2,z1-2);U.box(ax,y+.75,az,1.4,.9,1.1,0x9aa0a0,.06);U.box(ax,y+1.22,az,.9,.04,.9,0x4a4f52,0);}
+      if(Math.random()<.6){const tx=left?rand(cx,x1-2.5):rand(x0+2.5,cx),tz=rand(z0+2.5,z1-2.5);U.geo(TRUNK,tx,y+2.1,tz,1.1,2.2,1.1,0x6b5a44,.1);for(const q of[[-.7,-.7],[.7,-.7],[-.7,.7],[.7,.7]])U.box(tx+q[0],y+.8,tz+q[1],.12,1.1,.12,0x2c2f2e,0);}
+    }
+  }
+  for(let k=0;k<=floors;k++){const m=LV[k].build(STATIC_MAT);m.castShadow=true;m.receiveShadow=true;W.g.add(m);b.lv.push(m);}
+  for(const [k,m] of pend){W.g.remove(m);b.lv[k].add(m);}
 }
 function addBuilding(B,cx,cz,w,d,o){
   const x0=cx-w/2,x1=cx+w/2,z0=cz-d/2,z1=cz+d/2,side=o.side!=null?o.side:randi(0,3);
@@ -974,9 +1023,8 @@ function addBuilding(B,cx,cz,w,d,o){
     const inset=(k===0||k===2)?.9:-.9;
     for(let t=s[2]+2.4;t<s[3]-2.4;t+=2.3){if(ops.some(o=>Math.abs(t-o.at)<(o.win?1.7:2.5)))continue;b.slots.push(s[0]?{x:t,z:s[1]+inset,v:false}:{x:s[1]+inset,z:t,v:true});}
   });
-  b.roof=addRoof(cx,cz,w+1,d+1,WH,o.roof);
-  const tall=o.floors||((o.type==='store'||o.type==='clinic'||o.type==='police'||o.type==='bank')&&Math.random()<.7?3:1);
-  if(tall>1)addUpper(b,tall,o);
+  const tall=o.floors||((o.type==='store'||o.type==='clinic'||o.type==='police'||o.type==='bank')&&Math.random()<.7?4:1);b.side=side;
+  if(tall>1){b.roof=new T.Group();W.g.add(b.roof);addTall(b,o,tall);}else b.roof=addRoof(cx,cz,w+1,d+1,WH,o.roof);
   shuffle(b.slots);W.buildings.push(b);return b;
 }
 /* container trim: [x, y from the floor, z, sx, sy, sz, colour, mirror] in the container's own axes; mirror copies it to the other side(s) */
@@ -992,9 +1040,9 @@ const CDET={
  weaponcase:[[.42,.3,.305,.12,.09,.02,0x9aa0a6,'xz'],[0,.53,0,.34,.05,.07,0x1b221a],[0,.25,0,1.42,.04,.62,0x26331f],[.69,.25,0,.03,.5,.6,0x26331f,'x']],
  safe:[[.25,.62,.505,.2,.2,.02,0xb08a3a,'z'],[.25,.62,.515,.05,.05,.02,0x1b1c1f,'z'],[-.18,.62,.51,.04,.3,.04,0x9aa0a6,'z'],[-.45,.85,.505,.05,.15,.03,0x9aa0a6,'z'],[-.45,.35,.505,.05,.15,.03,0x9aa0a6,'z'],[0,.6,.502,.9,1.1,.006,0x262b30,'z']]
 };
-function containerDetail(type,x,z,v){
+function containerDetail(type,x,z,v,yb){yb=yb||0;
   const L=CDET[type];if(!CB||!L)return;
-  const put=(lx,ly,lz,sx,sy,sz,h)=>{if(v)CB.box(x+lz,ly+.07,z+lx,sz,sy,sx,h,.05);else CB.box(x+lx,ly+.07,z+lz,sx,sy,sz,h,.05);};
+  const put=(lx,ly,lz,sx,sy,sz,h)=>{if(v)CB.box(x+lz,yb+ly+.07,z+lx,sz,sy,sx,h,.05);else CB.box(x+lx,yb+ly+.07,z+lz,sx,sy,sz,h,.05);};
   for(const q of L){const m=q[7]||'';put(q[0],q[1],q[2],q[3],q[4],q[5],q[6]);
     if(m.indexOf('x')>=0)put(-q[0],q[1],q[2],q[3],q[4],q[5],q[6]);
     if(m.indexOf('z')>=0)put(q[0],q[1],-q[2],q[3],q[4],q[5],q[6]);
@@ -1002,12 +1050,12 @@ function containerDetail(type,x,z,v){
   if(type==='shelf'){const ITC=[0xb8432e,0xd9c37a,0x3f6d8a,0x6a8a3a,0xe0e0d8,0x8a3a6a];for(const y of [.47,.97,1.47])for(let i=0;i<3;i++){if(Math.random()<.25)continue;const lx=-.6+i*.6+rand(-.15,.15),h=rand(.1,.26);put(lx,y+h/2+.03,.12,rand(.12,.3),h,.22,pick(ITC));}}
 }
 function mkC(type,x,z,mesh,car){return {type:type,x:x,z:z,mesh:mesh,car:car,done:false,opened:false,shown:0,items:null,body:false};}
-function addContainer(type,x,z,v){
-  const d=CT[type],sx=v?d.s[2]:d.s[0],sz=v?d.s[0]:d.s[2];
-  const m=new T.Mesh(BOX,mat(d.c,d.em,d.c===0x30363c||d.c===0x4f6272||d.c===0xc9cdc6?.45:.8,d.c===0x30363c||d.c===0x4f6272?.4:0));m.castShadow=true;m.receiveShadow=true;m.position.set(x,d.s[1]/2+.07,z);m.scale.set(sx,d.s[1],sz);m.updateMatrix();m.matrixAutoUpdate=false;W.g.add(m);
-  if(!d.soft)pushCol(x-sx/2,x+sx/2,0,d.s[1]+.07,z-sz/2,z+sz/2);
-  containerDetail(type,x,z,v);
-  const c=mkC(type,x,z,m,null);W.containers.push(c);return c;
+function addContainer(type,x,z,v,y){
+  y=y||0;const d=CT[type],sx=v?d.s[2]:d.s[0],sz=v?d.s[0]:d.s[2];
+  const m=new T.Mesh(BOX,mat(d.c,d.em,d.c===0x30363c||d.c===0x4f6272||d.c===0xc9cdc6?.45:.8,d.c===0x30363c||d.c===0x4f6272?.4:0));m.castShadow=true;m.receiveShadow=true;m.position.set(x,y+d.s[1]/2+.07,z);m.scale.set(sx,d.s[1],sz);m.updateMatrix();m.matrixAutoUpdate=false;W.g.add(m);
+  if(!d.soft)pushCol(x-sx/2,x+sx/2,y,y+d.s[1]+.07,z-sz/2,z+sz/2);
+  containerDetail(type,x,z,v,y);
+  const c=mkC(type,x,z,m,null);c.y=y;W.containers.push(c);return c;
 }
 function fill(b,list){list.forEach(t=>{const s=b.slots.pop();if(s)addContainer(t,s.x,s.z,s.v);});}
 const LEAF=[0x3d5c2e,0x466a33,0x55702f,0x6f7a32,0x7d6a2c];
@@ -1070,7 +1118,7 @@ const BLOCKS={
 };
 function genWorld(seed){const mr=Math.random;Math.random=mulberry(seed==null?(mr()*1e9)|0:seed);try{genWorldRaw();}finally{Math.random=mr;}W.seed=seed==null?-1:seed;}
 function genWorldRaw(){
-  if(W){scene.remove(W.g);W.stat.geometry.dispose();if(W.lamp)W.lamp.geometry.dispose();for(const b of W.buildings)if(b.upper)b.upper.geometry.dispose();}
+  if(W){scene.remove(W.g);W.stat.geometry.dispose();if(W.lamp)W.lamp.geometry.dispose();for(const b of W.buildings)if(b.lv)for(const m of b.lv)m.geometry.dispose();}
   decals.forEach(m=>{m.visible=false;});parts.forEach(p=>{p.m.visible=false;p.life=0;});
   const g=new T.Group();scene.add(g);
   W={g:g,col:[],solid:[],buildings:[],containers:[],cars:[],enemies:[],exfils:[],time:RAID_TIME,heat:0,hunterT:30,zT:6,contract:null,warn:false,stat:null,spawn:null,bodies:[],windows:[],pickups:[]};
@@ -1565,17 +1613,16 @@ function interact(){
 }
 function findCtx(){
   if(P.car)return {t:'exit',label:'Get out'};
-  if(P.base>0)return null;
   let best=null,bd=2.7;
-  for(const c of W.containers){if(c.done)continue;let x=c.x,z=c.z;if(c.car){if(c.car.dead)continue;x=c.car.x+Math.sin(c.car.yaw)*2.5;z=c.car.z+Math.cos(c.car.yaw)*2.5;}
+  for(const c of W.containers){if(c.done||Math.abs((c.y||0)-P.base)>1.3)continue;let x=c.x,z=c.z;if(c.car){if(c.car.dead)continue;x=c.car.x+Math.sin(c.car.yaw)*2.5;z=c.car.z+Math.cos(c.car.yaw)*2.5;}
     const d=Math.hypot(x-P.x,z-P.z);if(d<bd){bd=d;best={t:'search',c:c,label:c.opened?'Open '+CT[c.type].n+' ('+c.items.length+')':'Search '+CT[c.type].n,x:x,z:z};}}
-  for(const c of W.cars){if(c.dead)continue;const d=Math.hypot(c.x-P.x,c.z-P.z);if(d<3.3&&d-1.2<bd){bd=d-1.2;best={t:'car',car:c,label:c.stolen?'Drive':'Steal car'};}}
+  if(P.base<.5)for(const c of W.cars){if(c.dead)continue;const d=Math.hypot(c.x-P.x,c.z-P.z);if(d<3.3&&d-1.2<bd){bd=d-1.2;best={t:'car',car:c,label:c.stolen?'Drive':'Steal car'};}}
   return best;
 }
 function findVault(){
   if(P.car||P.vault||P.y>0)return null;
   const fx=-Math.sin(P.yaw),fz=-Math.cos(P.yaw);
-  for(const w of W.windows){
+  for(const w of W.windows){if(Math.abs((w.y||0)-P.base)>1)continue;
     const along=w.hz?P.x-w.at:P.z-w.at,perp=w.hz?P.z-w.fixed:P.x-w.fixed;
     if(Math.abs(along)>.8||Math.abs(perp)>1.6)continue;
     const s=perp>=0?-1:1;if((w.hz?fz:fx)*s<.25)continue;
@@ -1643,6 +1690,12 @@ function drawRope(){
   pos.needsUpdate=true;HOOK_MESH.position.set(h.x,h.y,h.z);
   if(h.st==='fly')HOOK_MESH.lookAt(h.x+h.vx,h.y+h.vy,h.z+h.vz);
 }
+let GA_ROOF=false;
+function groundAt(x,z,feet){let best=0,roof=false;
+  for(const b of W.buildings){if(x<b.x0-.5||x>b.x1+.5||z<b.z0-.5||z>b.z1+.5)continue;
+    if(!b.surf){const h=b.type==='canopy'?4.5:WH+.3;if(h<=feet+.45&&h>best){best=h;roof=true;}continue;}
+    for(const q of b.surf){if(x<q.x0||x>q.x1||z<q.z0||z>q.z1)continue;const h=q.r?q.y0+clamp((z-q.z0)/(q.z1-q.z0),0,1)*(q.y1-q.y0):q.y;if(h<=feet+.45&&h>best){best=h;roof=!!q.roof;}}}
+  GA_ROOF=roof;return best;}
 function roofAt(x,z){for(const b of W.buildings)if(x>b.x0-.5&&x<b.x1+.5&&z>b.z0-.5&&z<b.z1+.5)return b.rh||(b.type==='canopy'?4.5:WH+.3);return 0;}
 function grapple(){useGrapple();}
 function dive(){
@@ -1727,8 +1780,9 @@ function updPlayer(dt){
     P.x+=P.vx*dt;P.z+=P.vz*dt;
     collide(P,.4);carPush(P,.4);
     if(dt>0&&!P.grap){P.vx=(P.x-ox)/dt;P.vz=(P.z-oz)/dt;}
-    {const rf=roofAt(P.x,P.z);if(P.base===0&&rf>0&&P.y>=rf-.2){P.base=rf;P.y=Math.max(0,P.y-rf);}else if(P.base>0&&rf!==P.base){P.y+=P.base;P.base=0;}}
-    if(P.dive&&!P.dvWin){for(const w of W.windows){const al=w.hz?P.x-w.at:P.z-w.at,pe=w.hz?P.z-w.fixed:P.x-w.fixed;if(Math.abs(al)<.9&&Math.abs(pe)<.45){P.dvWin=true;burst(P.x,1.5+P.y*.3,P.z,0xcfeaff,12,4);hiss(.3,.4,6000);tone(2600,.07,'square',.05);tone(3400,.1,'square',.04,0,.05);makeNoise(P.x,P.z,26);shake=Math.max(shake,.25);break;}}}
+    {const feet=P.base+P.y,g=groundAt(P.x,P.z,feet);P.onRoof=GA_ROOF;
+      if(g!==P.base){if(P.y<=0&&feet-g>0&&feet-g<.4){P.base=g;P.y=0;}else{P.y=Math.max(0,feet-g);P.base=g;}}}
+    if(P.dive&&!P.dvWin){for(const w of W.windows){if(Math.abs((w.y||0)-P.base)>1)continue;const al=w.hz?P.x-w.at:P.z-w.at,pe=w.hz?P.z-w.fixed:P.x-w.fixed;if(Math.abs(al)<.9&&Math.abs(pe)<.45){P.dvWin=true;burst(P.x,1.5+P.y*.3,P.z,0xcfeaff,12,4);hiss(.3,.4,6000);tone(2600,.07,'square',.05);tone(3400,.1,'square',.04,0,.05);makeNoise(P.x,P.z,26);shake=Math.max(shake,.25);break;}}}
     const sp=Math.hypot(P.vx,P.vz);P.moving=sp>.7;
     const ground=P.y<=0&&P.slide<=0;
     if(ground)P.anim+=sp*dt*2.2;
@@ -1881,7 +1935,9 @@ function updView(){
   if(dual&&vmGunL.wid!==wm){vmGunL.wid=wm;setGun(vmGunL,wm);}
   vmGunL.visible=vm.visible&&dual;
   drawRope();
-  for(const b of W.buildings){const v=!(view===2&&P.base===0&&P.x>b.x0-.4&&P.x<b.x1+.4&&P.z>b.z0-.4&&P.z<b.z1+.4);b.roof.visible=v;if(b.upper)b.upper.visible=v;}
+  for(const b of W.buildings){const inside=view===2&&P.x>b.x0-.4&&P.x<b.x1+.4&&P.z>b.z0-.4&&P.z<b.z1+.4;
+    if(b.lv){const pf=Math.floor((P.base+.5)/WH);for(let k=1;k<b.lv.length;k++)b.lv[k].visible=!inside||k<=pf;}
+    else b.roof.visible=!(inside&&P.base===0);}
 }
 
 /* ================= hud ================= */
@@ -1945,7 +2001,7 @@ function updHud(){
   if(P.armor>0)m.push(['ok','VEST',Math.ceil(P.armor/60*100)+'%']);
   {const bt=P.dive?1:0;if(hudKey.bt!==bt){hudKey.bt=bt;el('bt').style.opacity=bt;}}
   if(P.dive)m.push(['ok','DIVE','Bullet time']);
-  if(P.base>0&&!P.car)m.push(['ok','ROOF','On the roof']);
+  if(P.base>.5&&!P.car)m.push(['ok',P.onRoof?'ROOF':'FLOOR '+(Math.round((P.base-.3)/WH)+1),P.onRoof?'On the roof':'Upstairs']);
   if(P.hops>1&&!P.car)m.push(['ok','HOP','x'+P.hops+' · '+Math.round(Math.hypot(P.vx,P.vz))+' m/s']);
   if(P.crT>.5&&!P.car)m.push(['ok','LOW',P.prone?'Prone':P.slide>0?'Sliding':'Crouched']);
   if(P.adren>0)m.push(['ok','RUSH',Math.ceil(P.adren)+'s']);if(P.jug>0)m.push(['ok','TANK',Math.ceil(P.jug)+'s']);
