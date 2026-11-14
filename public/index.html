@@ -361,7 +361,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 85, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 86, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -510,21 +510,26 @@ const UPS={
  luck:{n:"Scavenger's eye",d:'Better odds on rare loot',base:2500},
  stash:{n:'Bigger stash',d:'+2 rows of stash space',base:2000}
 };
+/* body armor tiers: armor points soak a share of each hit until they run out; heavier kit slows you down */
+const ARMORS={1:{n:'Soft vest',cls:2,hp:45,ab:.35,price:900,slow:0,col:0x6a6a52},2:{n:'Patrol vest',cls:3,hp:75,ab:.5,price:2400,slow:0,col:0x4a5332},3:{n:'Plate carrier',cls:4,hp:130,ab:.6,price:7500,slow:.03,col:0x3c4636},
+ 4:{n:'Assault armor',cls:5,hp:200,ab:.7,price:18000,slow:.06,col:0x2e3530},5:{n:'Juggernaut suit',cls:6,hp:320,ab:.8,price:45000,slow:.12,col:0x1e2224}};
 const SHOP=[
  {k:'w',id:'dual'},{k:'w',id:'smg'},{k:'w',id:'uzis'},{k:'w',id:'shotgun'},{k:'w',id:'spas'},{k:'w',id:'ak'},{k:'w',id:'rifle'},{k:'w',id:'sniper'},{k:'w',id:'butterfly'},{k:'w',id:'karambit'},{k:'w',id:'katana'},{k:'w',id:'saber'},{k:'w',id:'redrebel'},{k:'w',id:'swingline'},{k:'p',id:'assault'},{k:'p',id:'raid'},{k:'p',id:'hauler'},{k:'g',id:'grapple',n:'Grapple gun',price:12000},
  {k:'a',id:'9mm',n:30,price:150},{k:'a',id:'12ga',n:12,price:180},{k:'a',id:'5.56',n:30,price:320},{k:'a',id:'7.62',n:20,price:480},
  {k:'m',id:'bandage',n:'Bandage',price:80},{k:'m',id:'medkit',n:'First aid kit',price:450},{k:'m',id:'morphine',n:'Morphine injector',price:900},
- {k:'v',price:1200},{k:'lp',price:600},{k:'sc',price:50000}
+ {k:'v',id:1,price:900},{k:'v',id:2,price:2400},{k:'v',id:3,price:7500},{k:'v',id:4,price:18000},{k:'v',id:5,price:45000},{k:'lp',price:600},{k:'sc',price:50000}
 ];
 const EXF=[['North Gate',0,-HALF],['South Gate',0,HALF],['East Checkpoint',HALF,0],['West Underpass',-HALF,0]];
 
 /* ================= save ================= */
 const SAVE_KEY='deadhaul.v1';
-function defSave(){return {shoulder:1,picks:2,kmig:0,skins:{},skinOn:{},bfskin:'stock',cash:500,xp:0,level:1,streak:0,weapons:['pistol'],ammo:{'9mm':36,'12ga':0,'5.56':0,'7.62':0},meds:{bandage:2,painkillers:0,medkit:0,morphine:0},armor:0,keepGear:false,load:{},stash:[],packs:[],grapple:false,coins:1,bob:true,bhop:true,full:true,gfx:'high',gfxLock:false,pvp:true,nick:'',lobby:'',adsToggle:false,up:{pack:0,vit:0,lungs:0,hands:0,luck:0,stash:0},stats:{raids:0,extracts:0,best:0,kills:0},view:0,muted:false};}
+function defSave(){return {shoulder:1,picks:2,kmig:0,skins:{},skinOn:{},bfskin:'stock',cash:500,xp:0,level:1,streak:0,weapons:['pistol'],ammo:{'9mm':36,'12ga':0,'5.56':0,'7.62':0},meds:{bandage:2,painkillers:0,medkit:0,morphine:0},armor:0,armors:[],amig:0,keepGear:false,load:{},stash:[],packs:[],grapple:false,coins:1,bob:true,bhop:true,full:true,gfx:'high',gfxLock:false,pvp:true,nick:'',lobby:'',adsToggle:false,up:{pack:0,vit:0,lungs:0,hands:0,luck:0,stash:0},stats:{raids:0,extracts:0,best:0,kills:0},view:0,muted:false};}
 let S=defSave();
 try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s&&Array.isArray(s.weapons)){const d=defSave();for(const k in d){if(s[k]==null)continue;if(typeof d[k]==='object'&&!Array.isArray(d[k]))Object.assign(d[k],s[k]);else d[k]=s[k];}S=d;}}catch(e){}
 {const i=(S.stash||[]).findIndex(it=>it&&it.gid==='redrebel');if(i>=0&&S.weapons.indexOf('redrebel')<0){S.stash.splice(i,1);S.weapons.push('redrebel');}}
 for(const k in S.ammo)if(typeof S.ammo[k]!=='number'||isNaN(S.ammo[k])){if(k==='undefined')delete S.ammo[k];else S.ammo[k]=0;}
+if(!S.amig){if(S.armor){S.armor=2;S.armors=[2];}else S.armors=[];S.amig=1;}
+if(!Array.isArray(S.armors))S.armors=[];if(S.armor&&S.armors.indexOf(S.armor)<0)S.armor=0;
 if(!S.kmig){S.kmig=1;if((S.xp>0||S.cash!==500)&&S.weapons.indexOf('katana')<0)S.weapons.push('katana');}
 if(!S.nick)S.nick='Raider-'+(100+Math.floor(Math.random()*900));
 function save(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){}}
@@ -1458,7 +1463,7 @@ function startRaid(){
   {const q=[[-1,-1],[1,-1],[-1,1],[1,1]][Math.floor(Math.random()*4)];W.spawn={x:q[0]*HALF,z:q[1]*HALF};for(let i=W.enemies.length-1;i>=0;i--){const e=W.enemies[i];if(Math.hypot(e.x-W.spawn.x,e.z-W.spawn.z)<30){W.g.remove(e.mesh);W.enemies.splice(i,1);}}}
   MP.lastHit=null;MP.killer='';
   const sp=W.spawn;
-  P={x:sp.x,z:sp.z,yaw:Math.atan2(sp.x,sp.z),pitch:0,recoil:0,hp:100+15*S.up.vit,maxHp:100+15*S.up.vit,stam:100,bleed:false,armor:S.armor?60:0,
+  P={x:sp.x,z:sp.z,yaw:Math.atan2(sp.x,sp.z),pitch:0,recoil:0,hp:100+15*S.up.vit,maxHp:100+15*S.up.vit,stam:100,bleed:false,armor:S.armor?ARMORS[S.armor].hp:0,armorMax:S.armor?ARMORS[S.armor].hp:1,armorAb:S.armor?ARMORS[S.armor].ab:0,armorSlow:S.armor?ARMORS[S.armor].slow:0,
      weapon:'pistol',mag:{},fireCd:0,reloading:0,healCd:0,bag:[],loose:0,weight:0,cap:22+6*S.up.pack+curPack().kg,over:false,car:null,search:null,loot:null,exT:0,panic:0,near:0,
      anim:0,moving:false,sprint:false,swing:0,y:0,vy:0,adsT:0,vx:0,vz:0,crouch:false,crT:0,slide:0,sdx:0,sdz:0,bobA:0,land:0,lean:0,sprT:0,swx:0,swy:0,stepN:0,hops:0,base:0,grap:null,hook:null,grapCd:0,dive:false,diveSlide:false,prone:false,dvWin:false,diveCd:0,dvT:0,dvF:1,dvS:0,dualSide:false,kL:0,kR:0,coins:0,mini:0,adren:0,jug:0,vault:null,canVault:false,lookIdle:9,xp:0,kills:0,zk:0,sk:0,peakHeat:0,noiseT:0,c:null};
   P.c=makeChar({skin:0xd0a582,shirt:0x2e4d6b,pants:0x3b3530,hair:0x3a2a1c,pack:0x4f5a36},true,'pistol');W.g.add(P.c.g);
@@ -1490,8 +1495,8 @@ function endRaid(res){if(P)P.climb=null;$('pickUI').hidden=true;if(P)P.pick=null
       if(it.k==='gun'&&S.weapons.indexOf(it.gid)<0){if(WPN[it.gid].am)S.ammo[WPN[it.gid].am]+=P.mag[it.gid]||0;it.mag=0;}
       const cp=stashCopy(it);cp.rot=false;if(stPlace(cp,stashRows()))S.stash.push(cp);else{overN++;overV+=it.val;}}
     S.cash+=overV;paid+=overV;
-   S.stats.extracts++;S.streak++;if(total>S.stats.best)S.stats.best=total;S.armor=P.armor>1?1:0;}
-  else{S.streak=0;S.armor=0;
+   S.stats.extracts++;S.streak++;if(total>S.stats.best)S.stats.best=total;if(S.armor&&P.armor<=1){S.armors=S.armors.filter(t=>t!==S.armor);card(ARMORS[S.armor].n+' was shot to pieces',0,'c');S.armor=0;}}
+  else{S.streak=0;if(S.armor){S.armors=S.armors.filter(t=>t!==S.armor);S.armor=0;}
     if(!S.keepGear){fixLoad();
       for(const k of ['primary','secondary','melee']){const id=S.load[k];if(!id||id==='pistol'||id==='knife')continue;const i=S.weapons.indexOf(id);if(i>=0)S.weapons.splice(i,1);lost.push(WPN[id].n);S.load[k]=k==='secondary'?'pistol':k==='melee'?'knife':'';}
       const pk=S.load.pack;if(PACKS[pk]&&PACKS[pk].price){const i=(S.packs||[]).indexOf(pk);if(i>=0)S.packs.splice(i,1);lost.push(PACKS[pk].n);S.load.pack='daypack';}}}
@@ -1545,7 +1550,7 @@ function makeNoise(x,z,r){for(const e of W.enemies){if(e.dead||e.aggro>0)continu
 function addHeat(v){const b=Math.floor(W.heat);W.heat=clamp(W.heat+v,0,5);if(W.heat>P.peakHeat)P.peakHeat=W.heat;const n=Math.floor(W.heat);if(n>b){banner('WANTED '+'★'.repeat(n),n>=2?'Hunters are coming. Haul bonus +'+n*10+'%':'Haul bonus +'+n*10+'%','heat');sfx.heat();}}
 function hurt(d,bite){
   if(state!=='raid')return;if(P.jug>0)d*=.25;
-  if(!bite&&P.armor>0){const a=Math.min(P.armor,d*.5);P.armor-=a;d-=a;}
+  if(!bite&&P.armor>0){const a=Math.min(P.armor,d*P.armorAb);P.armor-=a;d-=a;}
   P.hp-=d;if((bite&&Math.random()<.22)||(!bite&&Math.random()<.15)){if(!P.bleed){P.bleed=true;card('You are bleeding',0,'c','tap Q to bandage');}}
   hurtFx();sfx.hurt();shake=Math.max(shake,.25);
   if(P.hp<=0){P.hp=0;endRaid('kia');}
@@ -2029,7 +2034,7 @@ function updPlayer(dt){
       if(P.dive){P.dive=false;P.diveSlide=true;P.hops=0;P.land=.2;P.diveCd=1;const s0=Math.hypot(P.vx,P.vz)||1;P.slide=.5;P.sdx=P.vx/s0;P.sdz=P.vz/s0;hiss(.4,.2,700);}
       else if(S.bhop!==false&&(keys.Space||jumpHeld)&&P.stam>=2&&!P.over&&!P.loot&&!bagOpen){P.hops++;P.stam-=2;P.vy=5.8;P.y=.01;P.land=.03;const s0=Math.hypot(P.vx,P.vz);if(s0>3&&s0<12){const k=Math.min(1.07,12/s0);P.vx*=k;P.vz*=k;}}
       else{P.hops=0;P.land=Math.min(.24,.06+fall*.022);}}}
-    const spd=4.3*(P.sprint?1.6:1)*(P.over?.6:1)*(1-(curPack().slow||0))*(1-.45*P.adsT)*(P.adren>0?1.4:1)*(1-.5*P.crT)*(P.prone?.5:1);
+    const spd=4.3*(P.sprint?1.6:1)*(P.over?.6:1)*(1-(curPack().slow||0))*(1-(P.armorSlow||0))*(1-.45*P.adsT)*(P.adren>0?1.4:1)*(1-.5*P.crT)*(P.prone?.5:1);
     const sy=Math.sin(P.yaw),cy=Math.cos(P.yaw);
     let wx=(-sy*iy+cy*ix)*spd,wz=(-cy*iy-sy*ix)*spd;
     if(P.slide>0){P.slide-=dt;const k=Math.max(0,P.slide/.7);wx=P.sdx*(3.5+7.5*k);wz=P.sdz*(3.5+7.5*k);if(P.slide<=0){if(P.diveSlide){P.prone=true;P.crouch=false;}else P.crouch=true;P.diveSlide=false;}}
@@ -2270,7 +2275,7 @@ function updHud(){
   if(P.stam<25)m.push(['warn','WIND','Winded']);
   if(P.over)m.push(['warn','LOAD','Overloaded']);
   if(P.panic>.3)m.push(['warn','PANIC','Aim shaking']);
-  if(P.armor>0)m.push(['ok','VEST',Math.ceil(P.armor/60*100)+'%']);
+  if(P.armor>0)m.push(['ok','CLASS '+ARMORS[S.armor].cls,Math.ceil(P.armor/P.armorMax*100)+'%']);
   {const bt=P.dive?1:0;if(hudKey.bt!==bt){hudKey.bt=bt;el('bt').style.opacity=bt;}}
   if(P.dive)m.push(['ok','DIVE','Bullet time']);
   if(P.base>.5&&!P.car)m.push(['ok',P.onRoof?'ROOF':'FLOOR '+(Math.round((P.base-.3)/WH)+1),P.onRoof?'On the roof':'Upstairs']);
@@ -2572,7 +2577,7 @@ function slotItem(kind,three){
     const [w,k]=opts[Math.floor(Math.random()*opts.length)];(S.skins[w]||(S.skins[w]=[])).push(k);S.skinOn[w]=k;vmGun.wid=null;vmGunL.wid=null;try{makeIcons();}catch(e){}
     return SKINS[k].n+' skin for the '+WPN[w].n+' (equipped)';
   }
-  if(kind==='vest'){const had=S.armor;S.armor=1;let txt=had?'Armor vest (already had one: $1,500)':'Armor vest';let cash=had?1500:0;if(three){cash+=5000;txt+=' + $5,000';}S.cash+=cash;return txt;}
+  if(kind==='vest'){const had=S.armors.indexOf(2)>=0;if(!had){S.armors.push(2);if((S.armor||0)<2)S.armor=2;}let txt=had?'Patrol vest (already had one: $1,500)':'Patrol vest';let cash=had?1500:0;if(three){cash+=5000;txt+=' + $5,000';}S.cash+=cash;return txt;}
   const pool=kind==='gun'?(three?['ak','rifle','sniper','spas']:['dual','smg','shotgun','uzis']):(three?['saber']:['butterfly','karambit','katana']);
   const free=pool.filter(id=>!owns(id));
   if(!free.length){const id=pool[Math.floor(Math.random()*pool.length)],c=Math.round((WPN[id].price||5000)/2);S.cash+=c;return WPN[id].n+' (already owned: '+fmt(c)+')';}
@@ -2775,9 +2780,13 @@ function stashSell(list){
 }
 let loadOpen=null;
 const PACK_ICO='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M22 14 Q32 4 42 14" fill="none" stroke="#6a6f5a" stroke-width="4"/><rect x="14" y="14" width="36" height="44" rx="8" fill="#4a5332"/><rect x="19" y="34" width="26" height="16" rx="3" fill="#3a4128"/><rect x="19" y="20" width="26" height="4" fill="#2a2f1e"/></svg>');
-function loIcon(id){return PACKS[id]?PACK_ICO:(ICON['w_'+id]||'');}
-function slotOf(id){for(const k in SLOT)if(SLOT[k].indexOf(id)>=0)return k;return null;}
-function loEquip(k,id){fixLoad();if(id&&!owns(id))return;S.load[k]=id||'';if(k==='melee'&&!id)S.load.melee='knife';if(k==='pack'&&!id)S.load.pack='daypack';save();sfx.click();renderMenu();}
+const VEST_ICO={};
+function vestIco(t){if(VEST_ICO[t])return VEST_ICO[t];const c='#'+ARMORS[t].col.toString(16).padStart(6,'0');
+  return VEST_ICO[t]='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M20 8 L26 8 Q32 14 38 8 L44 8 L50 18 L48 58 L16 58 L14 18 Z" fill="'+c+'" stroke="#0c0e0c" stroke-width="2"/>'+(t>=2?'<rect x="22" y="24" width="20" height="24" rx="2" fill="none" stroke="#9aa08a" stroke-width="1.5" opacity=".7"/>':'')+(t>=3?'<path d="M20 36 H44 M20 42 H44" stroke="#0c0e0c" stroke-width="2"/>':'')+(t>=4?'<path d="M14 18 L6 24 L10 34 L16 28 Z M50 18 L58 24 L54 34 L48 28 Z" fill="'+c+'"/>':'')+'<text x="32" y="62" font-size="9" text-anchor="middle" fill="#e6c14a" font-family="monospace">'+ARMORS[t].cls+'</text></svg>');}
+function loIcon(id){if(String(id).indexOf('armor:')===0)return vestIco(+id.slice(6));return PACKS[id]?PACK_ICO:(ICON['w_'+id]||'');}
+function loName(id){if(String(id).indexOf('armor:')===0)return ARMORS[+id.slice(6)].n;return (WPN[id]||PACKS[id]).n;}
+function slotOf(id){if(String(id).indexOf('armor:')===0)return 'armor';for(const k in SLOT)if(SLOT[k].indexOf(id)>=0)return k;return null;}
+function loEquip(k,id){if(k==='armor'){const t=id?+String(id).slice(6):0;if(t&&S.armors.indexOf(t)<0)return;S.armor=t;save();sfx.click();renderMenu();return;}fixLoad();if(id&&!owns(id))return;S.load[k]=id||'';if(k==='melee'&&!id)S.load.melee='knife';if(k==='pack'&&!id)S.load.pack='daypack';save();sfx.click();renderMenu();}
 let LDR=null;
 function loEnd(){if(!LDR)return;if(LDR.ghost)LDR.ghost.remove();const lo=document.querySelector('#mLoad .lo');if(lo)lo.classList.remove('dragging');document.querySelectorAll('#mLoad .dslot.hov,#mLoad .dslot.ok').forEach(x=>x.classList.remove('hov','ok'));LDR=null;}
 function loInit(){const root=$('mLoad');
@@ -2786,7 +2795,7 @@ function loInit(){const root=$('mLoad');
     LDR={id:id,k:k,from:from,x:e.clientX,y:e.clientY,moved:false,ghost:null,pid:e.pointerId};});
   window.addEventListener('pointermove',e=>{const d=LDR;if(!d||e.pointerId!==d.pid)return;
     if(!d.moved){if(Math.hypot(e.clientX-d.x,e.clientY-d.y)<6||(d.from&&!d.id))return;d.moved=true;
-      const g=document.createElement('div');g.className='lghost';const ic=loIcon(d.id);g.innerHTML=(ic?'<i class="ai" style="background-image:url('+ic+')"></i>':'')+'<span>'+(WPN[d.id]||PACKS[d.id]).n+'</span>';document.body.appendChild(g);d.ghost=g;
+      const g=document.createElement('div');g.className='lghost';const ic=loIcon(d.id);g.innerHTML=(ic?'<i class="ai" style="background-image:url('+ic+')"></i>':'')+'<span>'+loName(d.id)+'</span>';document.body.appendChild(g);d.ghost=g;
       const lo=document.querySelector('#mLoad .lo');if(lo)lo.classList.add('dragging');document.querySelectorAll('#mLoad .dslot').forEach(x=>x.classList.toggle('ok',x.dataset.slot===d.k));}
     d.ghost.style.transform='translate('+(e.clientX-55)+'px,'+(e.clientY-30)+'px)';
     const t=document.elementFromPoint(e.clientX,e.clientY),sl=t&&t.closest('#mLoad .dslot');document.querySelectorAll('#mLoad .dslot.hov').forEach(x=>x.classList.remove('hov'));if(sl&&sl.dataset.slot===d.k)sl.classList.add('hov');e.preventDefault();});
@@ -2813,8 +2822,8 @@ function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.c
   const DS=[['pack','l',8,140,100,'Back'],['primary','r',8,184,96,'Sling'],['melee','l',40,126,200,'Sheath'],['secondary','r',40,194,200,'Holster'],['gadget','l',70,142,290,'Belt'],['armor','r',70,190,168,'Chest']];
   let dl='',ds='';
   for(const [k,side,top,ax,ay,where] of DS){const cy=(top/100)*420+37,x0=side==='l'?118:202;
-    if(k==='armor'){dl+='<line x1="'+x0+'" y1="'+cy+'" x2="'+ax+'" y2="'+ay+'" class="'+(S.armor?'on':'')+'"/><circle cx="'+ax+'" cy="'+ay+'" r="3.5" class="'+(S.armor?'on':'')+'"/>';
-      ds+='<div class="dslot fixed '+side+(S.armor?'':' empty')+'" style="top:'+top+'%" data-slot="armor"><span class="sk">Armor · '+where+'</span><b>'+(S.armor?'Armor vest':'No vest')+'</b><small>'+(S.armor?'Soaks half of each bullet':'Buy one at the trader')+'</small></div>';continue;}
+    if(k==='armor'){const A=S.armor?ARMORS[S.armor]:null,ic=A?loIcon('armor:'+S.armor):'';dl+='<line x1="'+x0+'" y1="'+cy+'" x2="'+ax+'" y2="'+ay+'" class="'+(A?'on':'')+'"/><circle cx="'+ax+'" cy="'+ay+'" r="3.5" class="'+(A?'on':'')+'"/>';
+      ds+='<div class="dslot '+side+(A?'':' empty')+'" style="top:'+top+'%" data-slot="armor" data-item="'+(A?'armor:'+S.armor:'')+'"><span class="sk">Armor · class '+(A?A.cls:'-')+'</span>'+(ic?'<i class="ai" style="background-image:url('+ic+')"></i>':'')+'<b>'+(A?A.n:(S.armors.length?'Drop armor here':'Buy armor at the trader'))+'</b></div>';continue;}
     const id=S.load[k],w=id?(WPN[id]||PACKS[id]):null,ic=id?loIcon(id):'';
     dl+='<line x1="'+x0+'" y1="'+cy+'" x2="'+ax+'" y2="'+ay+'" class="'+(w?'on':'')+'"/><circle cx="'+ax+'" cy="'+ay+'" r="3.5" class="'+(w?'on':'')+'"/>';
     ds+='<div class="dslot '+side+(w?'':' empty')+(loadOpen===k?' open':'')+'" style="top:'+top+'%" data-slot="'+k+'" data-item="'+(id||'')+'" title="'+SLOTN[k]+'"><span class="sk">'+(k==='gadget'?'G':k==='pack'?'Tab':['primary','secondary','melee'].indexOf(k)+1)+' · '+SLOTN[k]+'</span>'+(ic?'<i class="ai" style="background-image:url('+ic+')"></i>':'')+'<b>'+(w?w.n:'Drop '+SLOTN[k].toLowerCase()+' here')+'</b></div>';}
@@ -2822,13 +2831,20 @@ function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.c
     '<g class="body"><circle cx="160" cy="50" r="21"/><rect x="151" y="66" width="18" height="16"/><path d="M126 84 Q160 74 194 84 L201 192 Q160 202 119 192 Z"/>'+
     '<path class="limb" d="M130 90 L108 150 L102 208"/><path class="limb" d="M190 90 L212 150 L218 208"/><rect x="121" y="188" width="78" height="32" rx="9"/>'+
     '<path class="leg" d="M146 214 L141 300 L139 380"/><path class="leg" d="M174 214 L179 300 L181 380"/><rect x="124" y="378" width="28" height="14" rx="4"/><rect x="168" y="378" width="28" height="14" rx="4"/></g>'+
-    (S.armor?'<path class="vest" d="M132 92 Q160 86 188 92 L193 178 Q160 186 127 178 Z"/><path class="plate" d="M140 104 H180 M140 122 H180 M140 140 H180"/>':'')+
+    (S.armor?(()=>{const t=S.armor,c='#'+ARMORS[t].col.toString(16).padStart(6,'0');let v='<path class="vest" style="fill:'+c+'" d="M132 92 Q160 86 188 92 L193 '+(t>=4?188:178)+' Q160 '+(t>=4?196:186)+' 127 '+(t>=4?188:178)+' Z"/>';
+      if(t>=2)v+='<path class="plate" d="M140 104 H180 M140 122 H180'+(t>=3?' M140 140 H180 M140 158 H180':'')+'"/>';
+      if(t>=3)v+='<rect x="143" y="100" width="34" height="44" rx="3" style="fill:none;stroke:#9aa08a;stroke-width:1.2;opacity:.6"/>';
+      if(t>=4)v+='<path style="fill:'+c+'" d="M126 86 Q114 92 112 112 L128 110 Z M194 86 Q206 92 208 112 L192 110 Z"/><rect x="144" y="190" width="32" height="22" rx="4" style="fill:'+c+'"/>';
+      if(t>=5)v+='<path style="fill:'+c+'" d="M138 46 Q138 24 160 24 Q182 24 182 46 L182 52 L138 52 Z"/><rect x="142" y="44" width="36" height="8" style="fill:#0e1012"/>';
+      return v;})():'')+
     '<rect x="119" y="186" width="82" height="8" class="belt"/>'+dl+'</svg>';
   let arm='';
+  if(S.armors.length)arm+='<h4>Armor</h4><div class="agrid">'+S.armors.slice().sort((a,b)=>a-b).map(t=>'<div class="aitem'+(S.armor===t?' eq':'')+'" data-item="armor:'+t+'" title="'+ARMORS[t].n+'"><i class="ai" style="background-image:url('+loIcon('armor:'+t)+')"></i><span>'+ARMORS[t].n+' · '+ARMORS[t].cls+'</span></div>').join('')+'</div>';
   for(const k of ['primary','secondary','melee','gadget','pack']){const opts=SLOT[k].filter(owns);if(!opts.length)continue;
     arm+='<h4>'+SLOTN[k]+'</h4><div class="agrid">'+opts.map(o=>{const ic=loIcon(o);return '<div class="aitem'+(S.load[k]===o?' eq':'')+'" data-item="'+o+'" title="'+nm(o)+'">'+(ic?'<i class="ai" style="background-image:url('+ic+')"></i>':'')+'<span>'+nm(o)+'</span></div>';}).join('')+'</div>';}
   h+='<div class="lo"><div class="doll">'+fig+ds+'</div><div class="arm"><p class="lohint">Drag gear onto a slot on the body, or tap it to equip. Drag a slot off the body to empty it.</p>'+arm+'</div></div>';
-  if(loadOpen&&SLOT[loadOpen]){const k=loadOpen,id=S.load[k],w=id?(WPN[id]||PACKS[id]):null;
+  if(loadOpen==='armor'&&S.armor){const A=ARMORS[S.armor];h+='<div class="row"><span class="nm">Armor: '+A.n+' · class '+A.cls+'<small>'+A.hp+' armor · stops '+Math.round(A.ab*100)+'% of each hit'+(A.slow?' · '+Math.round(A.slow*100)+'% slower':'')+' · lost if you die in it or it breaks</small></span></div>';}
+  else if(loadOpen&&SLOT[loadOpen]){const k=loadOpen,id=S.load[k],w=id?(WPN[id]||PACKS[id]):null;
     const sub=!w?'Empty':k==='pack'?psub(id):w.gadget?(w.throwln?'Hold click or G to wind up, let go to throw, click again to drop it':w.hold?'Hold click or G to swing, let go to drop the line':'Click or G fires it, click again to let go'):w.melee?'Melee · '+w.dmg+' damage a swing':w.am+' · '+(id==='pistol'?'free mag each raid · ':'')+S.ammo[w.am]+' in reserve';
     h+='<div class="row"><span class="nm">'+SLOTN[k]+': '+(w?w.n:'Empty')+'<small>'+sub+'</small></span></div>';
     if(k!=='melee'&&k!=='pack'&&id)h+='<div class="opts"><button type="button" class="btn plain" data-act="equip" data-id="'+k+':">Leave '+SLOTN[k].toLowerCase()+' empty</button></div>';}
@@ -2847,7 +2863,7 @@ function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.c
     else if(s.k==='g'){name=s.n;sub='Fires a hook on a rope and reels you in. Reaches rooftops.';own=!!S.grapple;}
     else if(s.k==='sc'){name='Slot coin';sub='One spin on the slot machine. You have '+(S.coins||0);}
     else if(s.k==='lp'){name='Lock picks x 2';sub='Opens locked safes and registers. You have '+(S.picks||0);}
-    else{name='Armor vest';sub='Kept if you extract with it intact';own=!!S.armor;}
+    else{const A=ARMORS[s.id];name=A.n+' · class '+A.cls;sub=A.hp+' armor · stops '+Math.round(A.ab*100)+'% of each hit'+(A.slow?' · '+Math.round(A.slow*100)+'% slower':'')+' · lost if you die in it';own=S.armors.indexOf(s.id)>=0;}
     h+='<div class="row"><span class="nm">'+name+'<small>'+sub+'</small></span><button class="btn" type="button" data-act="buy" data-id="'+i+'"'+(own||S.cash<price?' disabled':'')+'>'+(own?'Owned':fmt(price))+'</button></div>';});
   $('mShop').innerHTML=h;
   h='';
@@ -2888,7 +2904,7 @@ $('menu').addEventListener('click',e=>{
   if(a==='wipe'){if(wipeArmed){S=defSave();view=0;wipeArmed=false;save();}else wipeArmed=true;renderMenu();return;}
   if(a==='buy'){const s=SHOP[+id],price=s.k==='w'?WPN[s.id].price:s.k==='p'?PACKS[s.id].price:s.price;if(S.cash<price)return;
     if(s.k==='w'){if(S.weapons.indexOf(s.id)>=0)return;S.weapons.push(s.id);if(!WPN[s.id].melee&&WPN[s.id].am)S.ammo[WPN[s.id].am]+=WPN[s.id].mag*2;autoEquip(s.id);}
-    else if(s.k==='a')S.ammo[s.id]+=s.n;else if(s.k==='m')S.meds[s.id]++;else if(s.k==='p'){if(owns(s.id))return;(S.packs||(S.packs=[])).push(s.id);fixLoad();S.load.pack=s.id;}else if(s.k==='g'){if(S.grapple)return;S.grapple=true;autoEquip('grapple');}else if(s.k==='lp'){S.picks=(S.picks||0)+2;}else if(s.k==='sc'){S.coins=(S.coins||0)+1;}else{if(S.armor)return;S.armor=1;}
+    else if(s.k==='a')S.ammo[s.id]+=s.n;else if(s.k==='m')S.meds[s.id]++;else if(s.k==='p'){if(owns(s.id))return;(S.packs||(S.packs=[])).push(s.id);fixLoad();S.load.pack=s.id;}else if(s.k==='g'){if(S.grapple)return;S.grapple=true;autoEquip('grapple');}else if(s.k==='lp'){S.picks=(S.picks||0)+2;}else if(s.k==='sc'){S.coins=(S.coins||0)+1;}else{if(S.armors.indexOf(s.id)>=0)return;S.armors.push(s.id);if((S.armor||0)<s.id)S.armor=s.id;}
     S.cash-=price;sfx.cash();}
   if(a==='up'){const c=upCost(id);if(S.up[id]>=UPMAX||S.cash<c)return;S.cash-=c;S.up[id]++;sfx.loot(2);}
   save();renderMenu();
