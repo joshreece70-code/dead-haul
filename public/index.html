@@ -372,7 +372,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 88, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 89, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -408,7 +408,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
           <li><b>Left click</b> fire (hold for auto) · <b>Right click</b> aim down sights on/off · <b>Space</b> jump, or vault through a window you are facing</li>
           <li><b>Hold Space</b> to bunny hop: you re-jump the instant you land and build speed. Strafe with <b>A</b> or <b>D</b> while turning the same way to gain more.</li>
           <li><b>F</b> inspects the weapon in your hands.</li>
-          <li>The <b>Red Rebel</b> ice axe only turns up in airdrops. Carry it and press <b>Space</b> facing the outside wall of a four storey building to climb: <b>W</b>/<b>S</b> up and down, <b>A</b>/<b>D</b> along the wall, <b>Space</b> to let go. Climbing up costs stamina. Falling or jumping next to one of those walls, press <b>Space</b> to dig the axe in and catch yourself.</li>
+          <li>The <b>Red Rebel</b> ice axe only turns up in airdrops. Carry it and press <b>Space</b> facing the outside wall of a tall building to climb: <b>W</b>/<b>S</b> up and down, <b>A</b>/<b>D</b> along the wall, <b>Space</b> to let go. Climbing up costs stamina. Falling or jumping next to one of those walls, press <b>Space</b> to dig the axe in and catch yourself.</li>
           <li>Safes and cash registers are locked. With a <b>lock pick</b>, press <b>E</b> and hit <b>Space</b>, <b>E</b> or click while the marker is in the green to set each pin. A miss drops a pin and can snap the pick.</li>
           <li><b>Z</b> or <b>mouse button 5</b> dolphin dive in the direction you are moving. Time slows while you are in the air, but you aim and shoot at nearly full speed. A dive carries you through open windows. You land prone: crawl, press <b>Ctrl</b> to crouch, or <b>Space</b> to stand.</li>
           <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. It lets go on its own once you are reeled all the way in (popping you over a roof edge), or click again to let go early and keep your swing. The <b>Swing Line</b> from the trader is a rope with a hook you throw by hand: hold the click (or <b>G</b>) to swing it round, the longer you wind up the further it flies (8 to 40 m), and let go to throw. It never reels in: the line locks at the length it landed at and you swing on it. Click again to drop the line. Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
@@ -1131,7 +1131,7 @@ function addBuilding(B,cx,cz,w,d,o){
     const inset=(k===0||k===2)?.9:-.9;
     for(let t=s[2]+2.4;t<s[3]-2.4;t+=2.3){if(ops.some(o=>Math.abs(t-o.at)<(o.win?1.7:2.5)))continue;b.slots.push(s[0]?{x:t,z:s[1]+inset,v:false}:{x:s[1]+inset,z:t,v:true});}
   });
-  const tall=o.floors||((o.type==='store'||o.type==='clinic'||o.type==='police'||o.type==='bank')&&Math.random()<.7?4:1);b.side=side;
+  const tall=o.floors||((o.type==='store'||o.type==='clinic'||o.type==='police'||o.type==='bank')&&Math.random()<.75?pick([4,5,6,6,7,8]):1);b.side=side;
   if(tall>1){b.roof=new T.Group();W.g.add(b.roof);addTall(b,o,tall);}else b.roof=addRoof(cx,cz,w+1,d+1,WH,o.roof);
   shuffle(b.slots);W.buildings.push(b);return b;
 }
@@ -1208,8 +1208,10 @@ function roadPoint(minD,maxD,px,pz){
   return {x:x,z:z};
 }
 const HOUSE_COL=[0x8d8468,0x7d6f5c,0x93886f,0x6f7a78,0x86705e];
-const PAD={house:0x4f6040,store:0x77796f,bank:0x77796f,police:0x6c6f6a,clinic:0x7c7f76,warehouse:0x5b5a52,gas:0x5b5a52,lot:0x5f5a4a};
+const PAD={highrise:0x6e706a,house:0x4f6040,store:0x77796f,bank:0x77796f,police:0x6c6f6a,clinic:0x7c7f76,warehouse:0x5b5a52,gas:0x5b5a52,lot:0x5f5a4a};
 const BLOCKS={
+ highrise(B,cx,cz){const b=addBuilding(B,cx,cz,22,18,{type:'office',floors:pick([10,11,12]),wall:pick([0x7a8590,0x8c8578,0x6f7a72]),floor:0x6d7068,roof:0x34383a});
+   fill(b,['locker','locker','shelf','register','safe','crate','duffel','weaponcase']);trees(B,cx,cz,2,18);spawn('s',cx-3,cz);spawn('s',cx+3,cz+2);spawn('z',cx,cz-6);spawn('z',cx+5,cz+5);},
  house(B,cx,cz){[-10,10].forEach(sx=>{const b=addBuilding(B,cx+sx,cz+rand(-4,4),rand(11,14.5),rand(10,13),{type:'house',wall:pick(HOUSE_COL),floor:0x5d4a33,roof:0x473832,side:sx<0?2:3});
    fill(b,['fridge','crate','duffel',Math.random()<.22?'safe':'crate',Math.random()<.5?'medbox':'duffel']);if(Math.random()<.65)spawn('z',b.cx,b.cz);});trees(B,cx,cz,4,18);},
  store(B,cx,cz){const b=addBuilding(B,cx,cz,24,16,{type:'store',wall:0x8a8d86,floor:0x6d7068,roof:0x3d4346});fill(b,['shelf','shelf','shelf','shelf','register','register','crate','fridge','duffel']);spawn('z',cx-3,cz);spawn('z',cx+3,cz+2);if(Math.random()<.6)spawn('s',cx,cz-2);},
@@ -1222,9 +1224,40 @@ const BLOCKS={
    const roof=addRoof(cx,cz+8,16,14,4.2,0x8a2f28);W.buildings.push({x0:cx-8,x1:cx+8,z0:cz+1,z1:cz+15,cx:cx,cz:cz+8,w:16,d:14,type:'canopy',slots:[],roof:roof});
    for(const px of[-2.5,2.5])addStatic(B,cx+px,.8,cz+8,.8,1.5,.5,0x9b3a2e,true);
    addCar(cx-5.2,cz+8,0);if(Math.random()<.6)addCar(cx+5.2,cz+9,Math.PI);spawn('s',cx,cz+4);spawn('z',cx+8,cz+16);},
- lot(B,cx,cz){for(let i=0;i<4;i++)addContainer('crate',cx+rand(-15,15),cz+rand(-15,15),false);for(let i=0;i<3;i++)addContainer('duffel',cx+rand(-15,15),cz+rand(-15,15),false);
+ lot(B,cx,cz){waterTower(B,cx-9,cz-9);radioMast(B,cx+10,cz+10);billboard(B,cx+rand(-4,4),cz-16.5);for(let i=0;i<4;i++)addContainer('crate',cx+rand(-15,15),cz+rand(-15,15),false);for(let i=0;i<3;i++)addContainer('duffel',cx+rand(-15,15),cz+rand(-15,15),false);
    addCar(cx+rand(-12,-6),cz+rand(-12,12),rand(0,6.28));addCar(cx+rand(6,12),cz+rand(-12,12),rand(0,6.28));trees(B,cx,cz,3,17);for(let i=0;i<3;i++)spawn('z',cx+rand(-14,14),cz+rand(-14,14));}
 };
+/* tall structures you can hook onto and stand on */
+function addStruct(x0,x1,z0,z1,rh,surf){const b={x0:x0,x1:x1,z0:z0,z1:z1,cx:(x0+x1)/2,cz:(z0+z1)/2,w:x1-x0,d:z1-z0,type:'struct',slots:[],roof:new T.Group(),rh:rh,surf:surf};W.g.add(b.roof);W.buildings.push(b);return b;}
+function slab(B,x0,x1,z0,z1,y,hex,list,roof){addStatic(B,(x0+x1)/2,y+.1,(z0+z1)/2,x1-x0,.2,z1-z0,hex,true,.05);list.push({x0:x0,x1:x1,z0:z0,z1:z1,y:y+.2,roof:!!roof});}
+function rail(B,x0,x1,z0,z1,y,skip){const c=0x2c2f2e;if(skip!=='n')addStatic(B,(x0+x1)/2,y+.6,z0,x1-x0,.08,.08,c,true,0);if(skip!=='s')addStatic(B,(x0+x1)/2,y+.6,z1,x1-x0,.08,.08,c,true,0);
+  addStatic(B,x0,y+.6,(z0+z1)/2,.08,.08,z1-z0,c,true,0);addStatic(B,x1,y+.6,(z0+z1)/2,.08,.08,z1-z0,c,true,0);for(const [px,pz] of [[x0,z0],[x1,z0],[x0,z1],[x1,z1]])B.box(px,y+.4,pz,.08,.6,.08,c,0);}
+function waterTower(B,x,z){const L=14,S=[],r=2.2,leg=0x3a3d3a;
+  for(const [a,c] of [[-r,-r],[r,-r],[-r,r],[r,r]])addStatic(B,x+a,L/2,z+c,.32,L,.32,leg,true,0);
+  for(let y=3.5;y<L;y+=3.5){addStatic(B,x,y,z-r,2*r,.16,.16,leg,true,0);addStatic(B,x,y,z+r,2*r,.16,.16,leg,true,0);addStatic(B,x-r,y,z,.16,.16,2*r,leg,true,0);addStatic(B,x+r,y,z,.16,.16,2*r,leg,true,0);}
+  for(let y=0;y<L;y+=.5)B.box(x+r+.3,y+.25,z,.05,.05,.6,0x2c2f2e,0);B.box(x+r+.3,L/2,z-.3,.05,L,.05,0x2c2f2e,0);B.box(x+r+.3,L/2,z+.3,.05,L,.05,0x2c2f2e,0);
+  const p=3.4;slab(B,x-p,x+p,z-p,z-2.6,L,0x4a4d4a,S);slab(B,x-p,x+p,z+2.6,z+p,L,0x4a4d4a,S);slab(B,x-p,x-2.6,z-2.6,z+2.6,L,0x4a4d4a,S);slab(B,x+2.6,x+p,z-2.6,z+2.6,L,0x4a4d4a,S);
+  rail(B,x-p,x+p,z-p,z+p,L+.2);
+  addStatic(B,x,L+2.2,z,5.2,4.2,5.2,0x8a9a9e,true,.05);B.box(x,L+2.2,z+2.62,3.4,1.1,.04,0x2e3a44,0);B.box(x,L+2.2,z-2.62,3.4,1.1,.04,0x2e3a44,0);
+  slab(B,x-2.8,x+2.8,z-2.8,z+2.8,L+4.3,0x5a6266,S,true);addStatic(B,x,L+5.2,z,2.4,.8,2.4,0x5a6266,true,.05);S.push({x0:x-1.2,x1:x+1.2,z0:z-1.2,z1:z+1.2,y:L+5.6,roof:true});
+  addStruct(x-p,x+p,z-p,z+p,L+4.5,S);}
+function radioMast(B,x,z){const H=33,S=[],r=.8,c=0x8a2a22,w=0xd8d6cc;
+  for(const [a,b2] of [[-r,-r],[r,-r],[-r,r],[r,r]])addStatic(B,x+a,H/2,z+b2,.16,H,.16,c,true,0);
+  for(let y=1.5,i=0;y<H;y+=3,i++){const col=(i%2)?w:c;addStatic(B,x,y,z-r,2*r,.1,.1,col,true,0);addStatic(B,x,y,z+r,2*r,.1,.1,col,true,0);addStatic(B,x-r,y,z,.1,.1,2*r,col,true,0);addStatic(B,x+r,y,z,.1,.1,2*r,col,true,0);
+    B.box(x,y+1.5,z-r,.06,3.3,.06,col,0);B.box(x,y+1.5,z+r,.06,3.3,.06,col,0);B.box(x-r,y+1.5,z,.06,3.3,.06,col,0);B.box(x+r,y+1.5,z,.06,3.3,.06,col,0);}
+  for(const y of [11,22]){slab(B,x-1.7,x+1.7,z-1.7,z+1.7,y,0x4a4d4a,S);rail(B,x-1.7,x+1.7,z-1.7,z+1.7,y+.2);}
+  slab(B,x-1.2,x+1.2,z-1.2,z+1.2,H,0x4a4d4a,S,true);addStatic(B,x,H+3,z,.12,6,.12,0x9aa0a6,true,0);
+  for(const q of [[1,0],[-1,0],[0,1],[0,-1]])B.box(x+q[0]*.95,H-2,z+q[1]*.95,q[0]?.12:.7,1.6,q[1]?.12:.7,0xd8d6cc,0);
+  const bl=new T.Mesh(BOX,mat(0xff2a1a,0xff2a1a,.4,0,4));bl.scale.set(.25,.25,.25);bl.position.set(x,H+6.1,z);W.g.add(bl);(W.blinks||(W.blinks=[])).push(bl);
+  addStruct(x-1.7,x+1.7,z-1.7,z+1.7,H+.2,S);}
+function billboard(B,x,z){const H=9,S=[],ad=pick([0xc8402a,0x2a6fd0,0xe0b02a,0x3a9a5a]);
+  for(const a of [-3,3])addStatic(B,x+a,H/2,z,.35,H,.35,0x3a3d3a,true,0);
+  addStatic(B,x,H+2.2,z+.2,9,4.2,.25,0x2a2c2a,true,0);B.box(x,H+2.2,z-.03,8.6,3.8,.04,ad,0);B.box(x-1.8,H+2.6,z-.06,3.6,1,.03,0xf2efe6,0);B.box(x+1.6,H+1.6,z-.06,4,.5,.03,0x161616,0);
+  slab(B,x-4.5,x+4.5,z-1.3,z-.05,H,0x4a4d4a,S);rail(B,x-4.5,x+4.5,z-1.3,z-.05,H+.2,'s');
+  for(let y=0;y<H;y+=.5)B.box(x+3.35,y+.25,z,.6,.05,.05,0x2c2f2e,0);
+  slab(B,x-4.6,x+4.6,z-.5,z+.9,H+4.3,0x4a4d4a,S,true);B.box(x,H+4.75,z+.9,9.2,.5,.06,0x2c2f2e,0);
+  for(let y=H;y<H+4.3;y+=.5)B.box(x+4.75,y+.25,z+.2,.05,.05,.6,0x2c2f2e,0);
+  addStruct(x-4.6,x+4.6,z-1.3,z+.9,H+4.5,S);}
 function genWorld(seed){const mr=Math.random;Math.random=mulberry(seed==null?(mr()*1e9)|0:seed);try{genWorldRaw();}finally{Math.random=mr;}W.seed=seed==null?-1:seed;}
 /* airdrops: a supply crate on a tall roof, red smoke pouring off it until it is emptied */
 function addDrop(b){
@@ -1240,6 +1273,7 @@ function puff(x,y,z){let p=PUFFS[puI%160];
   if(!p){const sp=new T.Sprite(new T.SpriteMaterial({map:SMOKE_TEX,color:0xe0331c,transparent:true,depthWrite:false,fog:false,opacity:0}));sp.visible=false;scene.add(sp);p=PUFFS[puI%160]={s:sp,life:0,max:1};}
   puI++;p.max=p.life=rand(5,7.5);p.vx=rand(-.35,.35)+.5;p.vy=rand(1.6,2.4);p.vz=rand(-.35,.35)+.2;p.s0=rand(.8,1.3);p.s.position.set(x+rand(-.2,.2),y,z+rand(-.2,.2));p.s.visible=true;p.s.material.rotation=rand(0,6.28);}
 function updSmoke(dt){
+  if(W.blinks){W.bt=(W.bt||0)+dt;const on=(W.bt%1.6)<.25;for(const m of W.blinks)m.visible=on;}
   if(W.smokes)for(const k of W.smokes){if(k.c.done){if(k.c.beacon)k.c.beacon.visible=false;continue;}k.t-=dt;if(k.t<=0){k.t=.1;puff(k.x,k.y,k.z);}
     if(k.c.beacon){k.bt=(k.bt||0)+dt;k.c.beacon.visible=(k.bt%1)<.5;}}
   for(const p of PUFFS){if(!p||!p.s.visible)continue;p.life-=dt;if(p.life<=0){p.s.visible=false;continue;}
@@ -1258,7 +1292,7 @@ function genWorldRaw(){
   const E=HALF+ROAD/2+1.5;
   addStatic(B,0,2,-E,2*E+1,4,1,0x676b66,true);addStatic(B,0,2,E,2*E+1,4,1,0x676b66,true);addStatic(B,-E,2,0,1,4,2*E+1,0x676b66,true);addStatic(B,E,2,0,1,4,2*E+1,0x676b66,true);
   for(let i=0;i<46;i++){const a=rand(0,6.28),r=rand(E+6,E+60),x=Math.cos(a)*r*1.3,z=Math.sin(a)*r*1.3;if(Math.abs(x)<E+3&&Math.abs(z)<E+3)continue;tree(B,x,z);}
-  const types=shuffle(['bank','police','clinic','gas','warehouse','warehouse','store','store','store','house','house','house','house','house','lot','lot']);let ti=0;
+  const types=shuffle(['bank','police','clinic','gas','warehouse','warehouse','store','store','highrise','highrise','house','house','house','house','lot','lot']);let ti=0;
   for(let i=0;i<N;i++)for(let j=0;j<N;j++){const cx=-HALF+PITCH/2+i*PITCH,cz=-HALF+PITCH/2+j*PITCH,ty=types[ti++];B.box(cx,.02,cz,BLOCK,.04,BLOCK,PAD[ty],.05);
     B.box(cx,.05,cz-19,40,.1,2,0x9a968c,.05);B.box(cx,.05,cz+19,40,.1,2,0x9a968c,.05);B.box(cx-19,.05,cz,2,.1,36,0x9a968c,.05);B.box(cx+19,.05,cz,2,.1,36,0x9a968c,.05);
     for(const q of[-1,1]){const lx=cx+q*19.2,lz=cz+q*19.2;addStatic(B,lx,2.7,lz,.18,5.4,.18,0x2c2f2e,true,0);B.box(lx+q*.7,5.3,lz,1.5,.1,.12,0x2c2f2e,0);B.box(lx+q*1.3,5.24,lz,.6,.12,.34,0x2c2f2e,0);L.box(lx+q*1.3,5.16,lz,.5,.05,.26,0xffffff,0);}
@@ -1902,7 +1936,7 @@ function hookHand(){
   const sy=Math.sin(P.yaw),cy=Math.cos(P.yaw);return [P.x-sy*.62+cy*.25,P.base+P.y+1.42,P.z-cy*.62-sy*.25];
 }
 function releaseHook(){const g=P.grap;if(g){const feet=P.base+P.y,hx=g.x-P.x,hz=g.z-P.z,hd=Math.hypot(hx,hz)||.001;
-    if(hd<1.8&&g.y>.5&&g.y-feet<2.2){P.vy=Math.max(P.vy,Math.min(9.5,Math.sqrt(36*Math.max(.4,g.y-feet+.6))));P.vx=hx/hd*2.8;P.vz=hz/hd*2.8;P.mdx=P.vx;P.mdz=P.vz;P.mant=.7;if(P.y<=0)P.y=.02;}}/* letting go at the top swings you up and over */
+    if(hd<1.8&&g.y>.5&&g.y-feet<2.2){P.vy=Math.max(P.vy,Math.min(9.5,Math.sqrt(36*Math.max(.4,g.y-feet+.6))));P.vx=hx/hd*2.8;P.vz=hz/hd*2.8;P.mdx=P.vx;P.mdz=P.vz;P.mant=.7;P.mY=g.y;if(P.y<=0)P.y=.02;}}/* letting go at the top swings you up and over */
   P.grap=null;if(P.hook)P.hook.st='back';P.grapCd=.6;tone(420,.06,'square',.06);}
 function fireHook(){
   if(state!=='raid'||P.car||P.vault||P.loot||bagOpen||P.fireCd>0)return;
@@ -2068,7 +2102,7 @@ function updPlayer(dt){
     P.x+=P.vx*dt;P.z+=P.vz*dt;
     collide(P,.4);carPush(P,.4);
     if(dt>0&&!P.grap){P.vx=(P.x-ox)/dt;P.vz=(P.z-oz)/dt;}
-    if(P.mant>0){P.mant-=dt;P.vx=P.mdx;P.vz=P.mdz;}
+    if(P.mant>0){P.mant-=dt;if(P.base>=(P.mY||0)-.45){P.mant=0;P.vx*=.1;P.vz*=.1;}else{P.vx=P.mdx;P.vz=P.mdz;}}
     {const feet=P.base+P.y,g=groundAt(P.x,P.z,feet);P.onRoof=GA_ROOF;
       if(g!==P.base){if(P.y<=0&&feet-g>0&&feet-g<.4){P.base=g;P.y=0;}else{P.y=Math.max(0,feet-g);P.base=g;}}}
     if(P.dive&&!P.dvWin){for(const w of W.windows){if(Math.abs((w.y||0)-P.base)>1)continue;const al=w.hz?P.x-w.at:P.z-w.at,pe=w.hz?P.z-w.fixed:P.x-w.fixed;if(Math.abs(al)<.9&&Math.abs(pe)<.45){P.dvWin=true;burst(P.x,1.5+P.y*.3,P.z,0xcfeaff,12,4);hiss(.3,.4,6000);tone(2600,.07,'square',.05);tone(3400,.1,'square',.04,0,.05);makeNoise(P.x,P.z,26);shake=Math.max(shake,.25);break;}}}
