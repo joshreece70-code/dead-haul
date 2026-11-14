@@ -197,6 +197,17 @@ h1 span{color:var(--cash)}
 .slot .sk{font:600 11px var(--display);letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
 .slot small{font:400 12px var(--mono);color:var(--dim)}
 .opts{display:flex;flex-wrap:wrap;gap:6px;padding:8px 0 4px;align-items:center}
+.skw{margin-top:18px}.skw h3{margin:0 0 6px;font:600 15px var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--text)}.skw h3 small{font:400 11px var(--mono);letter-spacing:0;text-transform:none;color:var(--dim);margin-left:6px}
+.skrow{border-top:1px solid var(--line);padding:8px 0 10px}
+.skh{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}.skh b{font:600 14px var(--display);color:var(--text)}.skh small{font:400 11px var(--mono);color:var(--cash)}
+.skl{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.skc{flex:0 0 118px;height:86px;position:relative;box-sizing:border-box;padding:4px 6px 5px;background:rgba(0,0,0,.4);border:1px solid var(--line);border-bottom:3px solid #4a4f48;cursor:pointer;text-align:left;display:flex;flex-direction:column;justify-content:flex-end;color:var(--text)}
+.skc i{position:absolute;left:4px;right:4px;top:4px;height:46px;background:center/contain no-repeat}
+.skc .sw{position:absolute;left:5px;top:5px;width:16px;height:16px;border:1px solid rgba(0,0,0,.6);box-shadow:0 0 0 1px rgba(255,255,255,.12)}
+.skc span{font:600 12px var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;position:relative}
+.skc em{font:400 9px var(--mono);font-style:normal;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;position:relative}
+.skc.t0{border-bottom-color:#9aa4ac}.skc.t1{border-bottom-color:var(--rl)}.skc.t1 em{color:var(--rl)}.skc.t2{border-bottom-color:#ff5a2a;background:linear-gradient(0deg,rgba(255,90,42,.14),rgba(0,0,0,.4) 60%)}.skc.t2 em{color:#ff7a4a}
+.skc:hover{border-color:var(--text)}.skc.on{border-color:var(--cash);box-shadow:inset 0 0 0 1px var(--cash)}.skc.on::after{content:'wearing';position:absolute;top:3px;right:5px;font:400 9px var(--mono);color:var(--cash)}
 .lo{display:grid;grid-template-columns:minmax(260px,360px) 1fr;gap:16px;align-items:start;margin-top:8px}
 @media(max-width:700px){.lo{grid-template-columns:1fr}}
 .doll{position:relative;width:100%;max-width:360px;aspect-ratio:320/420;margin:0 auto;user-select:none;-webkit-user-select:none}
@@ -361,7 +372,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 87, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 88, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -2785,6 +2796,23 @@ function stashSell(list){
   if(!v)return;S.cash+=v;save();sfx.cash();$('stMsg').textContent='Sold for '+fmt(v)+'.';
 }
 let loadOpen=null;
+function skinIconKey(w,k){return 'sk_'+w+'_'+(k||'none');}
+let skiBusy=false;
+function skinIcons(pairs){if(skiBusy)return;skiBusy=true;setTimeout(()=>{
+  const cv=document.createElement('canvas');let r=null;try{r=new T.WebGLRenderer({canvas:cv,antialias:true,alpha:true,preserveDrawingBuffer:true});}catch(e){}
+  try{if(r){r.outputEncoding=T.sRGBEncoding;r.toneMapping=T.ACESFilmicToneMapping;r.toneMappingExposure=1.3;r.setClearColor(0,0);r.setPixelRatio(1);r.setSize(240,100,false);}
+    const sc=new T.Scene(),hm=new T.HemisphereLight(0xdfe8f0,0x3a3428,1.5);sc.add(hm);const d1=new T.DirectionalLight(0xfff2dc,2.4);d1.position.set(2,4,3);sc.add(d1);const d2=new T.DirectionalLight(0x9fb6cf,.8);d2.position.set(-3,1,-2);sc.add(d2);
+    const cam=new T.OrthographicCamera(-1,1,1,-1,-20,20),box=new T.Box3(),ctr=new T.Vector3(),sz=new T.Vector3();
+    for(const [w,k] of pairs){const key=skinIconKey(w,k);ICON[key]='';if(!r)continue;try{
+      const geo=w==='butterfly'?bfGeo(k||'stock'):(k?skinGeo(w,k):GUNS[w]),mesh=new T.Mesh(geo,GUN_MAT);
+      if(WPN[w]&&WPN[w].melee)mesh.rotation.set(.18,-Math.PI/2,-.5);else mesh.rotation.set(.18,-Math.PI/2,0);
+      sc.add(mesh);mesh.updateMatrixWorld(true);box.setFromObject(mesh);box.getCenter(ctr);box.getSize(sz);
+      const asp=2.4,hw=Math.max(sz.x/2,sz.y/2*asp)*1.1,hh=hw/asp;cam.left=ctr.x-hw;cam.right=ctr.x+hw;cam.top=ctr.y+hh;cam.bottom=ctr.y-hh;cam.position.set(0,0,ctr.z+10);cam.updateProjectionMatrix();
+      r.render(sc,cam);ICON[key]=cv.toDataURL('image/png');sc.remove(mesh);}catch(e){}}
+  }catch(e){}
+  try{if(r){r.dispose();r.forceContextLoss();}}catch(e){}
+  skiBusy=false;if(state==='menu')renderMenu();},40);}
+
 const PACK_ICO='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="M22 14 Q32 4 42 14" fill="none" stroke="#6a6f5a" stroke-width="4"/><rect x="14" y="14" width="36" height="44" rx="8" fill="#4a5332"/><rect x="19" y="34" width="26" height="16" rx="3" fill="#3a4128"/><rect x="19" y="20" width="26" height="4" fill="#2a2f1e"/></svg>');
 const VEST_ICO={};
 function vestIco(t){if(VEST_ICO[t])return VEST_ICO[t];const c='#'+ARMORS[t].col.toString(16).padStart(6,'0');
@@ -2854,10 +2882,18 @@ function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.c
     const sub=!w?'Empty':k==='pack'?psub(id):w.gadget?(w.throwln?'Hold click or G to wind up, let go to throw, click again to drop it':w.hold?'Hold click or G to swing, let go to drop the line':'Click or G fires it, click again to let go'):w.melee?'Melee · '+w.dmg+' damage a swing':w.am+' · '+(id==='pistol'?'free mag each raid · ':'')+S.ammo[w.am]+' in reserve';
     h+='<div class="row"><span class="nm">'+SLOTN[k]+': '+(w?w.n:'Empty')+'<small>'+sub+'</small></span></div>';
     if(k!=='melee'&&k!=='pack'&&id)h+='<div class="opts"><button type="button" class="btn plain" data-act="equip" data-id="'+k+':">Leave '+SLOTN[k].toLowerCase()+' empty</button></div>';}
-  {const have=SKINNABLE.filter(w=>owns(w)&&(S.skins[w]||[]).length);
-   if(have.length){h+='<div class="row"><span class="nm">Weapon skins<small>Won on Drip Drop</small></span></div>';
-    for(const w of have){const on=S.skinOn[w]||'';h+='<div class="opts"><small>'+WPN[w].n+'</small>'+['',...S.skins[w]].map(k=>'<button type="button" class="btn'+(k===on?'':' plain')+'" data-act="skin" data-id="'+w+':'+k+'">'+(k?SKINS[k].n:'Default')+'</button>').join('')+'</div>';}}}
-  if(owns('butterfly'))h+='<div class="row"><span class="nm">Butterfly knife skin<small>'+BF_SKINS[S.bfskin||'stock'].n+'</small></span></div><div class="opts">'+Object.keys(BF_SKINS).filter(k=>k==='stock'||((S.skins.butterfly||[]).indexOf(k)>=0)).map(k=>'<button type="button" class="btn'+(k===(S.bfskin||'stock')?'':' plain')+'" data-act="bfskin" data-id="'+k+'">'+BF_SKINS[k].n+'</button>').join('')+'</div>';
+  /* weapon skins: one strip per weapon, a picture of the gun in each skin; tap to wear it */
+  {const rows=SKINNABLE.filter(w=>owns(w)&&(S.skins[w]||[]).length).map(w=>({w:w,on:S.skinOn[w]||'',list:['',...S.skins[w]]}));
+   if(owns('butterfly')&&(S.skins.butterfly||[]).length)rows.push({w:'butterfly',on:S.bfskin||'stock',list:['stock',...Object.keys(BF_SKINS).filter(k=>k!=='stock'&&S.skins.butterfly.indexOf(k)>=0)]});
+   if(rows.length){const need=[];
+    h+='<div class="skw"><h3>Weapon skins <small>won on Drip Drop · tap one to wear it</small></h3>';
+    for(const r of rows){const bf=r.w==='butterfly',nmOf=k=>bf?BF_SKINS[k].n:(k?SKINS[k].n:'Factory'),tier=k=>bf?(k==='stock'?-1:k==='crimson'?0:(k==='galaxy'||k==='molten')?2:1):(k?SKINS[k].rare:-1);
+      h+='<div class="skrow"><div class="skh"><b>'+WPN[r.w].n+'</b><small>'+nmOf(r.on)+'</small></div><div class="skl">';
+      for(const k of r.list){const key=skinIconKey(r.w,k),ic=ICON[key];if(!(key in ICON))need.push([r.w,k]);const t=tier(k);
+        h+='<button type="button" class="skc t'+t+(k===r.on?' on':'')+'" '+(bf?'data-act="bfskin" data-id="'+k+'"':'data-act="skin" data-id="'+r.w+':'+k+'"')+' title="'+nmOf(k)+'">'+
+          '<i style="'+(ic?'background-image:url('+ic+')':'')+'"></i>'+(SKIN_CSS[k]?'<b class="sw" style="background:'+SKIN_CSS[k]+'"></b>':'')+'<span>'+nmOf(k)+'</span><em>'+(t<0?'default':['common','rare','legendary'][t])+'</em></button>';}
+      h+='</div></div>';}
+    h+='</div>';if(need.length)skinIcons(need);}}
   h+='<div class="row"><span class="nm">Pack<small>'+(22+6*S.up.pack)+' kg before you slow down</small></span></div>';
   $('mLoad').innerHTML=h;
   h='';
