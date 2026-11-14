@@ -85,13 +85,12 @@ button{font-family:inherit;color:inherit;border-radius:0}
 #medUI .mi b{font:600 15px var(--display);color:var(--text)}#medUI .mi em{font-style:normal;color:var(--cash);grid-row:span 2;align-self:center}#medUI .mi span{color:var(--dim);font-size:11px}
 #medUI .mi.on{border-color:var(--go);background:rgba(111,207,90,.12)}#medUI .mi.none{opacity:.4}
 .pping{font-weight:600}
-#pickUI{position:absolute;left:50%;top:60%;transform:translate(-50%,-50%);width:min(420px,88vw);padding:12px 16px 10px;background:rgba(9,11,9,.9);border:1px solid var(--line);border-top:3px solid var(--cash);font:400 12px var(--mono);color:var(--text);pointer-events:none;z-index:6}
+#pickUI{position:absolute;left:50%;top:56%;transform:translate(-50%,-50%);width:min(320px,88vw);padding:12px 16px 10px;pointer-events:auto;background:rgba(9,11,9,.9);border:1px solid var(--line);border-top:3px solid var(--cash);font:400 12px var(--mono);color:var(--text);pointer-events:none;z-index:6}
 #pickUI h3{margin:0 0 8px;font:600 16px var(--display);letter-spacing:.14em;color:var(--cash);text-transform:uppercase}
 #pickUI h3 small{float:right;font:400 11px var(--mono);letter-spacing:0;color:var(--dim);text-transform:none}
-#pickPins{display:flex;gap:6px;margin-bottom:10px}#pickPins i{flex:1;height:22px;border:1px solid var(--line);background:#121512}#pickPins i.set{background:var(--go);border-color:var(--go)}
-#pickTrack{position:relative;height:20px;background:#070807;border:1px solid var(--line)}
-#pickZone{position:absolute;top:0;bottom:0;background:rgba(111,207,90,.32);border-left:2px solid var(--go);border-right:2px solid var(--go);box-sizing:border-box}
-#pickMark{position:absolute;top:-5px;bottom:-5px;width:4px;margin-left:-2px;background:var(--cash);box-shadow:0 0 6px var(--cash)}
+#pickCv{display:block;margin:0 auto;width:260px;height:210px;max-width:100%}
+#pickTurn{display:none;margin:6px auto 0;padding:10px 26px;font:600 14px var(--display);letter-spacing:.2em;background:#1e221e;color:var(--text);border:1px solid var(--line);touch-action:none}
+#app.touch #pickTurn{display:block}
 #pickUI p{margin:8px 0 0;color:var(--dim)}
 #search{position:absolute;left:50%;top:63%;transform:translateX(-50%);width:170px;text-align:center;font:400 12px var(--mono)}
 .bar{height:7px;background:rgba(0,0,0,.6);border:1px solid var(--line)}
@@ -326,7 +325,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     </div>
     <div id="prompt"></div>
     <div id="medUI" hidden></div>
-    <div id="pickUI" hidden><h3>Picking the <span id="pickN">lock</span> <small id="pickLeft"></small></h3><div id="pickPins"></div><div id="pickTrack"><i id="pickZone"></i><b id="pickMark"></b></div><p id="pickMsg"></p></div>
+    <div id="pickUI" hidden><h3>Picking the <span id="pickN">lock</span> <small id="pickLeft"></small></h3><canvas id="pickCv" width="260" height="210"></canvas><button type="button" id="pickTurn">TURN</button><p id="pickMsg"></p></div>
     <div id="search" hidden><span id="searchL">Searching</span><div class="bar"><div id="searchB"></div></div></div>
     <div id="exbar" hidden><span id="exL">EXTRACTING</span><div class="bar"><div id="exB"></div></div></div>
     <div id="feed"></div>
@@ -372,7 +371,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 91, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 92, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -410,7 +409,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
           <li><b>F</b> inspects the weapon in your hands.</li>
           <li>The <b>Red Rebel</b> ice axe only turns up in airdrops. Carry it and press <b>Space</b> facing the outside wall of a tall building to climb: <b>W</b>/<b>S</b> up and down, <b>A</b>/<b>D</b> along the wall, <b>Space</b> to let go. Climbing up costs stamina. Falling or jumping next to one of those walls, press <b>Space</b> to dig the axe in and catch yourself.</li>
           <li>Tall buildings have a <b>ledge</b> running round the outside at every floor. Stand on it to sneak round to a window, or face the wall and press <b>Space</b> to haul yourself up to the next ledge, and over the roof edge from the top one.</li>
-          <li>Safes and cash registers are locked. With a <b>lock pick</b>, press <b>E</b> and hit <b>Space</b>, <b>E</b> or click while the marker is in the green to set each pin. A miss drops a pin and can snap the pick.</li>
+          <li>Safes and cash registers are locked. With a <b>lock pick</b>, press <b>E</b>, then move the pick with the <b>mouse</b> (or hold <b>A</b> to sweep it) and hold <b>D</b> to turn the lock. The closer the pick is to the sweet spot the further the lock turns; turn it all the way to open it. If the lock stops and shakes, the pick is straining: let go of D and move the pick, or it snaps. Safes have a smaller sweet spot.</li>
           <li><b>Z</b> or <b>mouse button 5</b> dolphin dive in the direction you are moving. Time slows while you are in the air, but you aim and shoot at nearly full speed. A dive carries you through open windows. You land prone: crawl, press <b>Ctrl</b> to crouch, or <b>Space</b> to stand.</li>
           <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. It lets go on its own once you are reeled all the way in (popping you over a roof edge), or click again to let go early and keep your swing. The <b>Swing Line</b> from the trader is a rope with a hook you throw by hand: hold the click (or <b>G</b>) to swing it round, the longer you wind up the further it flies (8 to 40 m), and let go to throw. It never reels in: the line locks at the length it landed at and you swing on it. Hold <b>W</b> to climb the rope hand over hand (walking up any wall you are against, and over the top when you reach the hook) or <b>S</b> to let line out and rappel down. Climbing costs stamina. Click again to drop the line. Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
           <li><b>Ctrl</b> or <b>mouse button 4</b> crouch: slower and quieter, steadier aim, harder for infected to spot. Press it while sprinting to slide.</li>
@@ -1844,28 +1843,39 @@ function updCars(dt){
 
 /* ================= player ================= */
 /* lock picking: a marker sweeps the bar; set each pin while it is inside the green */
+/* lock picking, Skyrim style: find the sweet spot with the pick (mouse or A), then hold D to turn the lock.
+   The further the pick is from the sweet spot, the less the lock turns; force it and the pick strains and snaps. */
 function startPick(c){const safe=c.type==='safe';P.search=null;
-  P.pick={c:c,pins:safe?5:3,set:0,pos:0,dir:1,speed:safe?1.25:.95,zw:safe?.13:.2,za:0,brk:safe?.4:.28,fh:true,flash:0,x:P.x,z:P.z};newZone();
-  $('pickUI').hidden=false;$('pickN').textContent=CT[c.type].n;sfx.rustle();makeNoise(P.x,P.z,5);renderPick('Space, E or click when the marker is in the green. Esc to stop.');}
-function newZone(){const k=P.pick;k.za=rand(.08,.92-k.zw);}
-function renderPick(msg){const k=P.pick;if(!k)return;$('pickPins').innerHTML=Array.from({length:k.pins},(_,i)=>'<i'+(i<k.set?' class="set"':'')+'></i>').join('');
-  $('pickZone').style.left=(k.za*100)+'%';$('pickZone').style.width=(k.zw*100)+'%';if(msg!=null)$('pickMsg').textContent=msg;$('pickLeft').textContent=(S.picks||0)+' pick'+((S.picks||0)===1?'':'s');}
+  P.pick={c:c,safe:safe,pa:0,sweet:rand(-80,80),tol:safe?6:11,soft:safe?28:40,rot:0,strain:0,brk:safe?.8:1.1,dir:1,x:P.x,z:P.z,tick:0};
+  $('pickUI').hidden=false;$('pickN').textContent=CT[c.type].n;sfx.rustle();makeNoise(P.x,P.z,5);
+  renderPick(isTouch?'Drag to move the pick, hold TURN to turn the lock.':'Mouse or hold A to move the pick · hold D to turn the lock · Esc to stop');}
+function pickMax(k){const off=Math.abs(k.pa-k.sweet);return off<=k.tol?90:Math.max(0,90*(1-(off-k.tol)/k.soft));}
+function renderPick(msg){const k=P.pick;if(!k)return;if(msg!=null)$('pickMsg').textContent=msg;$('pickLeft').textContent=(S.picks||0)+' pick'+((S.picks||0)===1?'':'s');drawPick();}
+function drawPick(){const k=P.pick,cv=$('pickCv');if(!k||!cv)return;const g=cv.getContext('2d'),W2=cv.width,H2=cv.height,cx=W2/2,cy=H2/2+18,R=Math.min(W2,H2)*.29;g.clearRect(0,0,W2,H2);
+  const sh=k.strain>0?(Math.random()-.5)*k.strain*6:0;
+  g.save();g.translate(cx+sh,cy);g.fillStyle='#2a2d30';g.beginPath();g.arc(0,0,R+10,0,7);g.fill();g.fillStyle='#8a7a52';g.beginPath();g.arc(0,0,R,0,7);g.fill();
+  g.strokeStyle='#5e5236';g.lineWidth=3;g.beginPath();g.arc(0,0,R*.82,0,7);g.stroke();
+  g.rotate(k.rot*Math.PI/180);g.fillStyle='#2a2316';g.beginPath();g.arc(0,-R*.12,R*.16,0,7);g.fill();g.fillRect(-R*.07,-R*.12,R*.14,R*.45);
+  g.strokeStyle='#cfc8b4';g.lineWidth=4;g.lineCap='round';g.beginPath();g.moveTo(0,R*.3);g.lineTo(R*.25,R*1.25);g.stroke();g.restore();
+  g.save();g.translate(cx+sh,cy-R*.12);g.rotate((k.pa)*Math.PI/180);g.strokeStyle='#d8dce0';g.lineWidth=3;g.lineCap='round';g.beginPath();g.moveTo(0,0);g.lineTo(0,-R*1.25);g.stroke();
+  g.lineWidth=5;g.strokeStyle='#9aa0a6';g.beginPath();g.moveTo(0,-R*1.25);g.lineTo(0,-R*1.55);g.stroke();g.restore();
+  g.fillStyle=k.strain>.05?'#ff5a3a':'rgba(230,193,74,.85)';g.fillRect(12,H2-10,(W2-24)*Math.min(1,k.rot/90),4);g.strokeStyle='#3a403a';g.strokeRect(12,H2-10,W2-24,4);}
 function stopPick(msg){if(!P||!P.pick)return;P.pick=null;$('pickUI').hidden=true;if(msg)card(msg,0,'c');}
-function pickPress(){const k=P&&P.pick;if(!k)return;
-  if(k.pos>=k.za&&k.pos<=k.za+k.zw){k.set++;tone(1300+k.set*120,.05,'square',.08);tone(700,.04,'triangle',.06,0,.04);
-    if(k.set>=k.pins){const c=k.c;c.locked=false;stopPick();card('Lock open',0,'u','+20 XP');P.xp+=20;sfx.win();finishSearch(c);return;}
-    k.speed*=1.12;newZone();renderPick('Pin set. '+(k.pins-k.set)+' to go.');}
-  else{tone(160,.12,'sawtooth',.08);shake=Math.max(shake,.12);
-    if(Math.random()<k.brk){S.picks=Math.max(0,(S.picks||0)-1);save();burst(P.x,1.2+P.base,P.z,0x9aa0a6,5,1.5);
-      if(!(S.picks>0)){stopPick('Your last lock pick snapped');return;}k.set=Math.max(0,k.set-1);renderPick('The pick snapped. Fresh pick in.');}
-    else{k.set=Math.max(0,k.set-1);renderPick('Missed. A pin dropped.');}newZone();}}
+function pickPress(){}
+function snapPick(k){S.picks=Math.max(0,(S.picks||0)-1);save();tone(160,.14,'sawtooth',.09);tone(900,.05,'square',.06,0,.05);shake=Math.max(shake,.15);burst(P.x,1.2+P.base,P.z,0x9aa0a6,5,1.5);
+  k.rot=0;k.strain=0;if(!(S.picks>0)){stopPick('Your last lock pick snapped');return false;}renderPick('The pick snapped. Fresh pick in.');return true;}
 function updPick(rdt){const k=P.pick;if(!k)return;
   if(P.car||Math.hypot(P.x-k.x,P.z-k.z)>1.6||P.dive){stopPick('Stopped picking');return;}
-  if(firing&&!k.fh)pickPress();if(!P.pick)return;k.fh=firing;
-  k.pos+=k.dir*k.speed*rdt;if(k.pos>1){k.pos=1;k.dir=-1;}if(k.pos<0){k.pos=0;k.dir=1;}
-  $('pickMark').style.left=(k.pos*100)+'%';}
+  const turning=keys.KeyD||k.touchTurn;
+  if(keys.KeyA&&!turning){k.pa+=k.dir*70*rdt;if(k.pa>90){k.pa=90;k.dir=-1;}if(k.pa<-90){k.pa=-90;k.dir=1;}k.tick+=rdt;if(k.tick>.12){k.tick=0;tone(2400+Math.random()*400,.012,'square',.02);}}
+  if(turning){const mx=pickMax(k);k.rot=Math.min(mx,k.rot+160*rdt);
+    if(k.rot>=90){const c=k.c;c.locked=false;stopPick();tone(700,.05,'square',.07);tone(1100,.06,'triangle',.07,0,.05);card('Lock open',0,'u','+20 XP');P.xp+=20;sfx.win();finishSearch(c);return;}
+    if(k.rot>=mx-.5){k.strain+=rdt;if(Math.random()<rdt*8)tone(300+Math.random()*80,.03,'square',.04);if(k.strain>k.brk){if(!snapPick(k))return;}}else k.strain=Math.max(0,k.strain-rdt*2);}
+  else{k.rot=Math.max(0,k.rot-260*rdt);k.strain=Math.max(0,k.strain-rdt*3);}
+  drawPick();}
+function pickMouse(dx){const k=P&&P.pick;if(!k||keys.KeyD||k.touchTurn)return;const o=k.pa;k.pa=clamp(k.pa+dx*.35,-90,90);if(Math.floor(o/6)!==Math.floor(k.pa/6))tone(2400+Math.random()*400,.012,'square',.02);}
 function interact(){
-  if(state!=='raid')return;if(P.pick){pickPress();return;}if(P.loot){closeLoot();return;}if(P.car){exitCar();return;}
+  if(state!=='raid')return;if(P.pick){stopPick();return;}if(P.loot){closeLoot();return;}if(P.car){exitCar();return;}
   const c=ctx;if(!c)return;
   if(c.t==='car')enterCar(c.car);
   else if(c.t==='search'&&c.c.locked){if(!(S.picks>0)){card('Locked. You need a lock pick.',0,'c');tone(180,.1,'square',.08);}else startPick(c.c);}
@@ -2058,7 +2068,7 @@ function updPlayer(dt){
   if(kl||ku){P.yaw+=kl*2.4*dt;P.pitch+=ku*1.4*dt;P.lookIdle=0;}
   if(!locked&&mouseIn&&!P.loot&&!bagOpen&&look.id===null&&Math.abs(mnx)>.8){P.yaw-=Math.sign(mnx)*(Math.abs(mnx)-.8)/.2*2.6*dt;P.lookIdle=0;}
   P.pitch=clamp(P.pitch,-1.2,1.1);
-  let ix=(keys.KeyD?1:0)-(keys.KeyA?1:0)+joy.x,iy=(keys.KeyW?1:0)-(keys.KeyS?1:0)+joy.y;
+  let ix=(keys.KeyD?1:0)-(keys.KeyA?1:0)+joy.x,iy=(keys.KeyW?1:0)-(keys.KeyS?1:0)+joy.y;if(P.pick){ix=0;iy=0;}
   const il=Math.hypot(ix,iy);if(il>1){ix/=il;iy/=il;}
   P.moving=il>.15;
   if(P.car){
@@ -2541,7 +2551,7 @@ window.addEventListener('keydown',e=>{
   if(e.code!=='Escape'&&e.code!=='Tab'&&e.code!=='KeyI')relock();
   if(QT&&QT.open&&/^Digit[1-4]$/.test(e.code)){QT.sel=+e.code.slice(5)-1;medUse();return;}
   if(QT&&QT.open&&e.code==='Escape'){medClose();return;}
-  if(P&&P.pick){if(e.code==='Space'||e.code==='KeyE')pickPress();else if(e.code==='Escape')stopPick();return;}
+  if(P&&P.pick){if(e.code==='Escape'||e.code==='KeyE')stopPick();return;}
   switch(e.code){
     case 'KeyE':if(P&&P.loot){if(e.shiftKey)closeLoot();else takeAll();}else interact();break;
     case 'KeyR':if(DRAG)invRotate();else if(P&&P.loot)takeAll();else reload();break;
@@ -2598,6 +2608,7 @@ window.addEventListener('mousemove',e=>{
   mouseIn=true;mnx=VW?(e.clientX/VW)*2-1:0;
   const mvx=clamp(e.movementX||0,-160,160),mvy=clamp(e.movementY||0,-160,160);
   if(QT&&QT.open){QT.acc+=mvy;if(Math.abs(QT.acc)>45){medPick(QT.acc>0?1:-1);QT.acc=0;}return;}
+  if(P&&P.pick){pickMouse(mvx);return;}
   if(P.loot||bagOpen){if(locked){cx=clamp(cx+mvx,0,VW-2);cy=clamp(cy+mvy,0,VH-2);}else{cx=e.clientX;cy=e.clientY;}placeCur();invMove(cx,cy);return;}
   P.swx=clamp(P.swx-mvx*.00009,-.03,.03);P.swy=clamp(P.swy+mvy*.00009,-.03,.03);
   const sens=.0023*(1-(P.weapon==='sniper'&&!(P.mini>0)?.82:.4)*P.adsT);
@@ -2635,7 +2646,9 @@ function tap(id,fn){const b=$(id);
   b.addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();setTouch();initAudio();fn();},{passive:false});
   b.addEventListener('mousedown',e=>{e.preventDefault();e.stopPropagation();initAudio();fn();});}
 (function(){const hb=$('hotbar');const pick=e=>{const b=e.target.closest('[data-hb]');if(!b||state!=='raid')return;e.preventDefault();e.stopPropagation();swapWeapon(+b.dataset.hb);};hb.addEventListener('mousedown',pick);hb.addEventListener('touchstart',pick,{passive:false});})();
-tap('bAim',()=>{ads=!ads;});tap('bJump',()=>{jumpHeld=true;jump();});for(const t of ['touchend','touchcancel','mouseup','mouseleave'])$('bJump').addEventListener(t,()=>{jumpHeld=false;});tap('bCrouch',crouch);tap('bDive',dive);tap('bHook',useGrapple);for(const t of ['touchend','touchcancel','mouseup'])$('bHook').addEventListener(t,gadgetUp);tap('bUse',()=>{if(P&&P.pick)pickPress();else if(P&&P.loot)takeAll();else interact();});tap('bReload',reload);tap('bSwap',()=>{if(state==='raid')swapWeapon();});tap('bHeal',heal);tap('bView',()=>{if(state==='raid')toggleView();});tap('bBag',toggleBag);
+{const pt=$('pickTurn');let ly=null;pt.addEventListener('touchstart',e=>{if(P&&P.pick)P.pick.touchTurn=true;e.preventDefault();},{passive:false});for(const t of ['touchend','touchcancel'])pt.addEventListener(t,()=>{if(P&&P.pick)P.pick.touchTurn=false;});
+ const cvp=$('pickCv');cvp.addEventListener('touchstart',e=>{ly=e.touches[0].clientX;e.preventDefault();},{passive:false});cvp.addEventListener('touchmove',e=>{const x=e.touches[0].clientX;if(ly!=null)pickMouse((x-ly)*1.6);ly=x;e.preventDefault();},{passive:false});}
+tap('bAim',()=>{ads=!ads;});tap('bJump',()=>{jumpHeld=true;jump();});for(const t of ['touchend','touchcancel','mouseup','mouseleave'])$('bJump').addEventListener(t,()=>{jumpHeld=false;});tap('bCrouch',crouch);tap('bDive',dive);tap('bHook',useGrapple);for(const t of ['touchend','touchcancel','mouseup'])$('bHook').addEventListener(t,gadgetUp);tap('bUse',()=>{if(P&&P.pick)stopPick();else if(P&&P.loot)takeAll();else interact();});tap('bReload',reload);tap('bSwap',()=>{if(state==='raid')swapWeapon();});tap('bHeal',heal);tap('bView',()=>{if(state==='raid')toggleView();});tap('bBag',toggleBag);
 $('bFire').addEventListener('touchstart',e=>{e.preventDefault();e.stopPropagation();setTouch();if(state!=='raid')return;const t=e.changedTouches[0];fireTouch=t.identifier;firing=true;if(look.id===null){look.id=t.identifier;look.x=t.clientX;look.y=t.clientY;}},{passive:false});
 
 /* ================= menu ================= */
