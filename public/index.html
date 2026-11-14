@@ -372,7 +372,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 90, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 91, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -409,6 +409,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
           <li><b>Hold Space</b> to bunny hop: you re-jump the instant you land and build speed. Strafe with <b>A</b> or <b>D</b> while turning the same way to gain more.</li>
           <li><b>F</b> inspects the weapon in your hands.</li>
           <li>The <b>Red Rebel</b> ice axe only turns up in airdrops. Carry it and press <b>Space</b> facing the outside wall of a tall building to climb: <b>W</b>/<b>S</b> up and down, <b>A</b>/<b>D</b> along the wall, <b>Space</b> to let go. Climbing up costs stamina. Falling or jumping next to one of those walls, press <b>Space</b> to dig the axe in and catch yourself.</li>
+          <li>Tall buildings have a <b>ledge</b> running round the outside at every floor. Stand on it to sneak round to a window, or face the wall and press <b>Space</b> to haul yourself up to the next ledge, and over the roof edge from the top one.</li>
           <li>Safes and cash registers are locked. With a <b>lock pick</b>, press <b>E</b> and hit <b>Space</b>, <b>E</b> or click while the marker is in the green to set each pin. A miss drops a pin and can snap the pick.</li>
           <li><b>Z</b> or <b>mouse button 5</b> dolphin dive in the direction you are moving. Time slows while you are in the air, but you aim and shoot at nearly full speed. A dive carries you through open windows. You land prone: crawl, press <b>Ctrl</b> to crouch, or <b>Space</b> to stand.</li>
           <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. It lets go on its own once you are reeled all the way in (popping you over a roof edge), or click again to let go early and keep your swing. The <b>Swing Line</b> from the trader is a rope with a hook you throw by hand: hold the click (or <b>G</b>) to swing it round, the longer you wind up the further it flies (8 to 40 m), and let go to throw. It never reels in: the line locks at the length it landed at and you swing on it. Hold <b>W</b> to climb the rope hand over hand (walking up any wall you are against, and over the top when you reach the hook) or <b>S</b> to let line out and rappel down. Climbing costs stamina. Click again to drop the line. Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
@@ -1017,6 +1018,7 @@ function collide(o,r){
   for(let i=0;i<cs.length;i++){const c=cs[i];
     if(c.y1<=ph+.35||c.y0>=ph+1.7)continue; /* only what is at body height counts */
     if(over&&c.sill)continue; /* a dive carries you over a window sill */
+    if(c.flr)continue; /* ledges are floors: you stand on them, you never bump into their edge */
     if(o.x<c.x0-r||o.x>c.x1+r||o.z<c.z0-r||o.z>c.z1+r)continue;
     const nx=clamp(o.x,c.x0,c.x1),nz=clamp(o.z,c.z0,c.z1),dx=o.x-nx,dz=o.z-nz,d2=dx*dx+dz*dz;
     if(d2>=r*r)continue;hit=true;
@@ -1091,6 +1093,10 @@ function addTall(b,o,floors){
       for(const s of sides){const len=s[3]-s[2],n=Math.max(1,Math.floor((len-1.5)/3.2)),ops=[];
         for(let q=0;q<n;q++)ops.push({at:s[2]+len*(q+1)/(n+1),w:1.6,open:Math.random()<.5});
         upWall(U,s[0],s[1],s[2],s[3],ops,o.wall,by,ty,s[4]);}
+      /* a ledge you can stand on runs round the outside at every floor line */
+      {const E=.85,LC=0xbdb6a6,ly=y,parts=[[x0-E,x1+E,z0-E,z0],[x0-E,x1+E,z1,z1+E],[x0-E,x0,z0,z1],[x1,x1+E,z0,z1]];
+       for(const q of parts){U.box((q[0]+q[1])/2,ly+.15,(q[2]+q[3])/2,q[1]-q[0],.3,q[3]-q[2],LC,.04);U.box((q[0]+q[1])/2,ly-.04,(q[2]+q[3])/2,q[1]-q[0]-.1,.08,q[3]-q[2]-.1,0x8a8478,0);
+         pushCol(q[0],q[1],ly,ly+.3,q[2],q[3]);W.col[W.col.length-1].flr=true;b.surf.push({x0:q[0],x1:q[1],z0:q[2],z1:q[3],y:ly+.3,ledge:true});}}
       /* trim band on the outside at each floor line */
       U.box(cx,y+.15,z0-.07,x1-x0+.3,.32,.14,0xd9d3c2,.03);U.box(cx,y+.15,z1+.07,x1-x0+.3,.32,.14,0xd9d3c2,.03);
       U.box(x0-.07,y+.15,b.cz,.14,.32,z1-z0,0xd9d3c2,.03);U.box(x1+.07,y+.15,b.cz,.14,.32,z1-z0,0xd9d3c2,.03);
@@ -1910,6 +1916,18 @@ function updClimb(dt,ix,iy){
   if(P.base+P.y>=c.top-1.05&&up>0){P.x-=c.nx*1.3;P.z-=c.nz*1.3;P.base=c.top;P.y=0;P.climb=null;P.land=.15;card('Up and over',0,'u','roof');sfx.step(1.4);return;}
   if(P.y<=0&&up<0){P.y=0;P.climb=null;}
 }
+/* ledge climbing: face the outside wall of a tall building and jump to haul yourself up to the next ledge (or over the roof edge) */
+function findLedge(){
+  if(!P||P.car||P.climb||P.grap||P.y>.05||P.stam<10)return null;const fx=-Math.sin(P.yaw),fz=-Math.cos(P.yaw),feet=P.base+P.y;
+  for(const b of W.buildings){if(!b.lv)continue;const X0=b.x0-TH/2,X1=b.x1+TH/2,Z0=b.z0-TH/2,Z1=b.z1+TH/2;
+    if(P.x>X0&&P.x<X1&&P.z>Z0&&P.z<Z1)continue;
+    const nx=clamp(P.x,X0,X1),nz=clamp(P.z,Z0,Z1),dx=nx-P.x,dz=nz-P.z,d=Math.hypot(dx,dz);
+    if(d<.05||d>1.5||(fx*dx+fz*dz)/d<.45)continue;
+    const n=b.lv.length-1;for(let k=1;k<=n;k++){const y=k===n?b.rh:k*WH+.3,dh=y-feet;if(dh>.6&&dh<=3.75)return {b:b,y:y,nx:dx/d,nz:dz/d,roof:k===n};}}
+  return null;}
+function startLedge(c){const feet=P.base+P.y,dh=c.y-feet+(c.roof?1:.45);P.vy=Math.sqrt(36*dh);P.y=Math.max(P.y,.02);
+  P.mdx=c.nx*2.4;P.mdz=c.nz*2.4;P.vx=P.mdx;P.vz=P.mdz;P.mant=1;P.mY=c.y;P.mVert=true;P.stam=Math.max(0,P.stam-10);P.crouch=false;P.slide=0;P.ledgeT=.6;
+  sfx.rustle();tone(200,.05,'square',.05);makeNoise(P.x,P.z,5);}
 function jump(){
   if(state==='raid'&&P.climb){const c=P.climb;P.climb=null;P.vx=c.nx*1.8;P.vz=c.nz*1.8;P.vy=2;if(P.y<=0)P.y=.02;P.regrab=.45;return;}
   if(state==='raid'&&P.y>.05&&!P.car&&!P.loot&&!bagOpen){const cl=findClimb();if(cl){startClimb(cl);return;}}
@@ -1917,6 +1935,7 @@ function jump(){
   if(P.prone){P.prone=false;return;}
   const v=findVault();if(v){P.vault=v;P.search=null;P.stam=Math.max(0,P.stam-8);sfx.rustle();makeNoise(P.x,P.z,7);return;}
   const cl=findClimb();if(cl){startClimb(cl);return;}
+  const lg=findLedge();if(lg){startLedge(lg);return;}
   if(P.stam<6)return;P.crouch=false;P.slide=0;P.vy=5.8;P.y=.01;P.stam-=6;
 }
 /* grapple gun: a real hook flies out on a rope, catches, and the reel hauls you in. Release at any time to keep your swing. */
@@ -1936,7 +1955,7 @@ function hookHand(){
   const sy=Math.sin(P.yaw),cy=Math.cos(P.yaw);return [P.x-sy*.62+cy*.25,P.base+P.y+1.42,P.z-cy*.62-sy*.25];
 }
 function releaseHook(){const g=P.grap;if(g){const feet=P.base+P.y,hx=g.x-P.x,hz=g.z-P.z,hd=Math.hypot(hx,hz)||.001;
-    if(hd<1.8&&g.y>.5&&g.y-feet<2.2){P.vy=Math.max(P.vy,Math.min(10.5,Math.sqrt(36*Math.max(.4,g.y-feet+1.5))));P.vx=hx/hd*2.8;P.vz=hz/hd*2.8;P.mdx=P.vx;P.mdz=P.vz;P.mant=.7;P.mY=g.y;if(P.y<=0)P.y=.02;}}/* letting go at the top swings you up and over */
+    if(hd<1.8&&g.y>.5&&g.y-feet<2.2){P.vy=Math.max(P.vy,Math.min(10.5,Math.sqrt(36*Math.max(.4,g.y-feet+1.5))));P.vx=hx/hd*2.8;P.vz=hz/hd*2.8;P.mdx=P.vx;P.mdz=P.vz;P.mant=.7;P.mY=g.y;P.mVert=false;if(P.y<=0)P.y=.02;}}/* letting go at the top swings you up and over */
   P.grap=null;if(P.hook)P.hook.st='back';P.grapCd=.6;tone(420,.06,'square',.06);}
 function fireHook(){
   if(state!=='raid'||P.car||P.vault||P.loot||bagOpen||P.fireCd>0)return;
@@ -2008,7 +2027,7 @@ function drawRope(){
 }
 let GA_ROOF=false;
 function groundAt(x,z,feet){let best=0,roof=false;
-  for(const b of W.buildings){if(x<b.x0-.5||x>b.x1+.5||z<b.z0-.5||z>b.z1+.5)continue;
+  for(const b of W.buildings){const mg=b.lv?1.3:.5;if(x<b.x0-mg||x>b.x1+mg||z<b.z0-mg||z>b.z1+mg)continue;
     if(!b.surf){const h=b.type==='canopy'?4.5:WH+.3;if(h<=feet+.45&&h>best){best=h;roof=true;}continue;}
     for(const q of b.surf){if(x<q.x0||x>q.x1||z<q.z0||z>q.z1)continue;const h=q.r?q.y0+clamp((z-q.z0)/(q.z1-q.z0),0,1)*(q.y1-q.y0):q.y;if(h<=feet+.45&&h>best){best=h;roof=!!q.roof;}}}
   GA_ROOF=roof;return best;}
@@ -2106,7 +2125,7 @@ function updPlayer(dt){
     P.x+=P.vx*dt;P.z+=P.vz*dt;
     collide(P,.4);carPush(P,.4);
     if(dt>0&&!P.grap){P.vx=(P.x-ox)/dt;P.vz=(P.z-oz)/dt;}
-    if(P.mant>0){P.mant-=dt;if(P.base>=(P.mY||0)-.45){P.mant=0;P.vx*=.1;P.vz*=.1;}else{P.vx=P.mdx;P.vz=P.mdz;}}
+    if(P.mant>0){P.mant-=dt;if(P.base>=(P.mY||0)-.45){P.mant=0;P.mVert=false;P.vx*=.1;P.vz*=.1;}else if(P.mVert&&P.base+P.y<P.mY-.05){P.vx=0;P.vz=0;}else{P.vx=P.mdx;P.vz=P.mdz;}}
     {const feet=P.base+P.y,g=groundAt(P.x,P.z,feet);P.onRoof=GA_ROOF;
       if(g!==P.base){if(P.y<=0&&feet-g>0&&feet-g<.4){P.base=g;P.y=0;}else{P.y=Math.max(0,feet-g);P.base=g;}}}
     if(P.dive&&!P.dvWin){for(const w of W.windows){if(Math.abs((w.y||0)-P.base)>1)continue;const al=w.hz?P.x-w.at:P.z-w.at,pe=w.hz?P.z-w.fixed:P.x-w.fixed;if(Math.abs(al)<.9&&Math.abs(pe)<.45){P.dvWin=true;burst(P.x,1.5+P.y*.3,P.z,0xcfeaff,12,4);hiss(.3,.4,6000);tone(2600,.07,'square',.05);tone(3400,.1,'square',.04,0,.05);makeNoise(P.x,P.z,26);shake=Math.max(shake,.25);break;}}}
@@ -2252,7 +2271,7 @@ function updView(){
     m.armR.rotation.x=melee?(sf>0?.25+sf*2.05:.8+P.pitch*.3):1.45+P.pitch*.8;
     m.armL.rotation.x=melee?(sf>0?.3+sf*1.7:.72+P.pitch*.3):dual?1.45+P.pitch*.8:1.1+P.pitch*.6;
     m.armL.rotation.z=melee?.5:dual?.1:.42;m.armR.rotation.z=melee?(sf>0?-.55+sf*.8:-.28):-.1;
-    if(P.ropeClimb>0)P.ropeClimb-=1/60;
+    if(P.ropeClimb>0)P.ropeClimb-=1/60;if(P.ledgeT>0){P.ledgeT-=1/60;P.ropeClimb=Math.max(P.ropeClimb,.02);}
     if(P.climb||P.ropeClimb>0){const a=Math.sin(P.anim);m.armR.rotation.x=2.7+a*.35;m.armL.rotation.x=2.7-a*.35;m.armL.rotation.z=.15;m.armR.rotation.z=-.15;m.legL.rotation.x=.5+a*.4;m.legR.rotation.x=.5-a*.4;m.shinL.rotation.x=-.9;m.shinR.rotation.x=-.9;}
     if(P.insp>0){const q=inspPose(),e=Math.sin(Math.PI*(1-P.insp/INSP_T));m.armR.rotation.x+=(1.15-m.armR.rotation.x)*e;m.armR.rotation.z-=.3*e;m.gun.rotation.y+=q[1];m.gun.rotation.z+=q[2]*.6;}
   }
@@ -2321,7 +2340,7 @@ function updHud(){
   setT('hint',(!isTouch&&!locked&&!ui)?(lockFailed?'Mouse aims · left click fires':'Click anywhere to lock the mouse'):'');
   const ch=true;setHid('cur',!ui||isTouch);if(hudKey.cur!==ch){hudKey.cur=ch;$('app').classList.toggle('nocur',ch);}
   const key=isTouch?'':'<kbd>E</kbd>';
-  setH('prompt',P.search||P.loot?'':P.climb?(isTouch?'Stick up and down to climb · jump to let go':'<kbd>W</kbd><kbd>S</kbd> climb · <kbd>A</kbd><kbd>D</kbd> shuffle · <kbd>SPACE</kbd> let go'):P.y>.4&&findClimb()?(isTouch?'Jump to grab the wall':'<kbd>SPACE</kbd> Grab the wall'):ctx?key+ctx.label:P.canVault?(isTouch?'Jump to vault':'<kbd>SPACE</kbd>Vault window'):findClimb()?(isTouch?'Jump to climb':'<kbd>SPACE</kbd>Climb with the Red Rebel'):'');
+  setH('prompt',P.search||P.loot?'':P.climb?(isTouch?'Stick up and down to climb · jump to let go':'<kbd>W</kbd><kbd>S</kbd> climb · <kbd>A</kbd><kbd>D</kbd> shuffle · <kbd>SPACE</kbd> let go'):P.y>.4&&findClimb()?(isTouch?'Jump to grab the wall':'<kbd>SPACE</kbd> Grab the wall'):ctx?key+ctx.label:P.canVault?(isTouch?'Jump to vault':'<kbd>SPACE</kbd>Vault window'):findLedge()?(isTouch?'Jump to climb up':'<kbd>SPACE</kbd>Climb up to the ledge'):findClimb()?(isTouch?'Jump to climb':'<kbd>SPACE</kbd>Climb with the Red Rebel'):'');
   if(isTouch){setHid('bUse',(!ctx&&!P.loot)||!!P.search);if(P.loot)setT('bUse','TAKE ALL');else if(ctx)setT('bUse',ctx.t==='search'?(ctx.c.opened?'OPEN':'SEARCH'):ctx.t==='car'?'DRIVE':'EXIT');}
   setHid('search',!P.search);if(P.search){setT('searchL','Searching '+P.search.n);setW('searchB',P.search.t/P.search.dur*100);}
   setHid('exbar',P.exT<=0);if(P.exT>0){setT('exL','EXTRACTING '+Math.max(0,5-P.exT).toFixed(1));setW('exB',P.exT/5*100);}
