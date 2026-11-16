@@ -371,7 +371,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 93, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 94, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -409,6 +409,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
           <li><b>F</b> inspects the weapon in your hands.</li>
           <li>The <b>Red Rebel</b> ice axe only turns up in airdrops. Carry it and press <b>Space</b> facing the outside wall of a tall building to climb: <b>W</b>/<b>S</b> up and down, <b>A</b>/<b>D</b> along the wall, <b>Space</b> to let go. Climbing up costs stamina. Falling or jumping next to one of those walls, press <b>Space</b> to dig the axe in and catch yourself.</li>
           <li>Tall buildings have a <b>ledge</b> running round the outside at every floor. Stand on it to sneak round to a window, or face the wall and press <b>Space</b> to haul yourself up to the next ledge, and over the roof edge from the top one.</li>
+          <li>Loot now includes street drugs (joints, weed, a pressed brick, shrooms, Adderall, Xanax, codeine syrup and LSD) and more valuables like Rolexes, crypto wallets, game consoles, night vision and stolen paintings. They are all just for selling.</li>
           <li>Safes and cash registers are locked. With a <b>lock pick</b>, press <b>E</b>, then move the pick with the <b>mouse</b> (or hold <b>A</b> to sweep it) and hold <b>D</b> to turn the lock. The closer the pick is to the sweet spot the further the lock turns; turn it all the way to open it. If the lock stops and shakes, the pick is straining: let go of D and move the pick, or it snaps. Safes have a smaller sweet spot.</li>
           <li><b>Z</b> or <b>mouse button 5</b> dolphin dive in the direction you are moving. Time slows while you are in the air, but you aim and shoot at nearly full speed. A dive carries you through open windows. You land prone: crawl, press <b>Ctrl</b> to crouch, or <b>Space</b> to stand.</li>
           <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. It lets go on its own once you are reeled all the way in (popping you over a roof edge), or click again to let go early and keep your swing. The <b>Swing Line</b> from the trader is a rope with a hook you throw by hand: hold the click (or <b>G</b>) to swing it round, the longer you wind up the further it flies (8 to 40 m), and let go to throw. It never reels in: the line locks at the length it landed at and you swing on it. Hold <b>W</b> to climb the rope hand over hand (walking up any wall you are against, and over the top when you reach the hook) or <b>S</b> to let line out and rappel down. Climbing costs stamina. Click again to drop the line. Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
@@ -471,6 +472,12 @@ const IT=[
  ['gpu','Graphics card','r',1400,1,'val'],['watch','Gold watch','r',1100,.2,'val'],['chain','Gold chain','r',950,.2,'val'],
  ['laptop','Field laptop','r',1250,2,'val'],['scope','Rifle scope','r',800,.5,'val'],['roll','Cash roll','r',1500,.1,'val'],['morphine','Morphine injector','r',0,0,'med'],
  ['drive','Encrypted flash drive','e',3200,.05,'val'],['silver','Silver bars','e',3800,3,'val'],['intel','Intel folder','e',2900,.3,'val'],['gems','Loose diamonds','e',4500,.05,'val'],
+ ['joint','Pre-rolled joints','c',120,.05,'drug'],['vape','Vape pen','c',90,.05,'junk'],['energy','Energy drink','c',40,.3,'food'],['lighter','Zippo lighter','c',60,.05,'junk'],['keys','Car keys','c',55,.05,'junk'],['wallet','Leather wallet','c',110,.1,'junk'],
+ ['weed','Bag of weed','u',350,.1,'drug'],['adderall','Adderall bottle','u',420,.1,'drug'],['xanax','Xanax bars','u',480,.05,'drug'],['shrooms','Bag of shrooms','u',380,.1,'drug'],['syrup','Codeine syrup','u',300,.4,'drug'],
+ ['headphones','Headphones','u',240,.3,'junk'],['shades','Designer sunglasses','u',220,.1,'junk'],['mask','Gas mask','u',260,.8,'junk'],['hdd','Hard drive','u',360,.4,'junk'],
+ ['lsd','LSD blotter sheet','r',900,.01,'drug'],['brick','Pressed weed brick','r',1600,1,'drug'],['console','Game console','r',1300,2,'val'],['tablet','Tablet','r',950,.6,'val'],['camera','Vintage camera','r',1100,1,'val'],
+ ['rolex','Rolex','e',5200,.2,'val'],['cold','Crypto hardware wallet','e',6200,.05,'val'],['ring','Diamond ring','e',4800,.05,'val'],['nvg','Night vision goggles','e',4200,1.2,'val'],
+ ['painting','Stolen painting','l',18000,3,'val'],
  ['goldbar','Gold bar','l',12000,4,'val'],['chip','Prototype chip','l',15000,.1,'val'],['lion','Golden lion statue','l',20000,6,'val'],['bonds','Bearer bonds','l',17500,.2,'val']
 ].map(a=>({id:a[0],name:a[1],r:a[2],val:a[3],w:a[4],k:a[5]}));
 const AMMO={a9:['9mm',15],a12:['12ga',8],a556:['5.56',20],a762:['7.62',10]};
@@ -500,7 +507,7 @@ const CT={
  crate:{n:'crate',s:[1,.8,1],c:0x7b5b35,t:1.2,q:[2,3],tb:[58,29,11,1.8,.2]},
  shelf:{n:'shelf',s:[1.7,1.6,.5],c:0x6a6f6a,t:.9,q:[1,3],tb:[70,24,5.5,.5,0],f:i=>i.k!=='val'},
  fridge:{n:'fridge',s:[.8,1.8,.8],c:0xc9cdc6,t:.8,q:[1,2],tb:[75,25,0,0,0],f:i=>i.k==='food'||i.k==='junk'},
- medbox:{n:'med cabinet',s:[.8,1.3,.4],c:0xd8dcd6,t:1,q:[1,3],tb:[45,38,17,0,0],f:i=>i.k==='med'},
+ medbox:{n:'med cabinet',s:[.8,1.3,.4],c:0xd8dcd6,t:1,q:[1,3],tb:[45,38,17,0,0],f:i=>i.k==='med'||i.id==='adderall'||i.id==='xanax'||i.id==='syrup'},
  locker:{n:'locker',s:[.8,1.9,.6],c:0x4f6272,t:1.4,q:[1,3],tb:[44,35,17,3.5,.5]},
  register:{n:'register',s:[.7,1.1,.6],c:0x2e3a33,t:.8,q:[2,4],tb:[22,40,27,9,2],cash:[300,1600],heat:.15},
  duffel:{n:'duffel bag',s:[.9,.4,.5],c:0x55603b,t:1,q:[2,4],tb:[42,35,19,3.6,.4],soft:1},
@@ -1445,7 +1452,7 @@ function revealFx(it){
   if(ri>=3){flashFx(ri===4?'var(--rl)':'var(--re)');banner(ri===4?'LEGENDARY':'EPIC FIND',it.name+'  '+fmt(it.val),ri===4?'gold':'epic');if(ri===4){slow=.9;shake=Math.max(shake,.3);}}
 }
 /* inventory: Tarkov-style grids. Items take up cells, can be dragged between the container and the pack, turned with R, and sent across with Shift-click. */
-const GC=6,ISZ={g_usps:[3,1],g_mp5sd:[4,2],g_glocksw:[2,2],g_pistol:[2,1],g_smg:[3,2],g_shotgun:[5,1],g_spas:[5,2],g_ak:[5,2],g_rifle:[5,2],g_sniper:[6,2],gpu:[2,1],laptop:[2,2],fuel:[2,3],tools:[2,2],lion:[2,3],silver:[2,1],goldbar:[2,1],whiskey:[1,2],water:[1,2],radio:[1,2],scope:[2,1],intel:[1,2],bonds:[1,2]};
+const GC=6,ISZ={g_usps:[3,1],g_mp5sd:[4,2],g_glocksw:[2,2],g_pistol:[2,1],g_smg:[3,2],g_shotgun:[5,1],g_spas:[5,2],g_ak:[5,2],g_rifle:[5,2],g_sniper:[6,2],gpu:[2,1],laptop:[2,2],fuel:[2,3],tools:[2,2],lion:[2,3],silver:[2,1],goldbar:[2,1],painting:[2,2],console:[2,1],nvg:[2,1],brick:[2,1],tablet:[1,2],syrup:[1,2],mask:[2,2],headphones:[2,1],whiskey:[1,2],water:[1,2],radio:[1,2],scope:[2,1],intel:[1,2],bonds:[1,2]};
 let DRAG=null,bagAuto=false;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function isz(it){const s=ISZ[it.id]||[1,1];return it.rot?[s[1],s[0]]:s;}
@@ -2893,6 +2900,31 @@ const IM=(function(){
     intel:[[b(.24,.3,.02),0xc8a060,0,0,0],[b(.22,.28,.004),0xf2efe6,.01,.01,.012],[b(.12,.04,.003),0xb02020,0,.08,.016],[b(.05,.08,.025),0xc8a060,-.1,.16,0]],
     gems:[[o(.05,0),0xbfe8ff,0,0,0],[o(.04,0),0xd8f2ff,.07,-.02,.02],[o(.035,0),0xa8dcff,-.06,-.02,.03],[o(.03,0),0xe8f8ff,.02,.05,-.02]],
     goldbar:[[b(.3,.08,.12),GOLD,0,0,0],[b(.26,.02,.09),0xe8c050,0,.05,0]],
+    joint:[[c(.012,.016,.16,8),0xf2efe6,-.03,0,0,0,1,1,1],[c(.012,.016,.16,8),0xf2efe6,.03,0,0],[c(.017,.017,.02,8),0xb0b4a0,-.03,-.08,0],[c(.017,.017,.02,8),0xb0b4a0,.03,-.08,0],[b(.13,.05,.01),0x3a7a3a,0,-.04,.02]],
+    vape:[[b(.03,.15,.02),0x2a2c30,0,0,0],[b(.024,.04,.016),0x3a8ad0,0,.09,0],[b(.006,.03,.003),0x7fc8ff,0,-.03,.011]],
+    energy:[[c(.04,.04,.16,14),0x1a8a3a,0,0,0],[c(.041,.041,.06,14),0x1d1f22,0,.02,0],[c(.032,.04,.012,14),0xb8bcc0,0,.085,0]],
+    lighter:[[b(.06,.09,.03),0xb8bcc2,0,0,0],[b(.061,.03,.031),0x9aa0a6,0,.05,0],[b(.02,.025,.02),0x6a6e74,.01,.075,0]],
+    keys:[[c(.03,.03,.006,14),0xb8bcc2,0,0,0,P2],[b(.04,.06,.012),DK,.05,-.03,0],[b(.012,.07,.004),ST,-.03,-.05,0],[b(.012,.06,.004),0xc8a040,0,-.06,.004]],
+    wallet:[[b(.16,.1,.025),0x4a2e1a,0,0,0],[b(.15,.002,.026),0x6a4428,0,0,0],[b(.08,.04,.002),0x5a8a4a,.03,.04,.012]],
+    weed:[[b(.14,.16,.02),0xe8eef0,0,0,0],[o(.05,0),0x3a7a2a,-.02,-.02,0],[o(.045,0),0x4a8a32,.03,.01,0],[o(.04,0),0x2e6a24,0,.04,0],[b(.14,.012,.022),0x2a6ad0,0,.075,0]],
+    adderall:[[c(.04,.04,.12,14),0xd8701a,0,0,0],[c(.044,.044,.03,14),0xf2f2ee,0,.07,0],[b(.06,.06,.002),0xf2f2ee,0,0,.04],[c(.012,.012,.01,8),0x2a6ad0,.06,-.05,0]],
+    xanax:[[b(.07,.02,.008),0xe8e8e2,-.02,0,0],[b(.07,.02,.008),0xe8e8e2,.015,.03,.004],[b(.07,.02,.008),0xf2e070,.0,-.03,.008],[b(.07,.02,.008),0x7fb0e8,.03,.06,.0]],
+    shrooms:[[b(.14,.16,.02),0xe8eef0,0,0,0],[c(.012,.016,.05,8),0xe8e0c8,-.03,-.03,0],[c(.04,.025,.025,10),0xa8784a,-.03,0,0],[c(.012,.016,.05,8),0xe8e0c8,.035,-.01,0],[c(.035,.02,.022,10),0x8a6038,.035,.02,0]],
+    syrup:[[c(.04,.04,.15,14),0x8a3aa8,0,0,0],[c(.042,.042,.06,14),0xf2f2ee,0,0,0],[c(.018,.025,.03,10),0x8a3aa8,0,.09,0],[c(.02,.02,.025,10),0xf2f2ee,0,.115,0]],
+    headphones:[[c(.11,.11,.025,18),0x1d1f22,0,.02,0],[c(.095,.095,.03,18),0x3a3d42,0,.02,0],[c(.045,.045,.05,14),0x1d1f22,-.1,-.06,0,0,1,1,1],[c(.045,.045,.05,14),0x1d1f22,.1,-.06,0]],
+    shades:[[b(.07,.04,.01),0x111214,-.045,0,0],[b(.07,.04,.01),0x111214,.045,0,0],[b(.02,.008,.01),0xd6a93a,0,.012,0],[b(.004,.004,.12),0xd6a93a,-.08,.012,-.06],[b(.004,.004,.12),0xd6a93a,.08,.012,-.06]],
+    mask:[[o(.11,1),0x3a4030,0,0,0],[c(.045,.05,.06,14),0x2a2c2e,0,-.04,.1,P2],[c(.035,.035,.01,14),0x7fc8ff,-.05,.04,.09,P2],[c(.035,.035,.01,14),0x7fc8ff,.05,.04,.09,P2]],
+    hdd:[[b(.12,.025,.16),0x9aa0a6,0,0,0],[c(.04,.04,.004,16),0xb8bcc2,0,.014,.02],[b(.08,.003,.03),0xe8e4d8,0,.014,-.05]],
+    lsd:[[b(.2,.004,.2),0xf2e070,0,0,0]].concat(Array.from({length:4},(_,i)=>[b(.002,.006,.2),0x9a3aa8,-.075+i*.05,0,0]),Array.from({length:4},(_,i)=>[b(.2,.006,.002),0x3a8ad0,0,0,-.075+i*.05]),[[o(.03,0),0xe84a3a,0,.01,0]]),
+    brick:[[b(.28,.1,.14),0x3a6a2a,0,0,0],[b(.285,.03,.145),0xd8c8a0,0,.02,0],[b(.06,.06,.002),0xc02020,0,0,.072]],
+    console:[[b(.3,.06,.2),0x1d1f22,0,0,0],[b(.302,.012,.202),0xe8e8e8,0,.02,0],[b(.12,.04,.08),0x2a2c30,.22,-.01,.05],[c(.012,.012,.02,8),0x7fc8ff,-.12,.032,.08]],
+    tablet:[[b(.17,.24,.012),0x2a2c30,0,0,0],[b(.15,.21,.002),0x3a7ad0,0,0,.007]],
+    camera:[[b(.2,.12,.08),0x1d1f22,0,0,0],[b(.2,.03,.082),0xb8bcc2,0,.05,0],[c(.045,.045,.07,16),0x2a2c2e,0,0,.07,P2],[c(.035,.035,.004,16),0x7fc8ff,0,0,.105,P2],[b(.04,.025,.03),0xb8bcc2,.06,.075,0]],
+    rolex:[[c(.055,.055,.025,18),0xc8ccd2,0,0,0,P2],[c(.045,.045,.027,18),0x1a5a3a,0,0,.001,P2],[b(.05,.08,.015),0xc8ccd2,0,.085,0],[b(.05,.08,.015),0xc8ccd2,0,-.085,0],[b(.004,.03,.002),GOLD,0,.012,.015],[b(.02,.004,.002),GOLD,.008,0,.015]],
+    cold:[[b(.07,.11,.014),0x1d1f22,0,0,0],[b(.05,.035,.002),0x9ad8a8,0,.02,.008],[c(.01,.01,.004,10),0xb8bcc2,-.015,-.03,.008,P2],[c(.01,.01,.004,10),0xb8bcc2,.015,-.03,.008,P2],[b(.02,.03,.01),0xb8bcc2,0,.065,0]],
+    ring:[[c(.045,.045,.012,20),GOLD,0,0,0,P2],[c(.035,.035,.014,20),0x111214,0,0,0,P2],[o(.028,0),0xd8f2ff,0,.05,0]],
+    nvg:[[b(.16,.07,.08),0x2a3024,0,0,0],[c(.03,.03,.08,14),0x1d1f22,-.045,0,.07,P2],[c(.03,.03,.08,14),0x1d1f22,.045,0,.07,P2],[c(.026,.026,.004,14),0x4ac84a,-.045,0,.111,P2],[c(.026,.026,.004,14),0x4ac84a,.045,0,.111,P2],[b(.04,.06,.03),0x2a3024,0,.06,-.03]],
+    painting:[[b(.36,.28,.03),0x8a6a2a,0,0,0],[b(.32,.24,.005),0x3a5a8a,0,0,.016],[o(.05,0),0xe8c050,-.06,.03,.02],[b(.3,.06,.006),0x4a7a3a,0,-.08,.019],[b(.08,.12,.006),0x8a3a2a,.08,-.02,.019]],
     chip:[[b(.16,.02,.16),0x1e2022,0,0,0],[b(.07,.024,.07),0x3a8ad0,0,.004,0]].concat(Array.from({length:6},(_,i)=>[b(.012,.006,.03),GOLD,-.06+i*.024,0,.09]),Array.from({length:6},(_,i)=>[b(.012,.006,.03),GOLD,-.06+i*.024,0,-.09])),
     lion:[[b(.3,.05,.16),0x6a4a2a,0,-.17,0],[b(.22,.12,.1),GOLD,0,-.06,0],[o(.075,0),GOLD,.13,.02,0],[o(.06,0),0xe8c050,.15,.03,0],[b(.03,.1,.03),GOLD,-.08,-.12,.04],[b(.03,.1,.03),GOLD,.08,-.12,.04],[c(.012,.008,.12,6),GOLD,-.14,-.02,0,.6]],
     bonds:[[b(.24,.03,.16),0xe8e0c0,0,0,0],[b(.24,.03,.16),0xf0e8cc,.01,.03,.005],[b(.24,.03,.16),0xe0d8b8,-.01,.06,-.004],[b(.03,.1,.17),0xb02020,0,.03,0]],
