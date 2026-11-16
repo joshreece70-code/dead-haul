@@ -371,7 +371,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 92, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 93, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -1049,6 +1049,84 @@ function wallRun(B,hz,fixed,a,b,ops,hex){
   seg(cur,b,0,WH);
 }
 function addRoof(cx,cz,w,d,y,hex){const m=new T.Mesh(BOX,mat(hex,0,.9));m.position.set(cx,y+.15,cz);m.scale.set(w,.3,d);m.castShadow=true;m.receiveShadow=true;W.g.add(m);pushCol(cx-w/2,cx+w/2,y,y+.3,cz-d/2,cz+d/2);return m;}
+
+/* ---------- interior decor: furniture laid out per building type, baked into the static batches (looks only, no collision) ---------- */
+const CYL10=new T.CylinderGeometry(.5,.5,1,10);
+function Furn(U,x,y,z,r){this.U=U;this.x=x;this.y=y;this.z=z;this.r=r||0;}
+Furn.prototype.b=function(lx,ly,lz,sx,sy,sz,c,j){const r=this.r;let X=lx,Z=lz,SX=sx,SZ=sz;
+  if(r===1){X=-lz;Z=lx;SX=sz;SZ=sx;}else if(r===2){X=-lx;Z=-lz;}else if(r===3){X=lz;Z=-lx;SX=sz;SZ=sx;}
+  this.U.box(this.x+X,this.y+ly,this.z+Z,SX,sy,SZ,c,j==null?.08:j);};
+Furn.prototype.c=function(lx,ly,lz,d,h,c){const r=this.r;let X=lx,Z=lz;if(r===1){X=-lz;Z=lx;}else if(r===2){X=-lx;Z=-lz;}else if(r===3){X=lz;Z=-lx;}this.U.geo(CYL10,this.x+X,this.y+ly,this.z+Z,d,h,d,c,.06);};
+const WOODS=[0x6a5238,0x7a5a3a,0x5a4430,0x8a6a48],FAB=[0x3a4a5a,0x5a3a32,0x4a5a3a,0x6a6458,0x2e3440,0x7a4a3a],GOODS=[0xb8432e,0xd9c37a,0x3f6d8a,0x6a8a3a,0xe0e0d8,0x8a3a6a,0xc87a2a,0x2a6a6a];
+const FURN={
+ desk(f){const w=pick(WOODS),k=0x2a2c2e;f.b(0,.74,0,1.4,.05,.7,w);for(const a of [-.66,.66])f.b(a,.36,0,.04,.72,.64,w);
+   if(Math.random()<.85){f.b(0,.93,-.15,.52,.34,.04,0x1a1c1e);f.b(0,.93,-.127,.46,.28,.005,Math.random()<.3?0x3a5a6a:0x1e2a32);f.b(0,.775,.08,.42,.02,.14,k);}
+   if(Math.random()<.7)f.b(rand(.3,.55),.77,rand(-.1,.15),.21,.006,.29,0xe8e4d8,.02);if(Math.random()<.5)f.c(-.5,.81,.1,.08,.1,pick([0xd8d2c0,0x2a5a8a,0xa83a2a]));},
+ chair(f){const c=0x1e2226;f.b(0,.46,0,.48,.07,.46,c);f.b(0,.8,.22,.46,.55,.06,c);f.b(0,.22,0,.08,.44,.08,0x3a3d40);},
+ woodchair(f){const w=pick(WOODS);f.b(0,.45,0,.44,.05,.44,w);f.b(0,.75,.2,.44,.55,.04,w);for(const a of [-.19,.19])f.b(a,.22,0,.04,.44,.42,w);},
+ toppled(f){const c=0x1e2226;f.b(0,.24,0,.48,.46,.07,c);f.b(0,.05,-.3,.46,.06,.55,c);f.b(.05,.25,.3,.06,.06,.4,0x3a3d40);},
+ cabinet(f){f.b(0,.66,0,.48,1.32,.6,0x7a8088);for(const y of [.33,.66,.99])f.b(0,y,.301,.46,.012,.01,0x3a3e44);for(const y of [.5,.83,1.16])f.b(0,y,.31,.12,.03,.02,0xb8bcc2);},
+ plant(f){f.c(0,.2,0,.38,.4,0x9a5a3a);f.b(0,.42,0,.34,.03,.34,0x3a2a1e);f.b(0,.78,0,.55,.6,.55,0x3f6a2e,.2);f.b(.1,1.12,-.05,.36,.4,.36,0x4f7a36,.2);f.b(-.12,.95,.1,.3,.3,.3,0x35602a,.2);},
+ cooler(f){f.b(0,.5,0,.34,1,.34,0xe0e0dc);f.c(0,1.22,0,.28,.42,0x6aa8d8);f.b(0,.85,.18,.08,.05,.04,0x2a5a9a);},
+ sofa(f){const c=pick(FAB);f.b(0,.22,0,2,.34,.85,c);for(const a of [-.48,.48])f.b(a,.45,.05,.92,.14,.7,c,.15);f.b(0,.62,-.34,2,.5,.2,c);for(const a of [-.95,.95])f.b(a,.45,0,.14,.42,.85,c);if(Math.random()<.6)f.b(rand(-.6,.6),.58,-.15,.36,.3,.12,pick(FAB),.2);},
+ coffeetable(f){const w=pick(WOODS);f.b(0,.42,0,1.1,.05,.55,w);for(const a of [-.5,.5])f.b(a,.2,0,.05,.4,.5,w);if(Math.random()<.6)f.b(.2,.46,0,.3,.04,.22,0xd8c8a0);if(Math.random()<.5)f.c(-.25,.5,.05,.08,.12,0x3a6a8a);},
+ tv(f){const w=pick(WOODS);f.b(0,.25,0,1.5,.5,.42,w);f.b(0,.25,.211,1.4,.4,.01,0x2a2218);f.b(0,.53,-.02,.3,.06,.2,0x111214);f.b(0,.92,-.04,1.25,.72,.06,0x111214);f.b(0,.92,-.007,1.17,.64,.005,Math.random()<.5?0x1a2028:0x2a3a3a);},
+ rug(f){const c=pick([0x7a3a2a,0x2a4a6a,0x6a5a3a,0x5a2a3a,0x3a5a4a]);f.b(0,.012,0,2.6,.02,1.8,c,.04);f.b(0,.014,0,2.3,.02,1.5,pick([0xc8b88a,0x9a7a4a,0x2a2a2a]),.04);f.b(0,.016,0,2,.02,1.2,c,.04);},
+ bed(f){const w=pick(WOODS),c=pick(FAB);f.b(0,.22,0,1.5,.3,2.1,w);f.b(0,.45,0,1.42,.18,2.0,0xe8e4dc,.03);f.b(0,.56,.3,1.46,.06,1.35,c,.1);for(const a of [-.35,.35])f.b(a,.58,-.78,.52,.1,.32,0xf2efe8,.03);f.b(0,.7,-1.06,1.5,1,.08,w);},
+ dining(f){const w=pick(WOODS);f.b(0,.74,0,1.6,.05,.9,w);for(const a of [-.72,.72])f.b(a,.36,0,.06,.72,.8,w);
+   for(const [a,c,r] of [[-.42,.72,0],[.42,.72,0],[-.42,-.72,2],[.42,-.72,2]])if(Math.random()<.85)FURN.woodchair(new Furn(f.U,f.x+(f.r%2?c:a)*(f.r===2||f.r===3?-1:1),f.y,f.z+(f.r%2?a:c)*(f.r===2||f.r===1?-1:1),(r+f.r)%4));
+   if(Math.random()<.6)f.c(0,.8,0,.2,.08,0xd8d2c0);},
+ bookshelf(f){const w=pick(WOODS);f.b(0,.95,0,1,1.9,.32,w);for(const y of [.05,.48,.92,1.36,1.82])f.b(0,y,.01,.94,.035,.3,w);
+   for(const y of [.07,.5,.94,1.38])for(let x=-.42;x<.4;){const t=rand(.14,.3);if(Math.random()<.8)f.b(x+t/2,y+.15,.02,t-.01,rand(.24,.3),.22,pick(GOODS),.25);x+=t+.01;}},
+ kitchen(f){f.b(0,.45,0,2.4,.9,.6,0xd8d4c8);f.b(0,.92,0,2.45,.05,.65,0x3a3a3a);f.b(.55,.935,0,.52,.02,.4,0x9aa0a6);f.b(.55,1.02,-.24,.04,.18,.04,0x9aa0a6);
+   for(const a of [-.9,-.3,.3,.9])f.b(a,.45,.301,.56,.82,.01,0xc8c4b8);f.b(-.6,.97,0,.5,.04,.4,0x1a1a1a);},
+ lamp(f){f.b(0,.02,0,.3,.04,.3,0x2a2c2e);f.b(0,.8,0,.04,1.6,.04,0x2a2c2e);f.c(0,1.62,0,.36,.3,0xe8dcc0);},
+ gondola(f,L){L=L||3.6;f.b(0,.08,0,L,.16,.9,0x5a5e5a);f.b(0,.9,0,L,1.6,.05,0x8a8e88);for(const y of [.45,.9,1.35])for(const s of [-.24,.24])f.b(0,y,s,L,.04,.42,0x9aa09a);
+   for(const y of [.47,.92,1.37])for(const s of [-.24,.24])for(let x=-L/2+.15;x<L/2-.15;){const t=rand(.4,.9);if(Math.random()<.75){const h=rand(.1,.32);f.b(x+t/2,y+h/2+.02,s+rand(-.05,.05),t,h,rand(.14,.3),pick(GOODS),.15);}x+=t+.03;}
+   for(let i=0;i<3;i++)if(Math.random()<.5)f.b(rand(-L/2,L/2),.03,rand(.5,.9)*(Math.random()<.5?1:-1),rand(.1,.25),.06,rand(.1,.2),pick(GOODS),.2);},
+ checkout(f){f.b(0,.45,0,1.8,.9,.7,0x8a8478);f.b(0,.91,.05,1.8,.02,.42,0x1a1a1a);f.b(.7,1.1,-.25,.3,.3,.04,0x1a1c1e);f.b(-.6,.94,-.2,.4,.08,.3,0x3a3d40);},
+ counter(f,L){L=L||5;f.b(0,.55,0,L,1.1,.6,0x6a5a48);f.b(0,1.12,0,L+.1,.05,.7,0xc8c0b0);f.b(0,1.5,-.2,L,.7,.03,0xb8d8e8,0);for(let x=-L/2+.8;x<L/2;x+=1.6)f.b(x,1.5,-.2,.05,.7,.06,0x3a3d40);},
+ hbed(f){const m=0xc8ccd0;f.b(0,.55,0,.95,.08,2,m);f.b(0,.66,0,.9,.14,1.9,0xe8f0f0,.03);f.b(0,.74,.35,.92,.04,1.1,0x9ac0c8,.05);f.b(0,.75,-.75,.5,.08,.3,0xffffff,.02);f.b(0,.85,-1,.95,.6,.05,m);
+   for(const c of [-.9,.9])f.b(0,.27,c,.86,.54,.04,0x6a6e72);for(const a of [-.5,.5])f.b(a,.8,.2,.03,.2,1,m);
+   f.b(.65,1,-.8,.03,2,.03,0x9aa0a6);f.b(.65,1.8,-.8,.16,.24,.05,0xd8f0ff,.02);f.b(.65,.02,-.8,.3,.04,.3,0x6a6e72);},
+ waiting(f){const c=pick([0x2a5a8a,0x5a2a2a,0x3a5a3a]);f.b(0,.36,0,2.3,.04,.08,0x3a3d40);for(let i=0;i<4;i++){const x=-.86+i*.575;f.b(x,.45,0,.5,.06,.45,c);f.b(x,.75,.22,.5,.5,.05,c);}for(const a of [-1.05,1.05])f.b(a,.2,0,.06,.4,.4,0x3a3d40);},
+ pallet(f){f.b(0,.07,0,1.2,.14,1,0x8a6a42,.15);const n=randi(1,3);for(let i=0;i<n;i++){f.b(rand(-.05,.05),.14+.28+i*.56,rand(-.05,.05),1.1,.56,.9,pick([0xa8835a,0x9a7a52,0xb89a6a]),.12);}if(Math.random()<.5)f.b(0,.14+n*.56/2,.0,1.14,n*.56,.94,0xd8e4e8,0);},
+ barrel(f){const c=pick([0x2a4a8a,0x8a2a22,0x3a5a2a,0x6a6a6a]);f.c(0,.45,0,.6,.9,c);f.c(0,.3,0,.62,.04,0x2a2a2a);f.c(0,.65,0,.62,.04,0x2a2a2a);},
+ rack(f,L){L=L||5;const o=0xd06a1a,bl=0x2a4a8a;for(let x=-L/2;x<=L/2+.01;x+=L/2)for(const z of [-.45,.45])f.b(x,1.8,z,.08,3.6,.08,bl);
+   for(const y of [.1,1.3,2.5])for(const z of [-.45,.45])f.b(0,y,z,L,.1,.08,o);for(const y of [.15,1.35,2.55])for(let x=-L/2+.7;x<L/2-.5;x+=1.3)if(Math.random()<.7)f.b(x,y+.3+.05,0,1.1,.6,.85,pick([0xa8835a,0x9a7a52,0x6a6e72]),.12);},
+ light(f){f.b(0,0,0,1.2,.05,.3,0xf6f2e2,0);},
+ papers(f){for(let i=0;i<randi(2,5);i++)f.b(rand(-.6,.6),.005,rand(-.6,.6),rand(.18,.3),.006,rand(.2,.3),pick([0xe8e4d8,0xd8d2c0,0xf2efe6]),.02);},
+ boxes(f){for(let i=0;i<randi(1,3);i++){const sx=rand(.35,.6);f.b(rand(-.3,.3),sx*.4+i*.01,rand(-.3,.3),sx,sx*.8,rand(.35,.55),pick([0xa8835a,0x9a7a52]),.12);}}
+};
+/* lay out one room: a grid of 'spots' in the middle of the floor, skipping the stairwell; wall art on the long walls; lights on the ceiling */
+function decorRoom(U,x0,x1,z0,z1,y,ceil,kind,avoid){
+  const ix0=x0+1.7,ix1=x1-1.7,iz0=z0+1.7,iz1=z1-1.7;if(ix1-ix0<1||iz1-iz0<1)return;
+  const used=[];const free=(a,b,c,d)=>{if(avoid&&!(b<avoid[0]||a>avoid[1]||d<avoid[2]||c>avoid[3]))return false;for(const u of used)if(!(b<u[0]||a>u[1]||d<u[2]||c>u[3]))return false;return true;};
+  const put=(fn,x,z,r,hw,hd,arg)=>{const sw=(r%2)?hd:hw,sd=(r%2)?hw:hd;if(x-sw<ix0-.6||x+sw>ix1+.6||z-sd<iz0-.6||z+sd>iz1+.6)return false;if(!free(x-sw,x+sw,z-sd,z+sd))return false;used.push([x-sw,x+sw,z-sd,z+sd]);FURN[fn](new Furn(U,x,y,z,r),arg);return true;};
+  const W=ix1-ix0,D=iz1-iz0;
+  if(kind==='office'){for(let z=iz0+.5;z<=iz1-.3;z+=2.6)for(let x=ix0+.8;x<=ix1-.6;x+=2.1){if(Math.random()<.2)continue;if(put('desk',x,z,0,.72,.4)){if(Math.random()<.15)FURN.toppled(new Furn(U,x+rand(-.3,.3),y,z+.85,randi(0,3)));else FURN.chair(new Furn(U,x+rand(-.08,.08),y,z+.72,0));}}
+    put('plant',ix0,iz0,0,.3,.3);put('plant',ix1,iz1,0,.3,.3);put('cooler',ix1,iz0,0,.2,.2);if(Math.random()<.7)put('cabinet',ix0,iz1,0,.3,.35);}
+  else if(kind==='store'){const L=Math.min(4.2,W-.5);for(let z=iz0+.3;z<=iz1-.2;z+=2.3)put('gondola',(ix0+ix1)/2,z,0,L/2,.45,L);put('checkout',ix0+.9,iz1,0,.9,.35);}
+  else if(kind==='clinic'){for(let x=ix0+.5;x<=ix1-.4;x+=1.7)put('hbed',x,(iz0+iz1)/2-.4,0,.5,1.05);put('waiting',(ix0+ix1)/2,iz1,2,1.15,.25);put('plant',ix1,iz0,0,.3,.3);}
+  else if(kind==='bank'){put('counter',(ix0+ix1)/2,iz0+.3,0,Math.min(5,W)/2,.35,Math.min(5,W));for(let x=ix0+.8;x<=ix1-.6;x+=2.2)put('desk',x,iz1-.4,2,.72,.4);put('plant',ix0,(iz0+iz1)/2,0,.3,.3);put('plant',ix1,(iz0+iz1)/2,0,.3,.3);put('rug',(ix0+ix1)/2,(iz0+iz1)/2+.4,0,1.3,.9);}
+  else if(kind==='warehouse'){const L=Math.min(6,W-.4);for(let z=iz0+.4;z<=iz1-.3;z+=3)put('rack',(ix0+ix1)/2,z,0,L/2,.5,L);
+    for(let i=0;i<10;i++){put(Math.random()<.6?'pallet':'barrel',rand(ix0,ix1),rand(iz0,iz1),randi(0,3),.62,.55);}}
+  else if(kind==='gas'){const L=Math.min(3,W-.5);put('gondola',(ix0+ix1)/2,(iz0+iz1)/2,0,L/2,.45,L);put('checkout',ix1-.6,iz0+.2,1,.9,.35);}
+  else if(kind==='home'){const cxr=(ix0+ix1)/2,czr=(iz0+iz1)/2;
+    put('rug',cxr-W/4,czr,0,1.3,.9);put('sofa',cxr-W/4,czr+1.1,2,1,.45);put('coffeetable',cxr-W/4,czr,0,.55,.3);put('tv',cxr-W/4,czr-1.3,0,.75,.22);
+    put('bed',cxr+W/4,czr-.3,randi(0,1)*2,.75,1.07);put('dining',ix1-.8,iz1-.4,0,.8,.5);put('bookshelf',ix0+.2,iz1-.1,2,.5,.17);put('lamp',ix0,iz0,0,.18,.18);
+    put('kitchen',ix1-1.2,iz0,0,1.2,.3);put('plant',ix1,(iz0+iz1)/2,0,.3,.3);}
+  /* lived-in mess */
+  for(let i=0;i<3;i++)if(Math.random()<.5)put(Math.random()<.6?'papers':'boxes',rand(ix0,ix1),rand(iz0,iz1),0,.4,.4);
+  /* ceiling lights */
+  if(ceil){for(let z=z0+2.5;z<z1-1.5;z+=3.4)for(let x=x0+2.5;x<x1-1.5;x+=3.6){if(avoid&&x>avoid[0]&&x<avoid[1]&&z>avoid[2]&&z<avoid[3])continue;FURN.light(new Furn(U,x,ceil-.05,z,0));}}
+  /* pictures and boards on the two long walls, high enough to clear the loot */
+  for(const zw of [z0+.03,z1-.03]){const n=Math.floor((x1-x0)/5);for(let i=0;i<n;i++){if(Math.random()<.45)continue;const x=x0+(i+.5)*(x1-x0)/n+rand(-.6,.6);if(avoid&&x>avoid[0]-.5&&x<avoid[1]+.5&&zw>avoid[2]-1&&zw<avoid[3]+1)continue;
+    const wb=kind==='office'&&Math.random()<.4,w2=wb?1.4:rand(.6,1),h2=wb?.9:rand(.45,.75),sgn=zw<(z0+z1)/2?1:-1;
+    U.box(x,y+1.75,zw+sgn*.02,w2+.08,h2+.08,.03,wb?0xb8bcc2:pick([0x3a2a1e,0x2a2a2a,0xb08a3a]),0);U.box(x,y+1.75,zw+sgn*.04,w2,h2,.02,wb?0xf2f2ee:pick([0x5a7a9a,0x9a6a4a,0x6a8a5a,0x8a5a6a,0xc8b88a,0x3a5a7a]),.2);}}
+}
+function roomKind(type,k){if(type==='house')return 'home';if(type==='store')return k?(Math.random()<.5?'office':'home'):'store';if(type==='clinic')return k?(Math.random()<.4?'clinic':'office'):'clinic';
+  if(type==='bank')return k?'office':'bank';if(type==='police'||type==='office')return k&&type==='office'&&Math.random()<.25?'home':'office';if(type==='warehouse')return 'warehouse';if(type==='gas')return 'gas';return null;}
 /* tall buildings: enterable floors joined by a staircase in one corner, open and glazed windows, a rooftop stair hut */
 function upWall(U,hz,fixed,a,b,ops,hex,y0,y1,out){
   const seg=(p,q,s0,s1,sill)=>{if(q-p<.02||s1-s0<.02)return;const m=(p+q)/2;
@@ -1070,7 +1148,7 @@ function addTall(b,o,floors){
   const x0=b.x0-TH/2,x1=b.x1+TH/2,z0=b.z0-TH/2,z1=b.z1+TH/2,cx=b.cx,H=WH*floors;
   b.surf=[];b.lv=[];b.rh=H+.3;
   const left=b.side!==2,sw=1.7,sxA=left?b.x0+TH/2+.05:b.x1-TH/2-.05-sw,sxB=sxA+sw,zs=b.z0+TH/2+1.4,ze=zs+6,inner=left?sxB:sxA;
-  b.slots=b.slots.filter(s=>!(s.x>sxA-.9&&s.x<sxB+.9&&s.z>zs-1.8&&s.z<ze+.9));
+  b.slots=b.slots.filter(s=>!(s.x>sxA-.9&&s.x<sxB+.9&&s.z>zs-1.8&&s.z<ze+.9));b.stair=[sxA-1,sxB+1,zs-1.8,ze+1.2];
   const LV=[],pend=[];for(let k=0;k<=floors;k++)LV.push(new Batch());
   const lvlY=k=>k===0?.07:k*WH+.3;
   /* one straight flight per storey, stacked in the same stairwell */
@@ -1099,6 +1177,7 @@ function addTall(b,o,floors){
       /* trim band on the outside at each floor line */
       U.box(cx,y+.15,z0-.07,x1-x0+.3,.32,.14,0xd9d3c2,.03);U.box(cx,y+.15,z1+.07,x1-x0+.3,.32,.14,0xd9d3c2,.03);
       U.box(x0-.07,y+.15,b.cz,.14,.32,z1-z0,0xd9d3c2,.03);U.box(x1+.07,y+.15,b.cz,.14,.32,z1-z0,0xd9d3c2,.03);
+      {const kd=roomKind(o.type,k),dq={low:0,med:.25,high:.5,ultra:.85}[S.gfx]??.5;if(kd&&Math.random()<dq)decorRoom(U,b.x0+TH/2,b.x1-TH/2,b.z0+TH/2,b.z1-TH/2,by,(k+1)*WH,kd,b.stair);}
       /* a little loot on each upper floor, away from the stairs */
       const nC=randi(1,2);for(let t=0,made=0;t<8&&made<nC;t++){const nearZ0=Math.random()<.5,x=rand(b.x0+1.3,b.x1-1.3),z=nearZ0?b.z0+.9:b.z1-.9;
         if(x>sxA-1.2&&x<sxB+1.2)continue;const ty2=pick(['crate','crate','locker','shelf','duffel','weaponcase','medbox',Math.random()<.2?'safe':'crate']);
@@ -1138,6 +1217,7 @@ function addBuilding(B,cx,cz,w,d,o){
   });
   const tall=o.floors||((o.type==='store'||o.type==='clinic'||o.type==='police'||o.type==='bank')&&Math.random()<.75?pick([4,5,6,6,7,8]):1);b.side=side;
   if(tall>1){b.roof=new T.Group();W.g.add(b.roof);addTall(b,o,tall);}else b.roof=addRoof(cx,cz,w+1,d+1,WH,o.roof);
+  {const kd=roomKind(o.type,0);if(kd)decorRoom(B,x0+TH/2,x1-TH/2,z0+TH/2,z1-TH/2,.07,WH,kd,b.stair);}
   shuffle(b.slots);W.buildings.push(b);return b;
 }
 /* container trim: [x, y from the floor, z, sx, sy, sz, colour, mirror] in the container's own axes; mirror copies it to the other side(s) */
@@ -1229,7 +1309,7 @@ const BLOCKS={
    const roof=addRoof(cx,cz+8,16,14,4.2,0x8a2f28);W.buildings.push({x0:cx-8,x1:cx+8,z0:cz+1,z1:cz+15,cx:cx,cz:cz+8,w:16,d:14,type:'canopy',slots:[],roof:roof});
    for(const px of[-2.5,2.5])addStatic(B,cx+px,.8,cz+8,.8,1.5,.5,0x9b3a2e,true);
    addCar(cx-5.2,cz+8,0);if(Math.random()<.6)addCar(cx+5.2,cz+9,Math.PI);spawn('s',cx,cz+4);spawn('z',cx+8,cz+16);},
- lot(B,cx,cz){waterTower(B,cx-9,cz-9);radioMast(B,cx+10,cz+10);billboard(B,cx+rand(-4,4),cz-16.5);for(let i=0;i<4;i++)addContainer('crate',cx+rand(-15,15),cz+rand(-15,15),false);for(let i=0;i<3;i++)addContainer('duffel',cx+rand(-15,15),cz+rand(-15,15),false);
+ lot(B,cx,cz){waterTower(B,cx-9,cz-9);radioMast(B,cx+10,cz+10);billboard(B,cx+rand(-4,4),cz-16.5);towerCrane(B,cx+13,cz-5);for(let i=0;i<4;i++)addContainer('crate',cx+rand(-15,15),cz+rand(-15,15),false);for(let i=0;i<3;i++)addContainer('duffel',cx+rand(-15,15),cz+rand(-15,15),false);
    addCar(cx+rand(-12,-6),cz+rand(-12,12),rand(0,6.28));addCar(cx+rand(6,12),cz+rand(-12,12),rand(0,6.28));trees(B,cx,cz,3,17);for(let i=0;i<3;i++)spawn('z',cx+rand(-14,14),cz+rand(-14,14));}
 };
 /* tall structures you can hook onto and stand on */
@@ -1263,6 +1343,42 @@ function billboard(B,x,z){const H=9,S=[],ad=pick([0xc8402a,0x2a6fd0,0xe0b02a,0x3
   slab(B,x-4.6,x+4.6,z-.5,z+.9,H+4.3,0x4a4d4a,S,true);B.box(x,H+4.75,z+.9,9.2,.5,.06,0x2c2f2e,0);
   for(let y=H;y<H+4.3;y+=.5)B.box(x+4.75,y+.25,z+.2,.05,.05,.6,0x2c2f2e,0);
   addStruct(x-4.6,x+4.6,z-1.3,z+.9,H+4.5,S);}
+/* tower cranes: a lattice mast, a cab, a long jib you can walk out along, a counter-jib, and a hook block hanging on its cable with a load of steel beams */
+function lineBox(B,ax,ay,az,bx,by,bz,t,c){const dx=bx-ax,dy=by-ay,dz=bz-az,l=Math.hypot(dx,dy,dz);const g=new T.BoxGeometry(t,t,l);
+  const q=new T.Quaternion().setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(dx/l,dy/l,dz/l));g.applyQuaternion(q);B.geo(g,(ax+bx)/2,(ay+by)/2,(az+bz)/2,1,1,1,c,0);}
+function towerCrane(B,x,z){const H=pick([40,44,48]),r=1.1,Y=0xe0b020,K=0x2a2c2a,dir=randi(0,3),ux=[1,0,-1,0][dir],uz=[0,1,0,-1][dir],vx=-uz,vz=ux,JL=30,CL=10,JY=H+2.6;
+  /* base and mast */
+  addStatic(B,x,.5,z,5,1,5,0x8a8a84,true,.05);for(const a of [-1.6,1.6])for(const c of [-1.6,1.6])addStatic(B,x+a,1.4,z+c,1.2,.8,1.2,0x6a6a64,true,.05);
+  for(const [a,c] of [[-r,-r],[r,-r],[-r,r],[r,r]])addStatic(B,x+a,H/2+.5,z+c,.18,H,.18,Y,true,0);
+  for(let y=1.5;y<H;y+=3){addStatic(B,x,y,z-r,2*r,.12,.12,Y,true,0);addStatic(B,x,y,z+r,2*r,.12,.12,Y,true,0);addStatic(B,x-r,y,z,.12,.12,2*r,Y,true,0);addStatic(B,x+r,y,z,.12,.12,2*r,Y,true,0);
+    lineBox(B,x-r,y,z-r,x+r,y+3,z-r,.07,Y);lineBox(B,x+r,y,z+r,x-r,y+3,z+r,.07,Y);lineBox(B,x-r,y,z+r,x-r,y+3,z-r,.07,Y);lineBox(B,x+r,y,z-r,x+r,y+3,z+r,.07,Y);}
+  for(let y=0;y<H;y+=.45)B.box(x+r+.25,y+.2,z,.05,.05,.5,0x2c2f2e,0);
+  /* slewing ring and cab */
+  addStatic(B,x,H+.8,z,3,1,3,0x3a3d3a,true,.05);addStatic(B,x+vx*1.6,H+2.2,z+vz*1.6,1.8,2,1.8,Y,true,.05);B.box(x+vx*1.6+ux*.91,H+2.4,z+vz*1.6+uz*.91,ux?.02:1.5,1.1,uz?.02:1.5,0x2e3a44,0);
+  /* jib: two bottom chords with a grated walkway, a top chord, lacing */
+  const J0=-CL,J1=JL,mid=(J0+J1)/2;const wx=x+ux*mid,wz=z+uz*mid,len=J1-J0;
+  for(const s of [-.6,.6])addStatic(B,x+ux*mid+vx*s,JY,z+uz*mid+vz*s,ux?len:.14,.14,uz?len:.14,Y,true,0);
+  addStatic(B,x+ux*mid,JY+1.5,z+uz*mid,ux?len:.12,.12,uz?len:.12,Y,true,0);
+  const S=[],slabAt=(a,b2,y)=>{const p=x+ux*a,q=z+uz*a,p2=x+ux*b2,q2=z+uz*b2,X0=Math.min(p,p2)+(ux?0:-.55)*1,X1=Math.max(p,p2)+(ux?0:.55),Z0=Math.min(q,q2)+(uz?0:-.55),Z1=Math.max(q,q2)+(uz?0:.55);
+    B.box((X0+X1)/2,y-.04,(Z0+Z1)/2,X1-X0,.06,Z1-Z0,0x4a4d4a,0);S.push({x0:X0,x1:X1,z0:Z0,z1:Z1,y:y,roof:true});};
+  slabAt(J0,J1,JY+.08);
+  for(let a=J0;a<J1;a+=2){for(const s of [-.6,.6])lineBox(B,x+ux*a+vx*s,JY,z+uz*a+vz*s,x+ux*(a+1)+vx*0,JY+1.5,z+uz*(a+1)+vz*0,.06,Y);
+    for(const s of [-.6,.6])lineBox(B,x+ux*(a+1),JY+1.5,z+uz*(a+1),x+ux*(a+2)+vx*s,JY,z+uz*(a+2)+vz*s,.06,Y);B.box(x+ux*a,JY+.55,z+uz*a,ux?.04:1.2,.04,uz?.04:1.2,0x2c2f2e,0);}
+  /* counter-jib weights, apex and pendant lines */
+  for(let i=0;i<3;i++)addStatic(B,x-ux*(CL-1.2-i*1.3),JY-.9,z-uz*(CL-1.2-i*1.3),ux?1.1:2,1.6,uz?1.1:2,0x9a9a92,true,.06);
+  addStatic(B,x,H+6,z,.5,7,.5,Y,true,0);lineBox(B,x,H+9.4,z,x+ux*JL*.7,JY+1.5,z+uz*JL*.7,.05,0x3a3a3a);lineBox(B,x,H+9.4,z,x-ux*(CL-.5),JY+1.5,z-uz*(CL-.5),.05,0x3a3a3a);
+  const bl=new T.Mesh(BOX,mat(0xff2a1a,0xff2a1a,.4,0,4));bl.scale.set(.3,.3,.3);bl.position.set(x,H+9.7,z);W.g.add(bl);(W.blinks||(W.blinks=[])).push(bl);
+  /* trolley, cable, hook block and a bundle of beams on slings */
+  const tr=rand(12,JL-3),hy=rand(13,Math.min(26,H-12)),tx=x+ux*tr,tz=z+uz*tr;
+  addStatic(B,tx,JY-.35,tz,1.4,.5,1.4,0x3a3d3a,true,.05);B.box(tx,(JY-.6+hy+.6)/2,tz,.05,JY-.6-hy-.6,.05,0x222222,0);
+  addStatic(B,tx,hy+.3,tz,.7,.9,.5,Y,true,.05);B.box(tx,hy-.3,tz,.12,.4,.12,0x3a3d3a,0);
+  const ly=hy-2.6;lineBox(B,tx,hy-.4,tz,tx+vx*1.8,ly+.35,tz+vz*1.8,.04,0x222222);lineBox(B,tx,hy-.4,tz,tx-vx*1.8,ly+.35,tz-vz*1.8,.04,0x222222);
+  for(let i=0;i<3;i++)for(let j=0;j<2;j++)addStatic(B,tx+ux*(i-1)*.32,ly+.12+j*.26,tz+uz*(i-1)*.32,ux?.26:4.4,.24,uz?.26:4.4,0x6a4a3a,true,.08);
+  const LS=[];{const X0=tx-(ux?.5:2.2),X1=tx+(ux?.5:2.2),Z0=tz-(uz?.5:2.2),Z1=tz+(uz?.5:2.2);LS.push({x0:X0,x1:X1,z0:Z0,z1:Z1,y:ly+.5,roof:true});addStruct(X0,X1,Z0,Z1,ly+.5,LS);}
+  /* the walkways count as structures so you can land and stand on them */
+  {const X0=Math.min(x+ux*J0,x+ux*J1)-(ux?0:.6),X1=Math.max(x+ux*J0,x+ux*J1)+(ux?0:.6),Z0=Math.min(z+uz*J0,z+uz*J1)-(uz?0:.6),Z1=Math.max(z+uz*J0,z+uz*J1)+(uz?0:.6);addStruct(X0,X1,Z0,Z1,JY+.08,S);}
+  {const CS=[{x0:x-1.5,x1:x+1.5,z0:z-1.5,z1:z+1.5,y:1,roof:false}];addStruct(x-2.5,x+2.5,z-2.5,z+2.5,1,CS);}
+}
 function genWorld(seed){const mr=Math.random;Math.random=mulberry(seed==null?(mr()*1e9)|0:seed);try{genWorldRaw();}finally{Math.random=mr;}W.seed=seed==null?-1:seed;}
 /* airdrops: a supply crate on a tall roof, red smoke pouring off it until it is emptied */
 function addDrop(b){
