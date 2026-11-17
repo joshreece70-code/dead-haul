@@ -894,7 +894,7 @@ const GUNS={
 };
 GUNS.dual=bake([[gBox(.03,.034,.19),0x3a3d42,0,.038,-.075],[gBox(.028,.024,.15),0x202226,0,.01,-.055],[gBox(.022,.012,.055),0x202226,0,-.006,-.118],[gBox(.03,.104,.046),0x202226,0,-.052,.013,-.2443],[gBox(.032,.01,.052),0x2c2e33,0,-.108,.027,-.2443],[gBox(.006,.02,.007),0x3a3d42,0,-.016,-.022,.2793],[gCyl(.0085,.0085,.012,8),0x1b1c1f,0,.038,-.176,1.5708],[gBox(.016,.002,.036),0x1b1c1f,.008,.0555,-.06],[gBox(.02,.008,.008),0x1b1c1f,0,.06,.008],[gBox(.005,.008,.008),0x1b1c1f,0,.06,-.16],[gBox(.01,.014,.012),0x1b1c1f,0,.046,.024],[gBox(.01,.005,.055),0x202226,0,-.04,-.0275],[gBox(.01,.028,.005),0x202226,0,-.026,-.055],[gBox(.0305,.026,.003),0x1b1c1f,0,.038,.004],[gBox(.0305,.026,.003),0x1b1c1f,0,.038,.011],[gBox(.0305,.026,.003),0x1b1c1f,0,.038,.018],[gBox(.0305,.026,.003),0x1b1c1f,0,.038,.025],[gBox(.0305,.026,.003),0x1b1c1f,0,.038,.032]]);
 GUNS.grapple=bake([[gBox(.05,.075,.24),0x3a3d42,0,.03,-.06],[gCyl(.032,.032,.12,12),0x1b1c1f,0,.035,-.24,HPI],[gBox(.075,.075,.075),0xb02a20,0,-.035,.02],[gBox(.077,.02,.077),0xd8d0b8,0,-.035,.02],[gBox(.032,.1,.045),0x202226,0,-.07,.1,-.25],[gBox(.008,.03,.012),0x6a6e74,0,-.02,.05]]);
-GUNS.swingline=bake([[new T.TorusGeometry(.075,.011,8,32).rotateY(Math.PI/2),0x151515,0,-.02,-.06],[new T.TorusGeometry(.069,.011,8,32).rotateY(Math.PI/2).rotateX(.25),0x1c1c1c,.016,-.024,-.058],[new T.TorusGeometry(.072,.011,8,32).rotateY(Math.PI/2).rotateX(-.2),0x111111,-.016,-.018,-.062],[gCyl(.02,.02,.06,12),0x2a2a2a,0,-.02,-.135]]);
+GUNS.swingline=bake([[new T.TorusGeometry(.058,.009,8,32).rotateY(Math.PI/2),0x151515,0,-.02,-.06],[new T.TorusGeometry(.053,.009,8,32).rotateY(Math.PI/2).rotateX(.25),0x1c1c1c,.013,-.024,-.058],[new T.TorusGeometry(.055,.009,8,32).rotateY(Math.PI/2).rotateX(-.2),0x111111,-.013,-.018,-.062],[gCyl(.02,.02,.06,12),0x2a2a2a,0,-.02,-.135]]);
 if(S.bfskin&&S.bfskin!=='stock'&&((S.skins||{}).butterfly||[]).indexOf(S.bfskin)<0)S.bfskin='stock';
 GUNS.butterfly=bfGeo(S.bfskin);
 const ADSY={usps:-.092,glocksw:-.092,mp5sd:-.12,grapple:-.1,swingline:-.1,dual:-.15,uzis:-.15,spas:-.1,pistol:-.092,smg:-.12,shotgun:-.092,rifle:-.135,ak:-.114,sniper:-.142,minigun:-.125,katana:-.105,redrebel:-.105,knife:-.105,butterfly:-.105,karambit:-.105,saber:-.105};
@@ -949,7 +949,7 @@ function setGun(mesh,w){
   if(w==='saber'&&!mesh.blade){mesh.blade=new T.Group();mesh.blade.add(new T.Mesh(BLADE_GEO,BLADE_MAT));mesh.blade.add(new T.Mesh(GLOW_GEO,GLOW_MAT));mesh.add(mesh.blade);}
   if(mesh.blade)mesh.blade.visible=w==='saber';
   if(WPN[w]&&WPN[w].gadget&&!mesh.hk){mesh.hk=new T.Mesh(HK(),GUN_MAT);mesh.hk.scale.setScalar(.62);mesh.add(mesh.hk);
-    mesh.rp=new T.Mesh(new T.CylinderGeometry(.5,.5,1,8).rotateX(Math.PI/2),new T.MeshLambertMaterial({color:0x121212}));mesh.rp.visible=false;mesh.add(mesh.rp);}
+    mesh.rp=new T.Mesh(new T.CylinderGeometry(.5,.5,1,8).rotateX(Math.PI/2),new T.MeshBasicMaterial({color:0x070707}));mesh.rp.visible=false;mesh.add(mesh.rp);}
   if(mesh.hk){mesh.hk.rotation.set(0,0,0);if(WPN[w]&&WPN[w].throwln){mesh.hk.rotation.x=Math.PI/2;mesh.hk.position.set(-.02,-.21,-.06);}else{mesh.hk.rotation.y=Math.PI;mesh.hk.position.set(0,.035,-.3);}}
   if(mesh.hk)mesh.hk.visible=!!(WPN[w]&&WPN[w].gadget);
   if(false&&w==='rifle'&&!mesh.dot){mesh.dot=new T.Group();const d=new T.Mesh(DOT_GEO,DOT_MAT);d.position.set(0,.099,-.09);mesh.dot.add(d);const l=new T.Mesh(LENS_GEO,LENS_MAT);l.position.set(0,.099,-.09);mesh.dot.add(l);mesh.add(mesh.dot);}
@@ -2174,7 +2174,7 @@ const HOOK_MESH=new T.Mesh(HK(),GUN_MAT);HOOK_MESH.scale.setScalar(1.25);
 HOOK_MESH.visible=false;scene.add(HOOK_MESH);
 const ROPE_N=10,ROPE=new T.Line(new T.BufferGeometry(),new T.LineBasicMaterial({color:0xe2dac4}));
 ROPE.geometry.setAttribute('position',new T.Float32BufferAttribute(new Array(ROPE_N*3).fill(0),3));ROPE.frustumCulled=false;ROPE.visible=false;scene.add(ROPE);
-const ROPE_T=new T.Mesh(new T.BufferGeometry(),new T.MeshLambertMaterial({color:0x111111}));ROPE_T.frustumCulled=false;ROPE_T.visible=false;scene.add(ROPE_T);
+const ROPE_T=new T.Mesh(new T.BufferGeometry(),new T.MeshBasicMaterial({color:0x070707}));ROPE_T.frustumCulled=false;ROPE_T.visible=false;scene.add(ROPE_T);
 function hookHand(){
   if(view===1&&!P.car){const v=new T.Vector3(.2,-.18,-.62).applyQuaternion(camera.quaternion);return [camera.position.x+v.x,camera.position.y+v.y,camera.position.z+v.z];}
   const sy=Math.sin(P.yaw),cy=Math.cos(P.yaw);return [P.x-sy*.62+cy*.25,P.base+P.y+1.42,P.z-cy*.62-sy*.25];
