@@ -528,7 +528,7 @@ const CT={
  register:{n:'register',s:[.7,1.1,.6],c:0x2e3a33,t:.8,q:[2,4],tb:[22,40,27,9,2],cash:[300,1600],heat:.15},
  duffel:{n:'duffel bag',s:[.9,.4,.5],c:0x55603b,t:1,q:[2,4],tb:[42,35,19,3.6,.4],soft:1},
  weaponcase:{n:'weapon case',s:[1.4,.5,.6],c:0x2f3f2c,t:1.8,q:[2,3],tb:[20,45,28,6,1],f:i=>i.k==='ammo'||i.k==='val'},
- safe:{n:'safe',s:[1,1.2,1],c:0x30363c,t:3.6,q:[2,3],tb:[0,0,62,30,8],f:i=>i.k==='val'||i.id==='card_r'||i.id==='card_e',heat:.5,em:0x3a2c00},
+ safe:{n:'safe',s:[1,1.2,1],c:0x30363c,t:3.6,q:[2,3],tb:[0,0,62,30,8],f:i=>i.k==='val'||i.id==='card_r',heat:.5,em:0x3a2c00},
  trunk:{n:'trunk',t:1.3,q:[1,2],tb:[55,30,12,2.5,.5]},
  zbody:{n:'infected body',t:.7,q:[0,2],tb:[76,20,3.6,.4,0],cash:[4,48],f:i=>i.k!=='ammo'},
  pile:{n:'dropped pile',s:[.5,.3,.5],c:0x55603b,t:.3,q:[0,0],tb:[1,0,0,0,0],soft:1},
@@ -1467,7 +1467,7 @@ const CRIT=[['Embercub','fire','c'],['Puddlet','water','c'],['Sproutle','grass',
  ['Pyrafox','fire','u'],['Tidalotl','water','u'],['Thornox','grass','u'],['Sparkoon','volt','u'],['Mindmoth','psy','u'],['Wispurr','ghost','u'],['Glacieel','ice','u'],['Cyclowl','wind','u'],['Mirageon','sand','u'],
  ['Cindrake','fire','r'],['Brineback','water','r'],['Boulderon','rock','r'],['Phantoll','ghost','r'],['Tempestag','wind','r'],['Aurumdrake','fire','e']];
 const CRV={c:40,u:120,r:650,e:4200};
-function finishItem(it){if(it.k!=='card'||it.id==='booster')return it;const r=it.id.slice(5),pool=[];CRIT.forEach((c,i)=>{if(c[2]===r)pool.push(i);});const cid=pick(pool),first=Math.random()<.08;
+function finishItem(it){if(it.k!=='card'||it.id==='booster')return it;if(it.id==='card_e'&&Math.random()<.75){it.id='card_r';it.r='r';}/* the secret gold stays scarce */const r=it.id.slice(5),pool=[];CRIT.forEach((c,i)=>{if(c[2]===r)pool.push(i);});const cid=pick(pool),first=Math.random()<.08;
   it.cid=cid;it.first=first;it.val=CRV[r]*(first?3:1);it.name=CRIT[cid][0]+' #'+String(cid+1).padStart(3,'0')+(first?' · 1st edition':'')+(r==='r'?' · holo':r==='e'?' · secret gold':'');return it;}
 function cardItem(cid,first){const r=CRIT[cid][2],it=Object.assign({},IT.find(i=>i.id==='card_'+r));it.cid=cid;it.first=!!first;it.val=CRV[r]*(first?3:1);it.name=CRIT[cid][0]+' #'+String(cid+1).padStart(3,'0')+(first?' · 1st edition':'')+(r==='r'?' · holo':r==='e'?' · secret gold':'');return it;}
 function hsh(n){n=Math.imul(n^61,0x45d9f3b);n^=n>>>15;n=Math.imul(n,0x2c1b3c6d);return (n>>>0)%1000/1000;}
