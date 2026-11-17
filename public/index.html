@@ -276,6 +276,8 @@ h2{font:600 14px var(--display);letter-spacing:.24em;color:var(--dim);margin:0 0
 .btn:disabled{color:var(--dim);border-color:var(--line);cursor:default}
 .btn.plain{color:var(--text);border-color:var(--line)}
 button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+#menu .aitem:focus,#menu .skc:focus{outline:2px solid #fff;outline-offset:2px}
+kbd.pad{border-radius:10px;min-width:1.4em;text-align:center;background:#2a2d30;color:#fff;border-color:#5a6068}kbd.pad.ps{border-radius:50%}
 .keys{font:400 12px/1.7 var(--mono);color:var(--text);margin:6px 0 0;padding:0;list-style:none}
 .keys b{color:var(--cash);font-weight:400}
 #summary .wrap{max-width:520px}
@@ -384,7 +386,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 96, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 97, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -418,6 +420,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
         <ul class="keys">
           <li><b>Phone</b> left thumb moves, right thumb aims. Push the stick all the way to sprint.</li>
           <li><b>WASD</b> move · <b>Mouse</b> aim · <b>Arrows</b> also aim</li>
+          <li><b>Controller</b> (Xbox or PlayStation, plug in or pair, then press any button): left stick move, click <b>L3</b> to sprint · right stick look · <b>RT/R2</b> fire · <b>LT/L2</b> aim · <b>A/✕</b> jump, climb, vault · <b>B/○</b> crouch · <b>R3</b> dive · <b>X/□</b> interact or reload · <b>Y/△</b> swap weapon · <b>LB/L1</b> grapple or Swing Line · <b>RB/R1</b> tap bandage, hold meds · <b>View/Share</b> bag · <b>Menu/Options</b> close menus · d-pad: up ping, down camera, left shoulder, right inspect. In the bag the right stick moves the cursor and <b>A/✕</b> picks up. In the hideout the d-pad moves between buttons, <b>A/✕</b> presses, <b>LB/RB</b> switch tabs and <b>Start</b> jumps to Deploy. Controllers rumble on shots and hits.</li>
           <li><b>Left click</b> fire (hold for auto) · <b>Right click</b> aim down sights on/off · <b>Space</b> jump, or vault through a window you are facing</li>
           <li><b>Hold Space</b> to bunny hop: you re-jump the instant you land and build speed. Strafe with <b>A</b> or <b>D</b> while turning the same way to gain more.</li>
           <li><b>F</b> inspects the weapon in your hands.</li>
@@ -1784,7 +1787,7 @@ function showCombo(){const c=$('combo');c.innerHTML='x'+combo+'<small>'+(COMBO_N
 function makeNoise(x,z,r){for(const e of W.enemies){if(e.dead||e.aggro>0)continue;if(Math.hypot(e.x-x,e.z-z)<r){e.hear={x:x+rand(-3,3),z:z+rand(-3,3)};e.hearT=e.kind==='z'?10:6;}}}
 function addHeat(v){const b=Math.floor(W.heat);W.heat=clamp(W.heat+v,0,5);if(W.heat>P.peakHeat)P.peakHeat=W.heat;const n=Math.floor(W.heat);if(n>b){banner('WANTED '+'★'.repeat(n),n>=2?'Hunters are coming. Haul bonus +'+n*10+'%':'Haul bonus +'+n*10+'%','heat');sfx.heat();}}
 function hurt(d,bite){
-  if(state!=='raid')return;if(P.jug>0)d*=.25;d*=fxMul('dmg');
+  if(state!=='raid')return;if(P.jug>0)d*=.25;d*=fxMul('dmg');if(GP.active)rumble(Math.min(1,.3+d/40),.5,180);
   if(!bite&&P.armor>0){const a=Math.min(P.armor,d*P.armorAb);P.armor-=a;d-=a;}
   P.hp-=d;if((bite&&Math.random()<.22)||(!bite&&Math.random()<.15)){if(!P.bleed){P.bleed=true;card('You are bleeding',0,'c','tap Q to bandage');}}
   hurtFx();sfx.hurt();shake=Math.max(shake,.25);
@@ -1861,6 +1864,7 @@ function shoot(){
   }
   MP.fn=(MP.fn+1)%1000000;MP.sendT=0;
   mflash.position.set(mx,my,mz);mflash.intensity=w.sup?.35:2.2;P.recoil+=w.kick*(1-.35*P.adsT)*fxMul('kick');shake=Math.max(shake,w.pel?.25:.07);
+  if(GP.active)rumble(w.pel?.5:.18,w.pel?.6:.35,w.pel?140:60);
   sfx.shot(mini?'smg':w.sup?'sup':w.pel?'shotgun':P.weapon==='uzis'||P.weapon==='glocksw'?'smg':P.weapon);makeNoise(bx,bz,w.noise);if(W.heat<1.6)addHeat(w.heat);
   if(!mini&&P.mag[P.weapon]<=0&&S.ammo[w.am]>0)reload();
 }
@@ -2277,7 +2281,7 @@ function updPlayer(dt){
   if(kl||ku){P.yaw+=kl*2.4*dt;P.pitch+=ku*1.4*dt;P.lookIdle=0;}
   if(!locked&&mouseIn&&!P.loot&&!bagOpen&&look.id===null&&Math.abs(mnx)>.8){P.yaw-=Math.sign(mnx)*(Math.abs(mnx)-.8)/.2*2.6*dt;P.lookIdle=0;}
   P.pitch=clamp(P.pitch,-1.2,1.1);
-  let ix=(keys.KeyD?1:0)-(keys.KeyA?1:0)+joy.x,iy=(keys.KeyW?1:0)-(keys.KeyS?1:0)+joy.y;if(P.pick){ix=0;iy=0;}
+  let ix=(keys.KeyD?1:0)-(keys.KeyA?1:0)+joy.x+GP.mx,iy=(keys.KeyW?1:0)-(keys.KeyS?1:0)+joy.y+GP.my;{const m=Math.hypot(ix,iy);if(m>1){ix/=m;iy/=m;}}if(P.pick){ix=0;iy=0;}
   const il=Math.hypot(ix,iy);if(il>1){ix/=il;iy/=il;}
   P.moving=il>.15;
   if(P.car){
@@ -2296,7 +2300,7 @@ function updPlayer(dt){
     if(k>=1){P.vault=null;P.y=0;P.vx=P.vz=0;P.land=.12;collide(P,.4);}
   }else{
     const wantAds=ads&&!WPN[P.weapon].melee&&P.reloading<=0;
-    const shift=keys.ShiftLeft||keys.ShiftRight||joy.mag>.92;
+    const shift=keys.ShiftLeft||keys.ShiftRight||joy.mag>.92||GP.spr;
     if(P.crouch&&shift&&iy>.2&&P.stam>1)P.crouch=false;
     if(P.prone&&shift&&iy>.2&&P.stam>1)P.prone=false;
     const crouching=(P.crouch||P.prone)&&P.y<=0;
@@ -2515,7 +2519,7 @@ function updView(){
 let hudKey={};
 const els={};const el=id=>els[id]||(els[id]=$(id));
 function setT(id,v){if(hudKey[id]!==v){hudKey[id]=v;el(id).textContent=v;}}
-function setH(id,v){if(hudKey[id]!==v){hudKey[id]=v;el(id).innerHTML=v;}}
+function setH(id,v){if(id==='prompt')v=padText(v);if(hudKey[id]!==v){hudKey[id]=v;el(id).innerHTML=v;}}
 function setW(id,p){p=Math.round(clamp(p,0,100));if(hudKey[id+'w']!==p){hudKey[id+'w']=p;el(id).style.width=p+'%';}}
 function setHid(id,h){if(hudKey[id+'h']!==h){hudKey[id+'h']=h;el(id).hidden=h;}}
 const mapCtx=$('map').getContext('2d');
@@ -2742,6 +2746,7 @@ let last=0;
 function frame(t){
   requestAnimationFrame(frame);
   const dt=Math.min(.05,Math.max(0,(t-last)/1000)||0);last=t;
+  try{padPoll(dt);}catch(e){}
   resize();
   if(state==='raid')update(dt);
   else{menuA+=dt*.05;camera.position.set(Math.cos(menuA)*70,34,Math.sin(menuA)*70);camera.lookAt(0,0,0);vm.visible=false;updFx(dt);}
@@ -2751,6 +2756,71 @@ function frame(t){
   draw(dt);
   if(DBG)$('carT').textContent='gfx '+GN[GFX.q]+' post '+post.ok+'/'+post.stage+' '+BW+'x'+BH+' dpr '+window.devicePixelRatio+' shadow '+sun.castShadow+' fps '+Math.round(fpsA)+' v'+view;
 }
+
+/* ================= controllers (Xbox and PlayStation, standard Gamepad mapping) ================= */
+const GP={active:false,sony:false,id:'',prev:[],mx:0,my:0,spr:false,lt:false,rt:false,xT:0,yT:0,nav:0,lastUse:0};
+function gpKey(code,down){window.dispatchEvent(new KeyboardEvent(down?'keydown':'keyup',{code:code,key:code,bubbles:true}));}
+function gpTap(code){gpKey(code,true);setTimeout(()=>gpKey(code,false),40);}
+function rumble(strong,weak,ms){try{const g=[...(navigator.getGamepads?navigator.getGamepads():[])].find(x=>x&&x.connected);if(g&&g.vibrationActuator&&S.rumble!==false)g.vibrationActuator.playEffect('dual-rumble',{duration:ms||120,strongMagnitude:strong,weakMagnitude:weak});}catch(e){}}
+window.addEventListener('gamepadconnected',e=>{const id=e.gamepad.id||'';GP.sony=isSony(id);GP.id=id;
+  card((GP.sony?'PlayStation':'Xbox')+' controller connected',0,'u',GP.sony?'✕ jump · R2 fire · L2 aim':'A jump · RT fire · LT aim');rumble(.4,.4,180);});
+window.addEventListener('gamepaddisconnected',()=>{GP.active=false;card('Controller disconnected',0,'c');});
+function isSony(id){return /054c|dualsense|dualshock|playstation/i.test(id)||(/wireless controller/i.test(id)&&!/xbox|xinput|045e/i.test(id));}
+function gpDz(v,d){d=d||.16;const a=Math.abs(v);return a<d?0:Math.sign(v)*((a-d)/(1-d));}
+/* menu navigation: move focus to the nearest control in the stick or d-pad direction */
+function navFocusables(){return [...document.querySelectorAll('#menu button:not([disabled]),#menu .aitem,#menu .skc,#summary:not([hidden]) button')].filter(b=>{const r=b.getBoundingClientRect();return r.width>0&&r.height>0&&b.offsetParent!==null;});}
+function navMove(dx,dy){const L=navFocusables();if(!L.length)return;let cur=document.activeElement;if(!L.includes(cur)){L[0].focus();L[0].scrollIntoView({block:'nearest'});return;}
+  const a=cur.getBoundingClientRect(),ax=a.left+a.width/2,ay=a.top+a.height/2;let best=null,bs=1e9;
+  for(const b of L){if(b===cur)continue;const r=b.getBoundingClientRect(),bx=r.left+r.width/2,by=r.top+r.height/2,ddx=bx-ax,ddy=by-ay;
+    const along=dx?ddx*dx:ddy*dy;if(along<=4)continue;const side=dx?Math.abs(ddy):Math.abs(ddx),sc=along+side*2.2;if(sc<bs){bs=sc;best=b;}}
+  if(best){best.focus();best.scrollIntoView({block:'nearest',inline:'nearest'});sfx.click&&tone(900,.02,'square',.03);}}
+function navPress(){const el=document.activeElement;if(!el||el===document.body)return;if(el.classList.contains('aitem')){const id=el.dataset.item,k=slotOf(id);if(k)loEquip(k,id);return;}el.click();}
+function padBtn(g,i){const b=g.buttons[i];return !!b&&(b.pressed||b.value>.5);}
+function padPoll(dt){
+  if(!navigator.getGamepads)return;const g=[...navigator.getGamepads()].find(x=>x&&x.connected&&x.mapping==='standard')||[...navigator.getGamepads()].find(x=>x&&x.connected);
+  if(!g){GP.mx=GP.my=0;return;}
+  const B=[];for(let i=0;i<17;i++)B[i]=padBtn(g,i);const pr=GP.prev,down=i=>B[i]&&!pr[i],up=i=>!B[i]&&pr[i];
+  const lx=gpDz(g.axes[0]||0),ly=gpDz(g.axes[1]||0),rx=gpDz(g.axes[2]||0,.13),ry=gpDz(g.axes[3]||0,.13);
+  if(B.some(x=>x)||Math.abs(lx)+Math.abs(ly)+Math.abs(rx)+Math.abs(ry)>0){if(!GP.active){GP.active=true;GP.sony=isSony(g.id||'');hudKey.prompt=null;}GP.lastUse=performance.now();}
+  if(state!=='raid'){GP.mx=GP.my=0;
+    /* hideout and other screens: d-pad or left stick moves focus, A/✕ presses, LB/RB switch tabs, Start deploys */
+    GP.nav-=dt;const nx=B[15]?1:B[14]?-1:Math.abs(lx)>.6?Math.sign(lx):0,ny=B[13]?1:B[12]?-1:Math.abs(ly)>.6?Math.sign(ly):0;
+    if((nx||ny)&&GP.nav<=0){navMove(nx,nx?0:ny);GP.nav=GP.nav<-.5?.32:.16;}else if(!nx&&!ny)GP.nav=0;
+    if(Math.abs(ry)>.2){const m=$('menu');if(m)m.scrollTop+=ry*900*dt;}
+    if(down(0))navPress();
+    if(down(4)||down(5)){const tabs=[...document.querySelectorAll('#mTabs [data-act="tab"]')];const i=tabs.findIndex(t=>t.classList.contains('on'));const n=tabs[(i+(down(5)?1:-1)+tabs.length)%tabs.length];if(n){n.click();n.focus();}}
+    if(down(9)){const d=$('deploy');if(d&&d.offsetParent!==null){d.focus();d.scrollIntoView({block:'nearest'});}}
+    GP.prev=B;return;}
+  if(!P){GP.prev=B;return;}
+  const ui=uiOpen();
+  /* lock picking: left stick moves the pick, RT/R2 turns the lock, B/○ stops */
+  if(P.pick){pickMouse(lx*14);keys.KeyD=B[7]||(GP.kd&&keys.KeyD);if(down(1))stopPick();GP.mx=GP.my=0;GP.prev=B;return;}
+  /* meds menu: d-pad or stick picks, A/✕ uses, B/○ closes */
+  if(QT&&QT.open){GP.nav-=dt;const ny=B[13]?1:B[12]?-1:Math.abs(ly)>.6?Math.sign(ly):Math.abs(ry)>.6?Math.sign(ry):0;if(ny&&GP.nav<=0){medPick(ny);GP.nav=.18;}else if(!ny)GP.nav=0;
+    if(down(0))medUse();if(down(1))medClose();if(up(5))gpKey('KeyQ',false);GP.prev=B;return;}
+  /* loot and bag: right stick drives the cursor, A/✕ picks up and drops (hold to drag), X/□ takes all, Y/△ rotates, B/○ closes */
+  if(ui){GP.mx=GP.my=0;cx=clamp(cx+rx*900*dt,0,VW-2);cy=clamp(cy+ry*900*dt,0,VH-2);if(rx||ry){placeCur();invMove(cx,cy);}
+    if(down(0))invDown(cx,cy,false);if(up(0))invUp(cx,cy,false);if(down(2)&&P.loot)takeAll();if(down(3))invRotate();if(down(1)){if(P.loot)closeLoot();else toggleBag();}if(down(8))toggleBag();GP.prev=B;return;}
+  /* movement and look */
+  GP.mx=lx;GP.my=-ly;const mag=Math.hypot(lx,ly);if(down(10))GP.spr=!GP.spr;if(mag<.25)GP.spr=false;
+  if(rx||ry){const a=.0023*(1-(P.weapon==='sniper'&&!(P.mini>0)?.82:.4)*P.adsT),sp=(S.padSens||1)*3.1;
+    const cxv=Math.sign(rx)*rx*rx,cyv=Math.sign(ry)*ry*ry;P.yaw-=cxv*sp*dt*(a/.0023);P.pitch-=cyv*sp*.72*dt*(a/.0023);P.lookIdle=0;P.swx=clamp(P.swx-cxv*.004,-.03,.03);P.swy=clamp(P.swy+cyv*.004,-.03,.03);}
+  /* triggers: RT/R2 fires, LT/L2 aims while held */
+  const rt=B[7],lt=B[6];if(rt!==GP.rt){GP.rt=rt;if(rt){initAudio();firing=true;}else if(!mouseDown&&fireTouch===null)firing=false;}
+  if(lt!==GP.lt){GP.lt=lt;ads=lt;}
+  /* face buttons */
+  if(down(0))gpKey('Space',true);if(up(0))gpKey('Space',false);
+  if(down(1))gpTap('ControlLeft');
+  if(down(2)){GP.xT=0;}if(B[2])GP.xT+=dt;if(up(2)){gpTap(ctx||P.loot?'KeyE':'KeyR');}
+  if(down(3))swapWeapon();
+  if(down(4))gpKey('KeyG',true);if(up(4))gpKey('KeyG',false);
+  if(down(5))gpKey('KeyQ',true);if(up(5))gpKey('KeyQ',false);
+  if(down(8))gpTap('Tab');if(down(9))gpTap('Escape');if(down(11))gpTap('KeyZ');
+  if(down(12))doPing();if(down(13))gpTap('KeyC');if(down(14))gpTap('KeyV');if(down(15))gpTap('KeyF');
+  GP.prev=B;}
+/* button prompts follow the controller when you are using one */
+const GPG={x:{SPACE:'A',E:'X',R:'X',Q:'RB',G:'LB',TAB:'View',F:'D→',V:'D←',C:'D↓',Z:'R3',W:'L↑',S:'L↓',A:'L←',D:'L→',ESC:'Menu'},p:{SPACE:'✕',E:'□',R:'□',Q:'R1',G:'L1',TAB:'Share',F:'D→',V:'D←',C:'D↓',Z:'R3',W:'L↑',S:'L↓',A:'L←',D:'L→',ESC:'Options'}};
+function padText(v){if(!GP.active||typeof v!=='string'||v.indexOf('<kbd>')<0)return v;const m=GP.sony?GPG.p:GPG.x;return v.replace(/<kbd>([^<]+)<\/kbd>/g,(a,k)=>{const g=m[k.trim().toUpperCase()];return g?'<kbd class="pad'+(GP.sony?' ps':'')+'">'+g+'</kbd>':a;});}
 
 /* ================= input ================= */
 window.addEventListener('keydown',e=>{
@@ -3202,9 +3272,9 @@ function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.c
       return v;})():'')+
     '<rect x="119" y="186" width="82" height="8" class="belt"/>'+dl+'</svg>';
   let arm='';
-  if(S.armors.length)arm+='<h4>Armor</h4><div class="agrid">'+S.armors.slice().sort((a,b)=>a-b).map(t=>'<div class="aitem'+(S.armor===t?' eq':'')+'" data-item="armor:'+t+'" title="'+ARMORS[t].n+'"><i class="ai" style="background-image:url('+loIcon('armor:'+t)+')"></i><span>'+ARMORS[t].n+' · '+ARMORS[t].cls+'</span></div>').join('')+'</div>';
+  if(S.armors.length)arm+='<h4>Armor</h4><div class="agrid">'+S.armors.slice().sort((a,b)=>a-b).map(t=>'<div tabindex="0" class="aitem'+(S.armor===t?' eq':'')+'" data-item="armor:'+t+'" title="'+ARMORS[t].n+'"><i class="ai" style="background-image:url('+loIcon('armor:'+t)+')"></i><span>'+ARMORS[t].n+' · '+ARMORS[t].cls+'</span></div>').join('')+'</div>';
   for(const k of ['primary','secondary','melee','gadget','pack']){const opts=SLOT[k].filter(owns);if(!opts.length)continue;
-    arm+='<h4>'+SLOTN[k]+'</h4><div class="agrid">'+opts.map(o=>{const ic=loIcon(o);return '<div class="aitem'+(S.load[k]===o?' eq':'')+'" data-item="'+o+'" title="'+nm(o)+'">'+(ic?'<i class="ai" style="background-image:url('+ic+')"></i>':'')+'<span>'+nm(o)+'</span></div>';}).join('')+'</div>';}
+    arm+='<h4>'+SLOTN[k]+'</h4><div class="agrid">'+opts.map(o=>{const ic=loIcon(o);return '<div tabindex="0" class="aitem'+(S.load[k]===o?' eq':'')+'" data-item="'+o+'" title="'+nm(o)+'">'+(ic?'<i class="ai" style="background-image:url('+ic+')"></i>':'')+'<span>'+nm(o)+'</span></div>';}).join('')+'</div>';}
   h+='<div class="lo"><div class="doll">'+fig+ds+'</div><div class="arm"><p class="lohint">Drag gear onto a slot on the body, or tap it to equip. Drag a slot off the body to empty it.</p>'+arm+'</div></div>';
   if(loadOpen==='armor'&&S.armor){const A=ARMORS[S.armor];h+='<div class="row"><span class="nm">Armor: '+A.n+' · class '+A.cls+'<small>'+A.hp+' armor · stops '+Math.round(A.ab*100)+'% of each hit'+(A.slow?' · '+Math.round(A.slow*100)+'% slower':'')+' · lost if you die in it or it breaks</small></span></div>';}
   else if(loadOpen&&SLOT[loadOpen]){const k=loadOpen,id=S.load[k],w=id?(WPN[id]||PACKS[id]):null;
