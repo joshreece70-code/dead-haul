@@ -197,6 +197,18 @@ h1 span{color:var(--cash)}
 .slot .sk{font:600 11px var(--display);letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
 .slot small{font:400 12px var(--mono);color:var(--dim)}
 .opts{display:flex;flex-wrap:wrap;gap:6px;padding:8px 0 4px;align-items:center}
+.bnd{margin-top:14px;border:1px solid var(--line);background:linear-gradient(180deg,#1a1d22,#121417);padding:10px 12px 12px}
+.bnd.off{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.bnd.off b{font:600 14px var(--display);color:var(--text)}.bnd.off span{font:400 12px var(--mono);color:var(--dim);flex:1}
+.bh{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:8px}.bh b{font:600 16px var(--display);letter-spacing:.12em;text-transform:uppercase;color:var(--text)}.bh span{font:400 12px var(--mono);color:var(--cash)}.bh .bb{margin-left:auto;display:flex;gap:6px}
+.bpages{display:flex;align-items:center;gap:8px}.bpages>.btn{align-self:stretch;min-width:30px;padding:0 6px}
+.bpage{flex:1;display:grid;grid-template-columns:repeat(9,1fr);gap:6px;padding:10px;background:#0c0e10;border:1px solid #2a2f36;box-shadow:inset 0 0 0 3px #1c2026}
+@media(max-width:700px){.bpage{grid-template-columns:repeat(3,1fr)}}
+.bp{aspect-ratio:63/88;border:1px dashed #3a4048;border-radius:3px;background:rgba(255,255,255,.03);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0;color:#5a6270}
+.bp i{font:600 11px var(--mono);font-style:normal}.bp small{font-size:10px}.bp.blank{border:none;background:none}
+.bp.has{border:1px solid #4a5260;background:#0c0e10;cursor:pointer;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.5)}.bp.has img{width:100%;height:100%;display:block}.bp.has:hover{border-color:var(--cash);transform:translateY(-2px)}
+.bp.r-r{box-shadow:0 0 8px rgba(160,120,255,.45)}.bp.r-e{box-shadow:0 0 10px rgba(255,210,90,.6)}
+.bdots{display:flex;gap:5px;justify-content:center;margin-top:6px}.bdots i{width:6px;height:6px;border-radius:50%;background:#3a4048}.bdots i.on{background:var(--cash)}
+.bnote{margin:6px 0 0;font:400 11px var(--mono);color:var(--dim)}
 .skw{margin-top:18px}.skw h3{margin:0 0 6px;font:600 15px var(--display);letter-spacing:.14em;text-transform:uppercase;color:var(--text)}.skw h3 small{font:400 11px var(--mono);letter-spacing:0;text-transform:none;color:var(--dim);margin-left:6px}
 .skrow{border-top:1px solid var(--line);padding:8px 0 10px}
 .skh{display:flex;align-items:baseline;gap:10px;margin-bottom:6px}.skh b{font:600 14px var(--display);color:var(--text)}.skh small{font:400 11px var(--mono);color:var(--cash)}
@@ -372,13 +384,14 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 95, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 96, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
       <div class="stW"><div class="stash" id="stG"></div></div>
       <div class="stBar"><span id="stMsg">Drag items to arrange them, R turns the one you are holding. Click to select, Shift-click sells one straight away.</span>
         <span class="stBtns"><button class="btn plain" type="button" data-act="stjunk">Select cheap</button><button class="btn plain" type="button" data-act="stall">Select all</button><button class="btn plain" type="button" data-act="stclear">Clear</button><button class="btn" type="button" data-act="stkeep" id="stKeep" hidden>Add to loadout</button><button class="btn plain" type="button" data-act="up" data-id="stash" id="stUp">Expand</button><button class="btn" type="button" data-act="stsell" id="stSell">Sell</button></span></div>
+      <div id="binder"></div>
     </section>
       <section class="tab" data-tab="slots"><h2>Slot machine</h2>
         <div class="reels"><div class="reel" id="r0">7</div><div class="reel" id="r1">7</div><div class="reel" id="r2">7</div></div>
@@ -411,6 +424,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
           <li>The <b>Red Rebel</b> ice axe only turns up in airdrops. Carry it and press <b>Space</b> facing the outside wall of a tall building to climb: <b>W</b>/<b>S</b> up and down, <b>A</b>/<b>D</b> along the wall, <b>Space</b> to let go. Climbing up costs stamina. Falling or jumping next to one of those walls, press <b>Space</b> to dig the axe in and catch yourself.</li>
           <li>Tall buildings have a <b>ledge</b> running round the outside at every floor. Stand on it to sneak round to a window, or face the wall and press <b>Space</b> to haul yourself up to the next ledge, and over the roof edge from the top one.</li>
           <li>Loot now includes street drugs (joints, weed, a pressed brick, shrooms, Adderall, Xanax, codeine syrup and LSD) and more valuables like Rolexes, crypto wallets, game consoles, night vision and stolen paintings. Hold <b>Q</b> in a raid to take the ones you are carrying: each lasts a while with an upside and a cost (Adderall makes you faster then crashes you, Xanax stops you flinching, LSD shows every enemy nearby but shakes your aim). The rest are for selling.</li>
+          <li><b>Critter cards</b> are collectibles: 30 cards from common (●) to holo (★) and a secret gold (✦), sometimes as a 1st edition worth triple. Sealed booster packs hold five. Buy a <b>card binder</b> at the trader and file them from the Stash tab; finish the set for a $100,000 bonus.</li>
           <li>Safes and cash registers are locked. With a <b>lock pick</b>, press <b>E</b>, then move the pick with the <b>mouse</b> (or hold <b>A</b> to sweep it) and hold <b>D</b> to turn the lock. The closer the pick is to the sweet spot the further the lock turns; turn it all the way to open it. If the lock stops and shakes, the pick is straining: let go of D and move the pick, or it snaps. Safes have a smaller sweet spot.</li>
           <li><b>Z</b> or <b>mouse button 5</b> dolphin dive in the direction you are moving. Time slows while you are in the air, but you aim and shoot at nearly full speed. A dive carries you through open windows. You land prone: crawl, press <b>Ctrl</b> to crouch, or <b>Space</b> to stand.</li>
           <li><b>G</b> fires the grapple gun if it is in your loadout. The hook flies out on a rope, catches walls, roof edges or the ground, and the reel hauls you in. It lets go on its own once you are reeled all the way in (popping you over a roof edge), or click again to let go early and keep your swing. The <b>Swing Line</b> from the trader is a rope with a hook you throw by hand: hold the click (or <b>G</b>) to swing it round, the longer you wind up the further it flies (8 to 40 m), and let go to throw. It never reels in: the line locks at the length it landed at and you swing on it. Hold <b>W</b> to climb the rope hand over hand (walking up any wall you are against, and over the top when you reach the hook) or <b>S</b> to let line out and rappel down. Climbing costs stamina. Click again to drop the line. Hook over a roof edge to climb onto the roof, where infected cannot reach you.</li>
@@ -479,6 +493,7 @@ const IT=[
  ['lsd','LSD blotter sheet','r',900,.01,'drug'],['brick','Pressed weed brick','r',1600,1,'drug'],['console','Game console','r',1300,2,'val'],['tablet','Tablet','r',950,.6,'val'],['camera','Vintage camera','r',1100,1,'val'],
  ['rolex','Rolex','e',5200,.2,'val'],['cold','Crypto hardware wallet','e',6200,.05,'val'],['ring','Diamond ring','e',4800,.05,'val'],['nvg','Night vision goggles','e',4200,1.2,'val'],
  ['painting','Stolen painting','l',18000,3,'val'],
+ ['card_c','Critter card','c',40,.01,'card'],['card_u','Critter card','u',120,.01,'card'],['card_r','Critter card','r',650,.01,'card'],['card_e','Critter card','e',4200,.01,'card'],['booster','Critter booster pack','u',260,.05,'card'],
  ['goldbar','Gold bar','l',12000,4,'val'],['chip','Prototype chip','l',15000,.1,'val'],['lion','Golden lion statue','l',20000,6,'val'],['bonds','Bearer bonds','l',17500,.2,'val']
 ].map(a=>({id:a[0],name:a[1],r:a[2],val:a[3],w:a[4],k:a[5]}));
 const AMMO={a9:['9mm',15],a12:['12ga',8],a556:['5.56',20],a762:['7.62',10]};
@@ -513,7 +528,7 @@ const CT={
  register:{n:'register',s:[.7,1.1,.6],c:0x2e3a33,t:.8,q:[2,4],tb:[22,40,27,9,2],cash:[300,1600],heat:.15},
  duffel:{n:'duffel bag',s:[.9,.4,.5],c:0x55603b,t:1,q:[2,4],tb:[42,35,19,3.6,.4],soft:1},
  weaponcase:{n:'weapon case',s:[1.4,.5,.6],c:0x2f3f2c,t:1.8,q:[2,3],tb:[20,45,28,6,1],f:i=>i.k==='ammo'||i.k==='val'},
- safe:{n:'safe',s:[1,1.2,1],c:0x30363c,t:3.6,q:[2,3],tb:[0,0,62,30,8],f:i=>i.k==='val',heat:.5,em:0x3a2c00},
+ safe:{n:'safe',s:[1,1.2,1],c:0x30363c,t:3.6,q:[2,3],tb:[0,0,62,30,8],f:i=>i.k==='val'||i.id==='card_r'||i.id==='card_e',heat:.5,em:0x3a2c00},
  trunk:{n:'trunk',t:1.3,q:[1,2],tb:[55,30,12,2.5,.5]},
  zbody:{n:'infected body',t:.7,q:[0,2],tb:[76,20,3.6,.4,0],cash:[4,48],f:i=>i.k!=='ammo'},
  pile:{n:'dropped pile',s:[.5,.3,.5],c:0x55603b,t:.3,q:[0,0],tb:[1,0,0,0,0],soft:1},
@@ -539,13 +554,13 @@ const SHOP=[
  {k:'w',id:'usps'},{k:'w',id:'dual'},{k:'w',id:'glocksw'},{k:'w',id:'smg'},{k:'w',id:'mp5sd'},{k:'w',id:'uzis'},{k:'w',id:'shotgun'},{k:'w',id:'spas'},{k:'w',id:'ak'},{k:'w',id:'rifle'},{k:'w',id:'sniper'},{k:'w',id:'butterfly'},{k:'w',id:'karambit'},{k:'w',id:'katana'},{k:'w',id:'saber'},{k:'w',id:'redrebel'},{k:'w',id:'swingline'},{k:'p',id:'assault'},{k:'p',id:'raid'},{k:'p',id:'hauler'},{k:'g',id:'grapple',n:'Grapple gun',price:12000},
  {k:'a',id:'9mm',n:30,price:150},{k:'a',id:'12ga',n:12,price:180},{k:'a',id:'5.56',n:30,price:320},{k:'a',id:'7.62',n:20,price:480},
  {k:'m',id:'bandage',n:'Bandage',price:80},{k:'m',id:'medkit',n:'First aid kit',price:450},{k:'m',id:'morphine',n:'Morphine injector',price:900},
- {k:'v',id:1,price:900},{k:'v',id:2,price:2400},{k:'v',id:3,price:7500},{k:'v',id:4,price:18000},{k:'v',id:5,price:45000},{k:'lp',price:600},{k:'sc',price:50000}
+ {k:'bd',price:1500},{k:'v',id:1,price:900},{k:'v',id:2,price:2400},{k:'v',id:3,price:7500},{k:'v',id:4,price:18000},{k:'v',id:5,price:45000},{k:'lp',price:600},{k:'sc',price:50000}
 ];
 const EXF=[['North Gate',0,-HALF],['South Gate',0,HALF],['East Checkpoint',HALF,0],['West Underpass',-HALF,0]];
 
 /* ================= save ================= */
 const SAVE_KEY='deadhaul.v1';
-function defSave(){return {shoulder:1,picks:2,kmig:0,skins:{},skinOn:{},bfskin:'stock',cash:500,xp:0,level:1,streak:0,weapons:['pistol'],ammo:{'9mm':36,'12ga':0,'5.56':0,'7.62':0},meds:{bandage:2,painkillers:0,medkit:0,morphine:0},armor:0,armors:[],amig:0,keepGear:false,load:{},stash:[],packs:[],grapple:false,coins:1,bob:true,bhop:true,full:true,gfx:'high',gfxLock:false,pvp:true,nick:'',lobby:'',adsToggle:false,up:{pack:0,vit:0,lungs:0,hands:0,luck:0,stash:0},stats:{raids:0,extracts:0,best:0,kills:0},view:0,muted:false};}
+function defSave(){return {binder:{},binderOwned:0,binderDone:0,bpage:0,shoulder:1,picks:2,kmig:0,skins:{},skinOn:{},bfskin:'stock',cash:500,xp:0,level:1,streak:0,weapons:['pistol'],ammo:{'9mm':36,'12ga':0,'5.56':0,'7.62':0},meds:{bandage:2,painkillers:0,medkit:0,morphine:0},armor:0,armors:[],amig:0,keepGear:false,load:{},stash:[],packs:[],grapple:false,coins:1,bob:true,bhop:true,full:true,gfx:'high',gfxLock:false,pvp:true,nick:'',lobby:'',adsToggle:false,up:{pack:0,vit:0,lungs:0,hands:0,luck:0,stash:0},stats:{raids:0,extracts:0,best:0,kills:0},view:0,muted:false};}
 let S=defSave();
 try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s&&Array.isArray(s.weapons)){const d=defSave();for(const k in d){if(s[k]==null)continue;if(typeof d[k]==='object'&&!Array.isArray(d[k]))Object.assign(d[k],s[k]);else d[k]=s[k];}S=d;}}catch(e){}
 {const i=(S.stash||[]).findIndex(it=>it&&it.gid==='redrebel');if(i>=0&&S.weapons.indexOf('redrebel')<0){S.stash.splice(i,1);S.weapons.push('redrebel');}}
@@ -1446,6 +1461,46 @@ function genWorldRaw(){
 
 /* ================= loot ================= */
 function rollRarity(tb){const lk=1+.18*S.up.luck,w=[tb[0],tb[1],tb[2]*lk,tb[3]*lk,tb[4]*lk];let x=Math.random()*(w[0]+w[1]+w[2]+w[3]+w[4]);for(let i=0;i<5;i++){x-=w[i];if(x<=0)return RAR[i];}return 'c';}
+/* ---------- collectibles: Critter cards, an original 30-card set ---------- */
+const CEL={fire:['#e8642a','#ffb46a'],water:['#2f7fd0','#9fd0ff'],grass:['#4fa83a','#b8e88a'],volt:['#e8b81a','#fff08a'],psy:['#b04ad0','#f0b0ff'],rock:['#9a7a52','#e0c89a'],ghost:['#5a4a8a','#b8a8f0'],ice:['#5ab8d8','#e0f8ff'],wind:['#5aa88a','#d0f0e0'],sand:['#c8983a','#f8e0a0']};
+const CRIT=[['Embercub','fire','c'],['Puddlet','water','c'],['Sproutle','grass','c'],['Zappik','volt','c'],['Pebbit','rock','c'],['Frostkit','ice','c'],['Gustling','wind','c'],['Dunemite','sand','c'],['Gloomit','ghost','c'],['Psyrin','psy','c'],['Cindrill','fire','c'],['Brinnow','water','c'],['Mossmaw','grass','c'],['Voltmole','volt','c'],['Cragling','rock','c'],
+ ['Pyrafox','fire','u'],['Tidalotl','water','u'],['Thornox','grass','u'],['Sparkoon','volt','u'],['Mindmoth','psy','u'],['Wispurr','ghost','u'],['Glacieel','ice','u'],['Cyclowl','wind','u'],['Mirageon','sand','u'],
+ ['Cindrake','fire','r'],['Brineback','water','r'],['Boulderon','rock','r'],['Phantoll','ghost','r'],['Tempestag','wind','r'],['Aurumdrake','fire','e']];
+const CRV={c:40,u:120,r:650,e:4200};
+function finishItem(it){if(it.k!=='card'||it.id==='booster')return it;const r=it.id.slice(5),pool=[];CRIT.forEach((c,i)=>{if(c[2]===r)pool.push(i);});const cid=pick(pool),first=Math.random()<.08;
+  it.cid=cid;it.first=first;it.val=CRV[r]*(first?3:1);it.name=CRIT[cid][0]+' #'+String(cid+1).padStart(3,'0')+(first?' · 1st edition':'')+(r==='r'?' · holo':r==='e'?' · secret gold':'');return it;}
+function cardItem(cid,first){const r=CRIT[cid][2],it=Object.assign({},IT.find(i=>i.id==='card_'+r));it.cid=cid;it.first=!!first;it.val=CRV[r]*(first?3:1);it.name=CRIT[cid][0]+' #'+String(cid+1).padStart(3,'0')+(first?' · 1st edition':'')+(r==='r'?' · holo':r==='e'?' · secret gold':'');return it;}
+function hsh(n){n=Math.imul(n^61,0x45d9f3b);n^=n>>>15;n=Math.imul(n,0x2c1b3c6d);return (n>>>0)%1000/1000;}
+function critterSvg(cid,cx,cy,sc){const c=CRIT[cid],el=CEL[c[1]],h=k=>hsh(cid*31+k),bw=12+h(1)*7,bh=10+h(2)*7,ear=Math.floor(h(3)*4),tail=Math.floor(h(4)*3);
+  let g='<g transform="translate('+cx+' '+cy+') scale('+sc+')">';
+  if(tail===0)g+='<path d="M'+(bw-2)+' 4 Q'+(bw+12)+' -2 '+(bw+8)+' -14 Q'+(bw+4)+' -4 '+(bw-4)+' -2Z" fill="'+el[0]+'"/>';
+  else if(tail===1)g+='<path d="M'+(bw-3)+' 6 q10 4 12 -6 q2 -6 -3 -8" fill="none" stroke="'+el[0]+'" stroke-width="3" stroke-linecap="round"/>';
+  else g+='<circle cx="'+(bw+3)+'" cy="2" r="4" fill="'+el[1]+'"/>';
+  if(ear===0)g+='<path d="M'+(-bw*.6)+' '+(-bh*.6)+' L'+(-bw*.8)+' '+(-bh-9)+' L'+(-bw*.1)+' '+(-bh*.8)+'Z M'+(bw*.6)+' '+(-bh*.6)+' L'+(bw*.8)+' '+(-bh-9)+' L'+(bw*.1)+' '+(-bh*.8)+'Z" fill="'+el[0]+'"/>';
+  else if(ear===1)g+='<circle cx="'+(-bw*.6)+'" cy="'+(-bh*.8)+'" r="5" fill="'+el[0]+'"/><circle cx="'+(bw*.6)+'" cy="'+(-bh*.8)+'" r="5" fill="'+el[0]+'"/>';
+  else if(ear===2)g+='<path d="M'+(-bw*.35)+' '+(-bh*.85)+' l-3 -9 l6 3Z M'+(bw*.35)+' '+(-bh*.85)+' l3 -9 l-6 3Z" fill="'+el[1]+'" stroke="'+el[0]+'"/>';
+  else g+='<path d="M-3 '+(-bh)+' q-4 -8 -8 -10 M3 '+(-bh)+' q4 -8 8 -10" stroke="'+el[0]+'" stroke-width="1.5" fill="none"/><circle cx="-11" cy="'+(-bh-10)+'" r="2" fill="'+el[1]+'"/><circle cx="11" cy="'+(-bh-10)+'" r="2" fill="'+el[1]+'"/>';
+  g+='<ellipse cx="'+(-bw*.5)+'" cy="'+(bh-1)+'" rx="4" ry="2.5" fill="'+el[0]+'"/><ellipse cx="'+(bw*.5)+'" cy="'+(bh-1)+'" rx="4" ry="2.5" fill="'+el[0]+'"/>';
+  g+='<ellipse cx="0" cy="0" rx="'+bw+'" ry="'+bh+'" fill="'+el[0]+'" stroke="#1a1410" stroke-opacity=".35"/><ellipse cx="0" cy="'+(bh*.3)+'" rx="'+(bw*.55)+'" ry="'+(bh*.5)+'" fill="'+el[1]+'"/>';
+  const ey=-bh*.25,ex=bw*.36;g+='<circle cx="'+(-ex)+'" cy="'+ey+'" r="3.4" fill="#fff"/><circle cx="'+ex+'" cy="'+ey+'" r="3.4" fill="#fff"/><circle cx="'+(-ex+.8)+'" cy="'+(ey+.5)+'" r="1.8" fill="#14100c"/><circle cx="'+(ex+.8)+'" cy="'+(ey+.5)+'" r="1.8" fill="#14100c"/>';
+  g+='<path d="M-3 '+(ey+5)+' q3 3 6 0" stroke="#14100c" stroke-width="1.2" fill="none"/>'+(h(5)<.5?'<ellipse cx="'+(-bw*.62)+'" cy="'+(ey+4)+'" rx="2.4" ry="1.4" fill="#ff8a8a" opacity=".7"/><ellipse cx="'+(bw*.62)+'" cy="'+(ey+4)+'" rx="2.4" ry="1.4" fill="#ff8a8a" opacity=".7"/>':'');
+  return g+'</g>';}
+const CARDI={};
+function cardIco(cid,first){const k=cid+':'+(first?1:0);if(CARDI[k])return CARDI[k];const c=CRIT[cid],el=CEL[c[1]],r=c[2],gold=r==='e',holo=r==='r'||gold;
+  const fr=gold?'url(#gd)':'#d8d8d0',sym={c:'●',u:'◆',r:'★',e:'✦'}[r];
+  let v='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 63 88"><defs><linearGradient id="gd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff2a8"/><stop offset=".5" stop-color="#c8962a"/><stop offset="1" stop-color="#ffe27a"/></linearGradient>'+
+    '<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+el[1]+'"/><stop offset="1" stop-color="'+el[0]+'"/></linearGradient>'+
+    '<linearGradient id="hl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff7ad8"/><stop offset=".25" stop-color="#7ad8ff"/><stop offset=".5" stop-color="#9aff7a"/><stop offset=".75" stop-color="#ffe07a"/><stop offset="1" stop-color="#ff7a7a"/></linearGradient></defs>'+
+    '<rect x=".5" y=".5" width="62" height="87" rx="4" fill="'+fr+'" stroke="#2a2620"/><rect x="3.5" y="3.5" width="56" height="81" rx="2.5" fill="'+el[1]+'"/>'+
+    '<text x="6" y="11" font-family="Arial,sans-serif" font-weight="700" font-size="6.2" fill="#1a1410">'+c[0]+'</text><text x="57" y="11" text-anchor="end" font-family="Arial,sans-serif" font-weight="700" font-size="5" fill="#a0201a">'+(40+Math.round(hsh(cid*7)*12)*10)+' HP</text>'+
+    '<rect x="6" y="14" width="51" height="34" fill="url(#bg)" stroke="#6a5a3a" stroke-width=".8"/>'+critterSvg(cid,31.5,33,.95)+
+    (holo?'<rect x="6" y="14" width="51" height="34" fill="url(#hl)" opacity="'+(gold?.25:.38)+'"/>':'')+
+    '<rect x="6" y="51" width="51" height="22" fill="#f4f0e2" opacity=".85"/><text x="8" y="57.5" font-family="Arial,sans-serif" font-size="4" font-weight="700" fill="#1a1410">'+['Tackle','Ember Snap','Bubble Jab','Vine Whip','Static Nip','Rock Toss','Frost Bite','Gust','Shade Claw','Mind Poke'][cid%10]+'</text><text x="55" y="57.5" text-anchor="end" font-family="Arial,sans-serif" font-size="4" font-weight="700">'+(10+(cid%6)*10)+'</text>'+
+    '<rect x="8" y="61" width="47" height=".6" fill="#b8b0a0"/><text x="8" y="67" font-family="Arial,sans-serif" font-size="3.4" fill="#4a4030">'+c[1].toUpperCase()+' type · '+['tiny','spry','loyal','sly','grumpy','brave'][cid%6]+'</text>'+
+    '<text x="6" y="81" font-family="Arial,sans-serif" font-size="3.6" fill="#1a1410">'+String(cid+1).padStart(3,'0')+'/030 '+sym+'</text>'+(first?'<circle cx="51" cy="79" r="4.2" fill="#1a1410"/><text x="51" y="80.6" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="3.6" fill="#fff">1st</text>':'')+'</svg>';
+  return CARDI[k]='data:image/svg+xml,'+encodeURIComponent(v).replace(/\(/g,'%28').replace(/\)/g,'%29');}
+const BOOSTER_ICO='data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 63 88"><defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a6fd0"/><stop offset=".5" stop-color="#7a3ad0"/><stop offset="1" stop-color="#e8642a"/></linearGradient></defs><path d="M4 2 L59 2 L60 8 L59 80 L60 86 L3 86 L4 80 L3 8Z" fill="url(#b)" stroke="#14100c"/><path d="M4 7 h55 M4 81 h55" stroke="#c8c8c8" stroke-dasharray="2 1.5"/><text x="31.5" y="26" text-anchor="middle" font-family="Arial,sans-serif" font-weight="900" font-size="9" fill="#fff2a8" stroke="#14100c" stroke-width=".6">CRITTER</text><text x="31.5" y="35" text-anchor="middle" font-family="Arial,sans-serif" font-weight="700" font-size="6" fill="#fff">BOOSTER</text>'+'<circle cx="31.5" cy="55" r="15" fill="#fff" opacity=".2"/><text x="31.5" y="76" text-anchor="middle" font-family="Arial,sans-serif" font-size="4.5" fill="#fff">5 CARDS</text></svg>').replace(/\(/g,'%28').replace(/\)/g,'%29');
+const BINDER_PRICE=1500;
 function rollItem(tb,f){for(let a=0;a<14;a++){const r=rollRarity(tb),pool=IT.filter(i=>i.r===r&&(!f||f(i)));if(pool.length)return pick(pool);}return IT[0];}
 function haul(){let v=P.loose;for(const i of P.bag)v+=i.val;return v;}
 function revealFx(it){
@@ -1509,7 +1564,7 @@ function take(it){
   stow(it);return true;
 }
 function fillLoot(c){
-  const d=CT[c.type];c.items=[];const n=randi(d.q[0],d.q[1]);for(let i=0;i<n;i++)c.items.push(Object.assign({},rollItem(d.tb,d.f)));
+  const d=CT[c.type];c.items=[];const n=randi(d.q[0],d.q[1]);for(let i=0;i<n;i++)c.items.push(finishItem(Object.assign({},rollItem(d.tb,d.f))));
   if(d.cash){const v=randi(d.cash[0],d.cash[1]);c.items.push({cash:v,name:'Loose cash',val:v,w:0,r:v>300?'u':'c',k:'cash'});}
   if(d.ammo){const id=pick(['a9','a9','a9','a12','a556','a762']);c.items.push(Object.assign({},IT.find(i=>i.id===id)));}
   {const pool={airdrop:[.7,['ak','rifle','sniper','spas','sniper','uzis','glocksw','mp5sd']],weaponcase:[.55,['shotgun','smg','ak','ak','rifle','spas','sniper','mp5sd']],locker:[.12,['pistol','smg','shotgun','usps']],safe:[.1,['pistol','usps','sniper','glocksw']],duffel:[.07,['pistol','smg','shotgun']],crate:[.04,['pistol','shotgun','smg']],trunk:[.08,['pistol','shotgun']]}[c.type];
@@ -2894,7 +2949,7 @@ for(let k=0;k<3;k++)slotShow(k,4,false);
 /* item icons: every item gets a small low-poly model, rendered once at start-up and used as its picture in the grids */
 const ICON={};
 function iconKey(it){return it.coin?'coin':it.cash?'cash':it.id;}
-function iconStyle(it){const u=ICON[iconKey(it)];return u?'background-image:url('+u+')':'';}
+function iconStyle(it){if(it.k==='card')return 'background-image:url('+(it.id==='booster'?BOOSTER_ICO:cardIco(it.cid||0,it.first))+');background-size:contain';const u=ICON[iconKey(it)];return u?'background-image:url('+u+')':'';}
 const IM=(function(){
   const b=gBox,c=gCyl,o=gIco,P2=Math.PI/2,GOLD=0xd6a93a,BRASS=0xb08a3a,DK=0x1d1f22,ST=0x8b9096;
   const ammoBox=(col,round)=>[[b(.22,.12,.14),col,0,0,0],[b(.23,.03,.15),0x2a2c2e,0,.075,0]].concat([-.07,-.025,.02,.065].map(x=>[c(.012,.012,.07,8),round,x,.12,.02]));
@@ -3029,7 +3084,7 @@ function stRotate(){if(!SD||!SD.moved)return;const s0=ISZ[SD.it.id];if(!s0||s0[0
   g.addEventListener('touchend',e=>{for(const p of e.changedTouches)if(p.identifier===tid){tid=null;stUp(p.clientX,p.clientY);}});
   window.addEventListener('keydown',e=>{if(SD&&e.code==='KeyR'){e.preventDefault();stRotate();}if(SD&&e.code==='Escape'){SD.it.rot=SD.rot0;SD=null;$('ghost').hidden=true;renderStash();}});
 })();
-function stashCopy(it){const o={};for(const k of ['id','gid','k','name','r','val','w','mag','rot'])if(it[k]!=null)o[k]=it[k];return o;}
+function stashCopy(it){const o={};for(const k of ['id','gid','k','name','r','val','w','mag','rot','cid','first'])if(it[k]!=null)o[k]=it[k];return o;}
 function renderStash(){
   const st=S.stash||(S.stash=[]);for(const it of [...stSel])if(st.indexOf(it)<0)stSel.delete(it);
   let cells=0,val=0;for(const it of st){const s=ISZ[it.id]||[1,1];cells+=s[0]*s[1];val+=it.val;}
@@ -3040,7 +3095,31 @@ function renderStash(){
   let sv=0;for(const it of stSel)sv+=it.val;
   $('stSell').disabled=!stSel.size;$('stSell').textContent=stSel.size?'Sell '+stSel.size+' for '+fmt(sv):'Sell';
   const one=stSel.size===1?[...stSel][0]:null;$('stKeep').hidden=!(one&&one.k==='gun'&&S.weapons.indexOf(one.gid)<0);
+  renderBinder(one);
 }
+function binderVal(){let v=0;for(const k in S.binder)v+=CRV[CRIT[k][2]]*(S.binder[k].first?3:1);return v;}
+function renderBinder(one){const el=$('binder');if(!el)return;const cards=S.stash.filter(i=>i.k==='card'&&i.id!=='booster'),packs=S.stash.filter(i=>i.id==='booster');
+  if(!S.binderOwned){el.innerHTML='<div class="bnd off"><b>Card binder</b><span>'+(cards.length?'You have '+cards.length+' Critter card'+(cards.length===1?'':'s')+' in your stash. ':'')+'Buy a card binder at the trader ('+fmt(BINDER_PRICE)+') to file your collection.</span>'+(packs.length?'<button class="btn" type="button" data-act="bopen">Open a booster pack ('+packs.length+')</button>':'')+'</div>';return;}
+  const have=Object.keys(S.binder).length,pg=Math.max(0,Math.min(3,S.bpage||0)),tot=CRIT.length;
+  let h='<div class="bnd"><div class="bh"><b>Critter binder</b><span>'+have+' / '+tot+' collected · worth '+fmt(binderVal())+(S.binderDone?' · set complete':'')+'</span><span class="bb">'+
+    (cards.length?'<button class="btn" type="button" data-act="bfile">File '+(one&&one.k==='card'&&one.id!=='booster'?'selected card':'cards ('+cards.length+')')+'</button>':'')+
+    (packs.length?'<button class="btn plain" type="button" data-act="bopen">Open booster ('+packs.length+')</button>':'')+'</span></div>';
+  h+='<div class="bpages"><button class="btn plain" type="button" data-act="bpg" data-id="-1"'+(pg<=0?' disabled':'')+'>‹</button><div class="bpage">';
+  for(let i=pg*9;i<pg*9+9;i++){if(i>=tot){h+='<div class="bp blank"></div>';continue;}const e=S.binder[i];
+    h+=e?'<button type="button" class="bp has r-'+CRIT[i][2]+'" data-act="bout" data-id="'+i+'" title="'+CRIT[i][0]+(e.first?' · 1st edition':'')+' · click to take it out"><img alt="" src="'+cardIco(i,e.first)+'"></button>':'<div class="bp"><i>'+String(i+1).padStart(3,'0')+'</i><small>'+(i<15?'●':i<24?'◆':i<29?'★':'✦')+'</small></div>';}
+  h+='</div><button class="btn plain" type="button" data-act="bpg" data-id="1"'+(pg>=3?' disabled':'')+'>›</button></div><div class="bdots">'+[0,1,2,3].map(p=>'<i class="'+(p===pg?'on':'')+'"></i>').join('')+'</div>';
+  h+='<p class="bnote">Filing keeps one of each card (a 1st edition replaces a plain copy); duplicates stay in the stash to sell. Complete all 30 for a $100,000 collector bonus.</p></div>';el.innerHTML=h;}
+function binderFile(list){let n=0,dup=0;for(const it of list){if(it.k!=='card'||it.id==='booster')continue;const e=S.binder[it.cid];
+    if(!e){S.binder[it.cid]={first:!!it.first};S.stash.splice(S.stash.indexOf(it),1);stSel.delete(it);n++;}
+    else if(it.first&&!e.first){const old=cardItem(it.cid,false);S.binder[it.cid]={first:true};const i=S.stash.indexOf(it);S.stash.splice(i,1);stSel.delete(it);if(stPlace(old,stashRows()))S.stash.push(old);n++;}else dup++;}
+  let msg=n?'Filed '+n+' card'+(n===1?'':'s')+' in the binder.':'Nothing new to file.';if(dup)msg+=' '+dup+' duplicate'+(dup===1?'':'s')+' left in the stash.';
+  if(!S.binderDone&&Object.keys(S.binder).length>=CRIT.length){S.binderDone=1;S.cash+=100000;msg+=' Set complete! +$100,000 collector bonus.';banner('SET COMPLETE','All 30 Critter cards · +$100,000','gold');sfx.win();}else if(n)sfx.loot(2);
+  $('stMsg').textContent=msg;save();}
+function boosterOpen(){const i=S.stash.findIndex(x=>x.id==='booster');if(i<0)return;const b=S.stash.splice(i,1)[0];stSel.delete(b);const got=[];
+  const roll=r=>{const pool=[];CRIT.forEach((c,j)=>{if(c[2]===r)pool.push(j);});return pick(pool);};
+  for(const r of ['c','c','c','u',Math.random()<.12?'e':'r'])got.push(cardItem(roll(r),Math.random()<.08));
+  let lost=0;for(const c of got){if(stPlace(c,stashRows()))S.stash.push(c);else{lost++;S.cash+=c.val;}}
+  $('stMsg').textContent='Pack opened: '+got.map(c=>c.name).join(', ')+'.'+(lost?' No room for '+lost+', sold them.':'');sfx.loot(got.some(c=>CRIT[c.cid][2]==='e')?4:3);save();}
 function stashSell(list){
   let v=0;for(const it of list){const i=S.stash.indexOf(it);if(i<0)continue;S.stash.splice(i,1);v+=it.val;stSel.delete(it);}
   if(!v)return;S.cash+=v;save();sfx.cash();$('stMsg').textContent='Sold for '+fmt(v)+'.';
@@ -3154,6 +3233,7 @@ function renderMenu(){{const tc=$('tabCoins');if(tc)tc.textContent=S.coins>0?S.c
     else if(s.k==='p'){const q=PACKS[s.id];name=q.n;sub=q.c+' x '+q.r+' grid · +'+q.kg+' kg · '+q.d;price=q.price;own=owns(s.id);}
     else if(s.k==='g'){name=s.n;sub='Fires a hook on a rope and reels you in. Reaches rooftops.';own=!!S.grapple;}
     else if(s.k==='sc'){name='Slot coin';sub='One spin on the slot machine. You have '+(S.coins||0);}
+    else if(s.k==='bd'){name='Card binder';sub='Files your Critter cards in the stash, 9 pockets a page, so they take no stash space';own=!!S.binderOwned;}
     else if(s.k==='lp'){name='Lock picks x 2';sub='Opens locked safes and registers. You have '+(S.picks||0);}
     else{const A=ARMORS[s.id];name=A.n+' · class '+A.cls;sub=A.hp+' armor · stops '+Math.round(A.ab*100)+'% of each hit'+(A.slow?' · '+Math.round(A.slow*100)+'% slower':'')+' · lost if you die in it';own=S.armors.indexOf(s.id)>=0;}
     h+='<div class="row"><span class="nm">'+name+'<small>'+sub+'</small></span><button class="btn" type="button" data-act="buy" data-id="'+i+'"'+(own||S.cash<price?' disabled':'')+'>'+(own?'Owned':fmt(price))+'</button></div>';});
@@ -3184,6 +3264,10 @@ $('menu').addEventListener('click',e=>{
   if(a==='stjunk'){stSel.clear();for(const it of S.stash)if(it.val<500&&it.k!=='gun')stSel.add(it);$('stMsg').textContent=stSel.size?'Selected everything worth under $500.':'Nothing cheap to sell.';renderStash();return;}
   if(a==='stclear'){stSel.clear();renderStash();return;}
   if(a==='stsell'){stashSell([...stSel]);renderMenu();return;}
+  if(a==='bfile'){const one=stSel.size===1?[...stSel][0]:null;binderFile(one&&one.k==='card'?[one]:S.stash.filter(i=>i.k==='card'));renderMenu();return;}
+  if(a==='bopen'){boosterOpen();renderMenu();return;}
+  if(a==='bpg'){S.bpage=Math.max(0,Math.min(3,(S.bpage||0)+(+id)));save();sfx.click();renderMenu();return;}
+  if(a==='bout'){const c=+id;if(!S.binder[c])return;const it=cardItem(c,S.binder[c].first);if(!stPlace(it,stashRows())){$('stMsg').textContent='No room in the stash.';return;}S.stash.push(it);delete S.binder[c];save();sfx.click();$('stMsg').textContent=it.name+' taken out of the binder.';renderMenu();return;}
   if(a==='stkeep'){const it=[...stSel][0];if(!it||it.k!=='gun'||S.weapons.indexOf(it.gid)>=0)return;S.weapons.push(it.gid);autoEquip(it.gid);S.stash.splice(S.stash.indexOf(it),1);stSel.clear();save();sfx.loot(3);$('stMsg').textContent=it.name+' added to your loadout.';renderMenu();return;}
   if(a==='bhop'){S.bhop=S.bhop===false;save();renderMenu();return;}
   if(a==='bob'){S.bob=S.bob===false;save();renderMenu();return;}
@@ -3196,7 +3280,7 @@ $('menu').addEventListener('click',e=>{
   if(a==='wipe'){if(wipeArmed){S=defSave();view=0;wipeArmed=false;save();}else wipeArmed=true;renderMenu();return;}
   if(a==='buy'){const s=SHOP[+id],price=s.k==='w'?WPN[s.id].price:s.k==='p'?PACKS[s.id].price:s.price;if(S.cash<price)return;
     if(s.k==='w'){if(S.weapons.indexOf(s.id)>=0)return;S.weapons.push(s.id);if(!WPN[s.id].melee&&WPN[s.id].am)S.ammo[WPN[s.id].am]+=WPN[s.id].mag*2;autoEquip(s.id);}
-    else if(s.k==='a')S.ammo[s.id]+=s.n;else if(s.k==='m')S.meds[s.id]++;else if(s.k==='p'){if(owns(s.id))return;(S.packs||(S.packs=[])).push(s.id);fixLoad();S.load.pack=s.id;}else if(s.k==='g'){if(S.grapple)return;S.grapple=true;autoEquip('grapple');}else if(s.k==='lp'){S.picks=(S.picks||0)+2;}else if(s.k==='sc'){S.coins=(S.coins||0)+1;}else{if(S.armors.indexOf(s.id)>=0)return;S.armors.push(s.id);if((S.armor||0)<s.id)S.armor=s.id;}
+    else if(s.k==='a')S.ammo[s.id]+=s.n;else if(s.k==='m')S.meds[s.id]++;else if(s.k==='p'){if(owns(s.id))return;(S.packs||(S.packs=[])).push(s.id);fixLoad();S.load.pack=s.id;}else if(s.k==='g'){if(S.grapple)return;S.grapple=true;autoEquip('grapple');}else if(s.k==='lp'){S.picks=(S.picks||0)+2;}else if(s.k==='bd'){if(S.binderOwned)return;S.binderOwned=1;}else if(s.k==='sc'){S.coins=(S.coins||0)+1;}else{if(S.armors.indexOf(s.id)>=0)return;S.armors.push(s.id);if((S.armor||0)<s.id)S.armor=s.id;}
     S.cash-=price;sfx.cash();}
   if(a==='up'){const c=upCost(id);if(S.up[id]>=UPMAX||S.cash<c)return;S.cash-=c;S.up[id]++;sfx.loot(2);}
   save();renderMenu();
