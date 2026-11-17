@@ -386,7 +386,7 @@ kbd.pad{border-radius:10px;min-width:1.4em;text-align:center;background:#2a2d30;
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 97, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 98, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -1371,7 +1371,7 @@ function billboard(B,x,z){const H=9,S=[],ad=pick([0xc8402a,0x2a6fd0,0xe0b02a,0x3
   addStruct(x-4.6,x+4.6,z-1.3,z+.9,H+4.5,S);}
 /* tower cranes: a lattice mast, a cab, a long jib you can walk out along, a counter-jib, and a hook block hanging on its cable with a load of steel beams */
 function lineBox(B,ax,ay,az,bx,by,bz,t,c){const dx=bx-ax,dy=by-ay,dz=bz-az,l=Math.hypot(dx,dy,dz);const g=new T.BoxGeometry(t,t,l);
-  const q=new T.Quaternion().setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(dx/l,dy/l,dz/l));g.applyQuaternion(q);B.geo(g,(ax+bx)/2,(ay+by)/2,(az+bz)/2,1,1,1,c,0);}
+  const q=new T.Quaternion().setFromUnitVectors(new T.Vector3(0,0,1),new T.Vector3(dx/l,dy/l,dz/l));g.applyMatrix4(new T.Matrix4().makeRotationFromQuaternion(q));B.geo(g,(ax+bx)/2,(ay+by)/2,(az+bz)/2,1,1,1,c,0);}
 function towerCrane(B,x,z){const H=pick([40,44,48]),r=1.1,Y=0xe0b020,K=0x2a2c2a,dir=randi(0,3),ux=[1,0,-1,0][dir],uz=[0,1,0,-1][dir],vx=-uz,vz=ux,JL=30,CL=10,JY=H+2.6;
   /* base and mast */
   addStatic(B,x,.5,z,5,1,5,0x8a8a84,true,.05);for(const a of [-1.6,1.6])for(const c of [-1.6,1.6])addStatic(B,x+a,1.4,z+c,1.2,.8,1.2,0x6a6a64,true,.05);
@@ -1428,7 +1428,7 @@ function updSmoke(dt){
     const sc=p.s0+a*7.5;p.s.scale.set(sc,sc,1);p.s.material.opacity=Math.min(1,a*6)*(1-a)*.85;}
 }
 function genWorldRaw(){
-  if(W){scene.remove(W.g);W.stat.geometry.dispose();if(W.lamp)W.lamp.geometry.dispose();for(const b of W.buildings)if(b.lv)for(const m of b.lv)m.geometry.dispose();}
+  if(W){scene.remove(W.g);if(W.stat)W.stat.geometry.dispose();if(W.lamp)W.lamp.geometry.dispose();for(const b of W.buildings)if(b.lv)for(const m of b.lv)if(m&&m.geometry)m.geometry.dispose();}
   decals.forEach(m=>{m.visible=false;});PUFFS.forEach(p=>{if(p){p.s.visible=false;p.life=0;}});parts.forEach(p=>{p.m.visible=false;p.life=0;});
   const g=new T.Group();scene.add(g);
   W={g:g,col:[],solid:[],buildings:[],containers:[],cars:[],enemies:[],exfils:[],time:RAID_TIME,heat:0,hunterT:30,zT:6,contract:null,warn:false,stat:null,spawn:null,bodies:[],windows:[],pickups:[]};
