@@ -386,7 +386,7 @@ kbd.pad{border-radius:10px;min-width:1.4em;text-align:center;background:#2a2d30;
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 102, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 103, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -402,7 +402,7 @@ kbd.pad{border-radius:10px;min-width:1.4em;text-align:center;background:#2a2d30;
       </section>
       <section class="tab" data-tab="drip"><h2>Drip Drop <small style="font:400 12px var(--mono);letter-spacing:0;text-transform:none;color:var(--dim)">weapon skins</small></h2>
         <div class="dripWin"><div class="dripStrip" id="dStrip"></div><i class="dripMark"></i></div>
-        <div class="row"><span class="nm"><span id="dCoins">0</span> coins<small id="dMsg">Five slot coins a roll. Always a skin for a weapon you own. Doubles pay cash.</small></span><button class="btn" type="button" data-act="drip" id="dRoll">Roll · 5 coins</button></div>
+        <div class="row"><span class="nm"><span id="dCoins">0</span> coins<small id="dMsg">One slot coin a roll. Always a skin for a weapon you own. Doubles pay cash.</small></span><button class="btn" type="button" data-act="drip" id="dRoll">Roll · 1 coin</button></div>
         <ul class="pay"><li><b>Common · 70%</b> Arctic Camo, Tiger Tooth, Crimson Web, Urban Pixel, Hazard Stripe, Rust Bucket</li><li><b>Rare · 25%</b> Fade, Doppler, Gold, Neon Rider, Toxic Spill, Carbon Fiber</li><li><b>Legendary · 5%</b> Dragon Scale, Galaxy, Molten Core</li><li><b>Double</b> common $20,000 · rare $60,000 · legendary $150,000</li></ul>
       </section>
       <section class="tab" data-tab="loadout"><h2>Loadout</h2><div id="mLoad"></div></section>
@@ -3017,7 +3017,7 @@ const SKIN_CSS={arctic:'linear-gradient(135deg,#e8eef2 0 32%,#9aa4ac 32% 62%,#4a
  urban:'conic-gradient(#2a2d30 25%,#9aa0a6 0 50%,#5a5f66 0 75%,#d0d4d8 0) 0 0/14px 14px',hazard:'repeating-linear-gradient(45deg,#f2c40a 0 10px,#141414 10px 20px)',rust:'radial-gradient(circle at 30% 40%,#c0601a,#8a3a12 40%,#3a1a0a)',
  neon:'repeating-linear-gradient(100deg,#0c0c12 0 14px,#ff2ad4 14px 17px,#0c0c12 17px 22px,#2ad4ff 22px 25px)',toxic:'linear-gradient(180deg,#7aff3a 0 30%,#1a2410 70%)',carbon:'repeating-conic-gradient(#1a1b1e 0 25%,#34363c 0 50%) 0 0/8px 8px',
  dragon:'radial-gradient(circle at 50% 100%,#e0a030 0 5px,#b01818 6px 9px,#3a0808 10px) 0 0/12px 10px',galaxy:'radial-gradient(circle at 20% 30%,#fff 0 1px,transparent 2px) 0 0/17px 13px,linear-gradient(120deg,#0a0620,#2a1060,#1a3a90,#5a2aa0)',molten:'radial-gradient(circle at 40% 60%,#ffd04a,#ff6a10 20%,#141012 55%)'};
-const DRIP_COST=5,DRIP_TIER=['Common','Rare','Legendary'],DRIP_DUP=[20000,60000,150000];
+const DRIP_COST=1,DRIP_TIER=['Common','Rare','Legendary'],DRIP_DUP=[20000,60000,150000];
 let dripBusy=false;
 function dripPool(){const o=[];for(const w of SKINNABLE)if(owns(w))for(const k in SKINS)o.push({w:w,k:k,rare:SKINS[k].rare,n:SKINS[k].n});
   if(owns('butterfly'))for(const k of ['crimson','fade','doppler','gold','neon','toxic','galaxy','molten'])o.push({w:'butterfly',k:k,rare:k==='crimson'?0:k==='galaxy'||k==='molten'?2:1,n:BF_SKINS[k].n});return o;}
