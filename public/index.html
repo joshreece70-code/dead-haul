@@ -386,7 +386,7 @@ kbd.pad{border-radius:10px;min-width:1.4em;text-align:center;background:#2a2d30;
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 100, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 101, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -1417,16 +1417,18 @@ function addDrop(b){
 }
 const SMOKE_TEX=canvasTex(64,(x,s)=>{const g=x.createRadialGradient(s/2,s/2,0,s/2,s/2,s/2);g.addColorStop(0,'rgba(255,255,255,.95)');g.addColorStop(.45,'rgba(255,255,255,.5)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.fillRect(0,0,s,s);});
 const PUFFS=[];let puI=0;
-function puff(x,y,z){let p=PUFFS[puI%160];
+function puff(x,y,z,o){let p=PUFFS[puI%160];
   if(!p){const sp=new T.Sprite(new T.SpriteMaterial({map:SMOKE_TEX,color:0xe0331c,transparent:true,depthWrite:false,fog:false,opacity:0}));sp.visible=false;scene.add(sp);p=PUFFS[puI%160]={s:sp,life:0,max:1};}
-  puI++;p.max=p.life=rand(5,7.5);p.vx=rand(-.35,.35)+.5;p.vy=rand(1.6,2.4);p.vz=rand(-.35,.35)+.2;p.s0=rand(.8,1.3);p.s.position.set(x+rand(-.2,.2),y,z+rand(-.2,.2));p.s.visible=true;p.s.material.rotation=rand(0,6.28);}
+  puI++;p.max=p.life=rand(5,7.5);p.vx=rand(-.35,.35)+.5;p.vy=rand(1.6,2.4);p.vz=rand(-.35,.35)+.2;p.s0=rand(.8,1.3);p.gr=7.5;p.op=.85;p.s.material.color.setHex(0xe0331c);
+  if(o){p.max=p.life=o.life||rand(1.6,2.6);p.vx=o.vx+rand(-.15,.15);p.vy=o.vy+rand(-.05,.15);p.vz=o.vz+rand(-.15,.15);p.s0=o.s0||rand(.12,.22);p.gr=o.gr||1.3;p.op=o.op||.55;p.s.material.color.setHex(o.col||0xd8d8d4);}
+  p.s.position.set(x+rand(-.2,.2)*(o?.25:1),y,z+rand(-.2,.2)*(o?.25:1));p.s.visible=true;p.s.material.rotation=rand(0,6.28);}
 function updSmoke(dt){
   if(W.blinks){W.bt=(W.bt||0)+dt;const on=(W.bt%1.6)<.25;for(const m of W.blinks)m.visible=on;}
   if(W.smokes)for(const k of W.smokes){if(k.c.done){if(k.c.beacon)k.c.beacon.visible=false;continue;}k.t-=dt;if(k.t<=0){k.t=.1;puff(k.x,k.y,k.z);}
     if(k.c.beacon){k.bt=(k.bt||0)+dt;k.c.beacon.visible=(k.bt%1)<.5;}}
   for(const p of PUFFS){if(!p||!p.s.visible)continue;p.life-=dt;if(p.life<=0){p.s.visible=false;continue;}
     const a=1-p.life/p.max;p.s.position.x+=p.vx*dt;p.s.position.y+=p.vy*dt*(1-a*.5);p.s.position.z+=p.vz*dt;
-    const sc=p.s0+a*7.5;p.s.scale.set(sc,sc,1);p.s.material.opacity=Math.min(1,a*6)*(1-a)*.85;}
+    const sc=p.s0+a*(p.gr||7.5);p.s.scale.set(sc,sc,1);p.s.material.opacity=Math.min(1,a*6)*(1-a)*(p.op||.85);}
 }
 function genWorldRaw(){
   if(W){scene.remove(W.g);if(W.stat)W.stat.geometry.dispose();if(W.lamp)W.lamp.geometry.dispose();for(const b of W.buildings)if(b.lv)for(const m of b.lv)if(m&&m.geometry)m.geometry.dispose();}
@@ -1717,7 +1719,7 @@ function startRaid(){
   if(W.drops)card((W.drops>1?W.drops+' airdrops':'Airdrop')+' on the rooftops',0,'l','follow the red smoke');
   S.stats.raids++;save();
 }
-function endRaid(res){clearFx();if(P)P.climb=null;$('pickUI').hidden=true;if(P)P.pick=null;QT=null;$('medUI').hidden=true;for(const p of PINGS){scene.remove(p.g);p.el.remove();}PINGS.length=0;MP.pg=null;
+function endRaid(res){clearFx();if(P)P.useA=null;vmUse.visible=false;if(P)P.climb=null;$('pickUI').hidden=true;if(P)P.pick=null;QT=null;$('medUI').hidden=true;for(const p of PINGS){scene.remove(p.g);p.el.remove();}PINGS.length=0;MP.pg=null;
   if(state!=='raid')return;
   if(P.car){P.car=null;}engineOff();closeLoot();bagOpen=false;bagAuto=false;$('inv').hidden=true;$('bt').style.opacity=0;$('scope').hidden=true;ROPE.visible=HOOK_MESH.visible=false;$('app').classList.remove('nocur');$('cur').hidden=true;ads=false;camera.fov=baseFov;camera.updateProjectionMatrix();
   mpDeath(res);
@@ -1828,7 +1830,7 @@ function swapWeapon(to){if(P)P.insp=0;
   if(id===P.weapon)return;P.weapon=id;P.reloading=0;P.fireCd=.25;sfx.click();
 }
 function shoot(){
-  const mini=P.mini>0,w=mini?MINI:WPN[P.weapon];if(P.climb||(QT&&QT.open)||P.pick||(P.reloading>0&&!mini)||P.fireCd>0)return;P.insp=0;
+  const mini=P.mini>0,w=mini?MINI:WPN[P.weapon];if(P.useA||P.climb||(QT&&QT.open)||P.pick||(P.reloading>0&&!mini)||P.fireCd>0)return;P.insp=0;
   if(w.gadget){fireHook();return;}
   const sy=Math.sin(P.yaw),cy=Math.cos(P.yaw),bx=P.car?P.car.x:P.x,bz=P.car?P.car.z:P.z;
   if(w.melee){
@@ -1889,7 +1891,7 @@ function grabPower(type){
 }
 function updPowers(dt){
   if(P.mini>0){P.mini-=dt;if(P.mini<=0){P.mini=0;card('Minigun spent',0,'c');}}
-  updDrugs(dt);if(P.adren>0)P.adren=Math.max(0,P.adren-dt);if(P.jug>0)P.jug=Math.max(0,P.jug-dt);
+  updDrugs(dt);updUse(dt);if(P.adren>0)P.adren=Math.max(0,P.adren-dt);if(P.jug>0)P.jug=Math.max(0,P.jug-dt);
   for(let i=W.pickups.length-1;i>=0;i--){
     const p=W.pickups[i];p.t-=dt;p.mesh.rotation.y+=dt*2.4;p.mesh.position.y=1+Math.sin(p.t*3)*.15;
     const got=Math.hypot(p.x-P.x,p.z-P.z)<(P.car?2.6:1.5);
@@ -1914,9 +1916,58 @@ const DRUGS={
 function fxMul(k){let v=1;if(P&&P.fx)for(const id in P.fx){const e=P.fx[id];const m=e.crash?(DRUGS[id].crash||{}).m:DRUGS[id].m;if(m&&m[k]!=null)v*=m[k];}return v;}
 function fxHas(k){if(!P||!P.fx)return false;for(const id in P.fx){const e=P.fx[id],m=e.crash?(DRUGS[id].crash||{}).m:DRUGS[id].m;if(m&&m[k])return true;}return false;}
 function drugList(){const o=[];for(const id in DRUGS){const n=P.bag.filter(i=>i.id===id).length;if(n)o.push([id,n]);}return o;}
-function takeDrug(id){const D=DRUGS[id];if(!D||state!=='raid')return;const i=P.bag.findIndex(x=>x.id===id);if(i<0){card('No '+D.n.toLowerCase()+' in your bag',0,'c');return;}
-  unstow(i);P.fx=P.fx||{};if(D.t)P.fx[id]={t:D.t,crash:false,hl:D.heal||0};if(D.stam)P.stam=Math.min(100,P.stam+D.stam);
+function takeDrug(id){const D=DRUGS[id];if(!D||state!=='raid')return;if(P.useA){card('Busy',0,'c');return;}const i=P.bag.findIndex(x=>x.id===id);if(i<0){card('No '+D.n.toLowerCase()+' in your bag',0,'c');return;}
+  unstow(i);if(typeof renderBag==='function'&&bagOpen)try{renderBag();}catch(e){}startUse(id);}
+function applyDrug(id){const D=DRUGS[id];P.fx=P.fx||{};if(D.t)P.fx[id]={t:D.t,crash:false,hl:D.heal||0};if(D.stam)P.stam=Math.min(100,P.stam+D.stam);
   hiss(.15,.2,700);tone(id==='lsd'||id==='shrooms'?520:300,.12,'triangle',.06);card('Took '+D.n.toLowerCase(),0,'u',D.d);if(typeof renderBag==='function'&&bagOpen)try{renderBag();}catch(e){}}
+/* ---------- use animations: the gun drops out of view, a hand brings the item to your mouth ---------- */
+const USE={joint:{k:'smoke',d:3.4,prop:'joint'},weed:{k:'smoke',d:3.8,prop:'joint'},vape:{k:'vape',d:2.4,prop:'vape'},adderall:{k:'pill',d:1.8,prop:'adderall'},xanax:{k:'bar',d:1.5,prop:'xanax'},
+  shrooms:{k:'eat',d:2.1,prop:'shrooms'},syrup:{k:'drink',d:2.3,prop:'syrup'},energy:{k:'drink',d:2.2,prop:'energy'},lsd:{k:'tab',d:1.4,prop:'lsd'}};
+const PROPS={};
+function propGeo(id){if(PROPS[id])return PROPS[id];let parts;
+  if(id==='joint')parts=[[gCyl(.006,.009,.11,8),0xf2efe6,0,0,0],[gCyl(.0092,.0092,.012,8),0xc8b88a,0,-.058,0],[gCyl(.0062,.0062,.006,8),0x3a3a3a,0,.057,0]];
+  else if(id==='lsd')parts=[[gBox(.018,.002,.018),0xf2e070,0,0,0],[gBox(.006,.0025,.006),0x9a3aa8,0,0,0]];
+  else if(id==='xanax')parts=[[gBox(.05,.012,.012),0xe8e8e2,0,0,0],[gBox(.002,.013,.013),0xb8b8b0,-.012,0,0],[gBox(.002,.013,.013),0xb8b8b0,.012,0,0]];
+  else if(id==='shrooms')parts=[[gCyl(.009,.012,.04,8),0xe8e0c8,0,-.01,0],[gCyl(.032,.018,.022,10),0xa8784a,0,.018,0]];
+  else parts=IM[id].map(q=>q.slice());
+  return PROPS[id]=bake(parts);}
+const vmUse=new T.Group();camera.add(vmUse);vmUse.visible=false;
+const vmUseHand=new T.Mesh(vmHand.geometry,CHAR_MAT);vmUse.add(vmUseHand);
+const vmProp=new T.Mesh(new T.BufferGeometry(),GUN_MAT);vmUse.add(vmProp);
+const vmGlow=new T.Mesh(new T.SphereGeometry(.007,8,6),new T.MeshBasicMaterial({color:0xff7a1a}));vmUse.add(vmGlow);vmGlow.visible=false;
+const vmFlame=new T.Mesh(new T.SphereGeometry(.01,8,6),new T.MeshBasicMaterial({color:0xffc04a,transparent:true,opacity:.9}));vmFlame.scale.set(1,1.8,1);vmUse.add(vmFlame);vmFlame.visible=false;
+function startUse(id){const U2=USE[id];if(!U2){applyDrug(id);return;}P.useA={id:id,k:U2.k,t:0,d:U2.d,ev:{}};vmProp.geometry=propGeo(U2.prop);P.insp=0;P.reloading=0;ads=false;}
+const ease=x=>x<0?0:x>1?1:x*x*(3-2*x);
+/* where the hand is: [x,y,z, rx,ry,rz] in front of the camera. 0 = down at your side, 1 = at your mouth */
+function usePose(u){const t=u.t/u.d,k=u.k;let up=t<.22?ease(t/.22):t<.78?1:1-ease((t-.78)/.22);
+  const rest=[.2,-.38,-.42,0,0,0],mouth=k==='drink'?[.02,-.07,-.2,-1.5,0,0]:k==='pill'?[.02,-.07,-.21,-1.3,0,0]:[.025,-.085,-.19,-.2,.0,.6],
+    p=rest.map((v,i)=>v+(mouth[i]-v)*up);
+  if(k==='smoke'||k==='vape'){const inh=t>.3&&t<.7;if(inh)p[2]+=Math.sin((t-.3)/.4*Math.PI)*.012;}
+  if(k==='eat'&&t>.3&&t<.75)p[1]+=Math.abs(Math.sin(t*40))*.008;
+  if(k==='drink'&&t>.3&&t<.75)p[3]-=.25*Math.sin((t-.3)/.45*Math.PI);
+  return p;}
+function updUse(dt){const u=P.useA;if(!u)return;u.t+=dt;const t=u.t/u.d,e=u.ev,fx=-Math.sin(P.yaw),fz=-Math.cos(P.yaw),hx=P.x+fx*.35,hy=P.base+P.y+(P.crouch?1.05:1.55),hz=P.z+fz*.35;
+  const once=(n,at,f)=>{if(!e[n]&&t>=at){e[n]=1;f();}};
+  if(u.k==='smoke'){once('flick',.12,()=>{tone(2600,.02,'square',.04);hiss(.05,.12,3000);});once('light',.2,()=>hiss(.3,.08,600));
+    if(t>.3&&t<.7&&Math.random()<dt*4)hiss(.12,.04,500);
+    once('ex',.8,()=>{for(let i=0;i<9;i++)setTimeout(()=>{if(state==='raid')puff(hx,hy,hz,{vx:fx*.9,vy:.25,vz:fz*.9,col:0xcfcfca,s0:.12,gr:1.4,op:.5,life:rand(1.8,2.8)});},i*70);hiss(.6,.06,400);});}
+  else if(u.k==='vape'){once('in',.3,()=>hiss(.5,.06,900));once('ex',.75,()=>{for(let i=0;i<14;i++)setTimeout(()=>{if(state==='raid')puff(hx,hy,hz,{vx:fx*1.1,vy:.18,vz:fz*1.1,col:0xf2f2f2,s0:.16,gr:2.2,op:.6,life:rand(2,3.2)});},i*45);hiss(.7,.07,500);});}
+  else if(u.k==='drink'){if(u.id==='energy')once('open',.08,()=>{hiss(.25,.2,4000);tone(1800,.02,'square',.04);});for(const g of [.38,.5,.62])once('g'+g,g,()=>{tone(140,.08,'sine',.08);tone(90,.06,'sine',.06,0,.04);});}
+  else if(u.k==='pill'){once('rattle',.1,()=>{for(let i=0;i<4;i++)tone(2200+Math.random()*600,.015,'square',.03,0,i*.04);});once('gulp',.55,()=>{tone(140,.08,'sine',.08);});}
+  else if(u.k==='bar'||u.k==='tab'){once('pop',.45,()=>tone(900,.03,'triangle',.05));once('gulp',.62,()=>tone(140,.08,'sine',.07));}
+  else if(u.k==='eat'){for(const g of [.35,.45,.55,.65])once('c'+g,g,()=>{hiss(.05,.1,1200);tone(220,.03,'square',.03);});}
+  if(t>=1){P.useA=null;applyDrug(u.id);}}
+function drawUse(scoped){const u=P&&P.useA;vmUse.visible=!!u&&view===1&&!scoped;if(!vmUse.visible)return;const p=usePose(u),t=u.t/u.d;
+  vmUse.position.set(p[0],p[1],p[2]);vmUse.rotation.set(p[3],p[4],p[5]);vmUseHand.position.set(0,0,.02);vmUseHand.rotation.set(0,0,0);
+  const k=u.k;vmProp.scale.setScalar(k==='drink'||k==='pill'?1.15:1.35);
+  if(k==='smoke'||k==='vape'){vmProp.position.set(-.035,-.03,-.03);vmProp.rotation.set(Math.PI/2,0,.5);}
+  else if(k==='drink'){vmProp.position.set(-.01,.04,-.03);vmProp.rotation.set(0,0,0);}
+  else if(k==='pill'){vmProp.position.set(-.01,.03,-.03);vmProp.rotation.set(0,0,0);}
+  else{vmProp.position.set(-.03,-.015,-.04);vmProp.rotation.set(.3,0,0);}
+  /* the joint's tip glows while you draw on it; a lighter flame at the start */
+  const tip=new T.Vector3(0,.057*1.35,0).applyEuler(vmProp.rotation).add(vmProp.position);
+  vmGlow.visible=k==='smoke'&&t>.18;vmGlow.position.copy(tip);vmGlow.scale.setScalar(t>.3&&t<.7?1.3+.5*Math.sin(u.t*14):.8);
+  vmFlame.visible=k==='smoke'&&t>.13&&t<.3;vmFlame.position.set(tip.x+.004,tip.y-.02,tip.z);vmFlame.scale.set(1,1.6+Math.sin(u.t*40)*.4,1);}
 let TRIP=0,SENSE=0;
 function updDrugs(dt){if(!P||!P.fx)return;let filt=[],trip=0;
   for(const id in P.fx){const e=P.fx[id],D=DRUGS[id];e.t-=dt;
@@ -2335,7 +2386,7 @@ function updPlayer(dt){
       if(P.dive){P.dive=false;P.diveSlide=true;P.hops=0;P.land=.2;P.diveCd=1;const s0=Math.hypot(P.vx,P.vz)||1;P.slide=.5;P.sdx=P.vx/s0;P.sdz=P.vz/s0;hiss(.4,.2,700);}
       else if(S.bhop!==false&&(keys.Space||jumpHeld)&&P.stam>=2&&!P.over&&!P.loot&&!bagOpen){P.hops++;P.stam-=2;P.vy=5.8;P.y=.01;P.land=.03;const s0=Math.hypot(P.vx,P.vz);if(s0>3&&s0<12){const k=Math.min(1.07,12/s0);P.vx*=k;P.vz*=k;}}
       else{P.hops=0;P.land=Math.min(.24,.06+fall*.022);}}}
-    const spd=4.3*(P.sprint?1.6:1)*(P.over?.6:1)*(1-(curPack().slow||0))*(1-(P.armorSlow||0))*fxMul('spd')*(1-.45*P.adsT)*(P.adren>0?1.4:1)*(1-.5*P.crT)*(P.prone?.5:1);
+    const spd=4.3*(P.sprint?1.6:1)*(P.over?.6:1)*(1-(curPack().slow||0))*(1-(P.armorSlow||0))*fxMul('spd')*(P.useA?.6:1)*(1-.45*P.adsT)*(P.adren>0?1.4:1)*(1-.5*P.crT)*(P.prone?.5:1);
     const sy=Math.sin(P.yaw),cy=Math.cos(P.yaw);
     let wx=(-sy*iy+cy*ix)*spd,wz=(-cy*iy-sy*ix)*spd;
     if(P.slide>0){P.slide-=dt;const k=Math.max(0,P.slide/.7);wx=P.sdx*(3.5+7.5*k);wz=P.sdz*(3.5+7.5*k);if(P.slide<=0){if(P.diveSlide){P.prone=true;P.crouch=false;}else P.crouch=true;P.diveSlide=false;}}
@@ -2499,12 +2550,13 @@ function updView(){
     m.armL.rotation.x=melee?(sf>0?.3+sf*1.7:.72+P.pitch*.3):dual?1.45+P.pitch*.8:1.1+P.pitch*.6;
     m.armL.rotation.z=melee?.5:dual?.1:.42;m.armR.rotation.z=melee?(sf>0?-.55+sf*.8:-.28):-.1;
     if(P.ropeClimb>0)P.ropeClimb-=1/60;if(P.ledgeT>0){P.ledgeT-=1/60;P.ropeClimb=Math.max(P.ropeClimb,.02);}
+    if(P.useA){const t=P.useA.t/P.useA.d,up=t<.22?t/.22:t<.78?1:1-(t-.78)/.22;m.armR.rotation.x=2.4*up;m.armR.rotation.z=-.5*up;}
     if(P.climb||P.ropeClimb>0){const a=Math.sin(P.anim);m.armR.rotation.x=2.7+a*.35;m.armL.rotation.x=2.7-a*.35;m.armL.rotation.z=.15;m.armR.rotation.z=-.15;m.legL.rotation.x=.5+a*.4;m.legR.rotation.x=.5-a*.4;m.shinL.rotation.x=-.9;m.shinR.rotation.x=-.9;}
     if(P.insp>0){const q=inspPose(),e=Math.sin(Math.PI*(1-P.insp/INSP_T));m.armR.rotation.x+=(1.15-m.armR.rotation.x)*e;m.armR.rotation.z-=.3*e;m.gun.rotation.y+=q[1];m.gun.rotation.z+=q[2]*.6;}
   }
   const scoped=view===1&&P.weapon==='sniper'&&!(P.mini>0)&&P.adsT>.75&&!P.car;setHid('scope',!scoped);
   {const o=scoped||(view===1&&wm==='rifle'&&P.adsT>.6&&!P.car)?0:1;if(hudKey.crossO!==o){hudKey.crossO=o;el('cross').style.opacity=o;}}
-  vm.visible=view===1&&!scoped;
+  vm.visible=view===1&&!scoped&&!(P.useA&&P.useA.t/P.useA.d>.08&&P.useA.t/P.useA.d<.92);drawUse(scoped);
   if(vm.visible){const vb=S.bob===false?0:P.bobA*(1-.8*P.adsT);vm.position.z=P.recoil*1.6;vm.position.x=Math.cos(P.anim)*.012*vb+P.swx;vm.position.y=(P.reloading>0?-.16:0)-Math.abs(Math.sin(P.anim))*.014*vb+P.swy-P.land*.25-.05*P.sprT*(1-P.adsT);vm.rotation.z=-P.lean*.05;vm.rotation.y=.22*P.sprT*(1-P.adsT);vmGun.position.x=.2*(1-P.adsT);vmGun.position.y=-.2+(.2+(ADSY[wm]||-.105))*P.adsT;{const sf=melee&&P.swing>0?P.swing/.25:0;vm.rotation.x=sf>0?.45-1.5*(1-sf):0;if(sf>0)vm.rotation.y+=.45*(1-sf)-.15;}if(SHORTK[wm])vmGun.rotation.set(.55,.35,.25);else if(wm==='redrebel')vmGun.rotation.set(.32,.14,.06);else vmGun.rotation.set(melee?.75:0,melee?.5:0,melee?.3:0);if(vmGun.wid!==wm){vmGun.wid=wm;setGun(vmGun,wm);}
     if(dual){vmGun.position.x=.2-.07*P.adsT;vmGun.position.y=-.2+.05*P.adsT;vmGun.position.z=-.48+P.kR;vmGunL.position.set(-vmGun.position.x,vmGun.position.y,-.48+P.kL);}else vmGun.position.z=-.48;
     if(melee){if(SHORTK[wm])vmGun.position.set(.16,-.155,-.34);else if(wm==='redrebel')vmGun.position.set(.25,-.27,-.44);else vmGun.position.set(.27,-.3,-.42);}
