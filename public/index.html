@@ -386,7 +386,7 @@ kbd.pad{border-radius:10px;min-width:1.4em;text-align:center;background:#2a2d30;
     <div class="xp"><i id="mXp"></i></div>
     <div class="go">
       <button id="deploy" type="button" data-act="deploy">Deploy</button>
-      <small id="mGo">15 minute raid. 2 exfils open. Build 101, hosted.</small>
+      <small id="mGo">15 minute raid. 2 exfils open. Build 102, hosted.</small>
     </div>
     <nav class="tabs" id="mTabs"><button type="button" data-act="tab" data-id="stash">Stash</button><button type="button" data-act="tab" data-id="loadout">Loadout</button><button type="button" data-act="tab" data-id="trader">Trader</button><button type="button" data-act="tab" data-id="skills">Skills</button><button type="button" data-act="tab" data-id="slots">Slots <i id="tabCoins"></i></button><button type="button" data-act="tab" data-id="drip">Drip Drop</button><button type="button" data-act="tab" data-id="mp">Multiplayer</button><button type="button" data-act="tab" data-id="settings">Settings</button></nav>
     <section id="stashS" class="tab" data-tab="stash"><h2>Stash <small id="stInfo"></small></h2>
@@ -1938,9 +1938,13 @@ const vmGlow=new T.Mesh(new T.SphereGeometry(.007,8,6),new T.MeshBasicMaterial({
 const vmFlame=new T.Mesh(new T.SphereGeometry(.01,8,6),new T.MeshBasicMaterial({color:0xffc04a,transparent:true,opacity:.9}));vmFlame.scale.set(1,1.8,1);vmUse.add(vmFlame);vmFlame.visible=false;
 function startUse(id){const U2=USE[id];if(!U2){applyDrug(id);return;}P.useA={id:id,k:U2.k,t:0,d:U2.d,ev:{}};vmProp.geometry=propGeo(U2.prop);P.insp=0;P.reloading=0;ads=false;}
 const ease=x=>x<0?0:x>1?1:x*x*(3-2*x);
+/* per animation: m = hand pose at the mouth [x,y,z,rx,ry,rz] in front of the camera, pp/pr = item offset/rotation in the hand, sc = item scale */
+const USEP={smoke:{m:[.03,-.035,-.3,.15,0,.25],pp:[-.035,.0,-.03],pr:[-Math.PI/2+.25,0,.2],sc:1.4},vape:{m:[.03,-.035,-.3,.15,0,.25],pp:[-.035,.0,-.035],pr:[-Math.PI/2+.25,0,.2],sc:1.4},
+ drink:{m:[.02,-.02,-.33,-1.35,0,.1],pp:[-.01,.05,-.03],pr:[0,0,0],sc:1.15},pill:{m:[.02,-.02,-.32,-1.2,0,.1],pp:[-.01,.04,-.03],pr:[0,0,0],sc:1.15},
+ eat:{m:[.02,-.04,-.29,.3,0,.2],pp:[-.03,.03,-.04],pr:[.2,0,0],sc:1.3},bar:{m:[.02,-.045,-.29,.3,0,.2],pp:[-.03,.03,-.04],pr:[.2,.4,0],sc:1.3},tab:{m:[.02,-.045,-.28,.3,0,.2],pp:[-.03,.025,-.04],pr:[.4,0,0],sc:1.4}};
 /* where the hand is: [x,y,z, rx,ry,rz] in front of the camera. 0 = down at your side, 1 = at your mouth */
 function usePose(u){const t=u.t/u.d,k=u.k;let up=t<.22?ease(t/.22):t<.78?1:1-ease((t-.78)/.22);
-  const rest=[.2,-.38,-.42,0,0,0],mouth=k==='drink'?[.02,-.07,-.2,-1.5,0,0]:k==='pill'?[.02,-.07,-.21,-1.3,0,0]:[.025,-.085,-.19,-.2,.0,.6],
+  const rest=[.24,-.42,-.45,0,0,0],mouth=USEP[k].m,
     p=rest.map((v,i)=>v+(mouth[i]-v)*up);
   if(k==='smoke'||k==='vape'){const inh=t>.3&&t<.7;if(inh)p[2]+=Math.sin((t-.3)/.4*Math.PI)*.012;}
   if(k==='eat'&&t>.3&&t<.75)p[1]+=Math.abs(Math.sin(t*40))*.008;
@@ -1959,13 +1963,9 @@ function updUse(dt){const u=P.useA;if(!u)return;u.t+=dt;const t=u.t/u.d,e=u.ev,f
   if(t>=1){P.useA=null;applyDrug(u.id);}}
 function drawUse(scoped){const u=P&&P.useA;vmUse.visible=!!u&&view===1&&!scoped;if(!vmUse.visible)return;const p=usePose(u),t=u.t/u.d;
   vmUse.position.set(p[0],p[1],p[2]);vmUse.rotation.set(p[3],p[4],p[5]);vmUseHand.position.set(0,0,.02);vmUseHand.rotation.set(0,0,0);
-  const k=u.k;vmProp.scale.setScalar(k==='drink'||k==='pill'?1.15:1.35);
-  if(k==='smoke'||k==='vape'){vmProp.position.set(-.035,-.03,-.03);vmProp.rotation.set(Math.PI/2,0,.5);}
-  else if(k==='drink'){vmProp.position.set(-.01,.04,-.03);vmProp.rotation.set(0,0,0);}
-  else if(k==='pill'){vmProp.position.set(-.01,.03,-.03);vmProp.rotation.set(0,0,0);}
-  else{vmProp.position.set(-.03,-.015,-.04);vmProp.rotation.set(.3,0,0);}
+  const k=u.k,q=USEP[k];vmProp.scale.setScalar(q.sc);vmProp.position.set(q.pp[0],q.pp[1],q.pp[2]);vmProp.rotation.set(q.pr[0],q.pr[1],q.pr[2]);
   /* the joint's tip glows while you draw on it; a lighter flame at the start */
-  const tip=new T.Vector3(0,.057*1.35,0).applyEuler(vmProp.rotation).add(vmProp.position);
+  const tip=new T.Vector3(0,.057*q.sc,0).applyEuler(vmProp.rotation).add(vmProp.position);
   vmGlow.visible=k==='smoke'&&t>.18;vmGlow.position.copy(tip);vmGlow.scale.setScalar(t>.3&&t<.7?1.3+.5*Math.sin(u.t*14):.8);
   vmFlame.visible=k==='smoke'&&t>.13&&t<.3;vmFlame.position.set(tip.x+.004,tip.y-.02,tip.z);vmFlame.scale.set(1,1.6+Math.sin(u.t*40)*.4,1);}
 let TRIP=0,SENSE=0;
@@ -3460,7 +3460,7 @@ $('mCode').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault()
 $('mCode').value=(S.lobby||'').toUpperCase();
 $('mNick').addEventListener('input',e=>{S.nick=String(e.target.value||'').replace(/[\u0000-\u001f]/g,'').trim().slice(0,14)||'Raider';save();});
 resize();genWorld();renderMenu();
-window.__dh={useGrapple:useGrapple,openLoot:openLoot,IT:IT,MP:MP,dropPower:dropPower,start:startRaid,update:update,end:endRaid,interact:interact,heal:heal,swap:swapWeapon,view:toggleView,keys:keys,fire:v=>{firing=v;},get P(){return P;},get W(){return W;},get state(){return state;},finishSearch:finishSearch,takeAll:takeAll,takeAt:takeAt,drop:dropItem,enterCar:enterCar,explode:explode,addHeat:addHeat};
+window.__dh={USEP:USEP,useGrapple:useGrapple,openLoot:openLoot,IT:IT,MP:MP,dropPower:dropPower,start:startRaid,update:update,end:endRaid,interact:interact,heal:heal,swap:swapWeapon,view:toggleView,keys:keys,fire:v=>{firing=v;},get P(){return P;},get W(){return W;},get state(){return state;},finishSearch:finishSearch,takeAll:takeAll,takeAt:takeAt,drop:dropItem,enterCar:enterCar,explode:explode,addHeat:addHeat};
 requestAnimationFrame(frame);
 })();
 </script>
